@@ -1,0 +1,131 @@
+.page-container {
+  padding: 28px;
+  background: linear-gradient(180deg, #f7fafb 0%, #ffffff 100%);
+  min-height: 100vh;
+}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h2 {
+    color: #024e4c;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 0.2px;
+  }
+}
+.btn-primary {
+  background: linear-gradient(135deg, #028B89, #02a6a3);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 9px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(2, 139, 137, 0.25);
+  transition: all 0.25s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(2, 139, 137, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(2, 139, 137, 0.3);
+  }
+}
+.vehicle-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+}
+.vehicle-table thead {
+  background: #f0f8f8;
+
+  th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #045c5a;
+    border-bottom: 1px solid #e1eeee;
+    white-space: nowrap;
+  }
+}
+.vehicle-table tbody tr {
+  transition: background 0.25s ease;
+}
+
+.vehicle-table tbody tr:hover {
+  background: #f6fcfb;
+}
+
+.vehicle-table td {
+  padding: 14px 16px;
+  font-size: 13.5px;
+  color: #2f3e3e;
+  border-bottom: 1px solid #edf2f2;
+  vertical-align: middle;
+}
+.vehicle-table td:nth-child(1),
+.vehicle-table td:nth-child(6) {
+  font-weight: 500;
+  color: #024e4c;
+}
+.btn-link {
+  background: rgba(2, 139, 137, 0.08);
+  color: #028B89;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  &:hover {
+    background: rgba(2, 139, 137, 0.16);
+  }
+}
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filter-bar input,
+.filter-bar select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #dfeeee;
+  font-size: 13px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #028b89;
+  color: #fff;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

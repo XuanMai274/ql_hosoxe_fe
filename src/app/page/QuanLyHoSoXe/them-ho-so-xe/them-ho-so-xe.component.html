@@ -1,0 +1,240 @@
+<div class="invoice-management-container">
+
+  <!-- ================= STEP 1: CHỌN HÃNG XE ================= -->
+  <div class="upload-tab">
+
+    <div class="stepper">
+      <div class="step" [class.active]="currentStep >= 1">
+        <span class="circle">1</span>
+        <span class="label">Chọn hãng xe</span>
+      </div>
+      <div class="line" [class.active]="currentStep >= 2"></div>
+      <div class="step" [class.active]="currentStep >= 2">
+        <span class="circle">2</span>
+        <span class="label">Nhập hồ sơ</span>
+      </div>
+    </div>
+
+    <div *ngIf="currentStep === 1">
+      <h2 class="section-title">Chọn hãng xe</h2>
+
+      <div class="brand-grid">
+        <div class="brand-card" *ngFor="let brand of brands" (click)="selectBrand(brand)"
+          [class.selected]="selectedBrand?.id === brand.id">
+          <img src="assets/public/img/{{ brand.logo }}" class="brand-logo" />
+          <h4>{{ brand.name }}</h4>
+          <p class="desc">{{ brand.description }}</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" [disabled]="!selectedBrand" (click)="goToUpload()">
+          Tiếp tục
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= STEP 2 ================= -->
+    <form *ngIf="currentStep === 2" [formGroup]="form">
+
+      <div class="brand-guarantee-row">
+        <div class="brand-col">
+
+          <!-- DÒNG 1 -->
+          <label class="inline-label">Hãng xe</label>
+
+          <!-- DÒNG 2 -->
+          <div class="brand-info-line">
+            <img src="assets/public/img/{{ selectedBrand?.logo }}" />
+
+            <div class="brand-text">
+              <h3>{{ selectedBrand?.name }}</h3>
+              <p>{{ selectedBrand?.description }}</p>
+            </div>
+          </div>
+
+          <!-- DÒNG 3 -->
+          <button style="padding:0px;margin-top: 15px;" class="btn-outline small" (click)="backToBrand()">
+            <i class="fa-solid fa-rotate-left"></i>
+            Đổi hãng
+          </button>
+
+        </div>
+
+        <!-- ================= THƯ BẢO LÃNH ================= -->
+        <div class="guarantee-col">
+
+          <!-- DÒNG 1 -->
+          <label class="inline-label">Thư bảo lãnh</label>
+
+          <!-- DÒNG 2 -->
+          <select class="dropdown-select" formControlName="guaranteeId" (change)="onGuaranteeChange()">
+            <option value="">-- Chọn thư bảo lãnh --</option>
+            <option *ngFor="let g of guaranteeList" [value]="g.id">
+              {{ g.guaranteeNoticeNumber || g.referenceCode }} - REF: {{ g.referenceCode }}
+            </option>
+          </select>
+
+          <!-- DÒNG 3 -->
+          <div class="selected" *ngIf="selectedGuarantee">
+            <strong>{{ selectedGuarantee.guaranteeNoticeNumber }}</strong>
+            – REF {{ selectedGuarantee.referenceCode }}
+            <span class="remove" (click)="clearGuarantee()">✕</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ===== CHỌN CÁCH NHẬP ===== -->
+      <div class="tabs mode-tabs">
+        <button [class.active]="activeTab === 'upload'" (click)="setTab('upload')">
+          Tự động
+        </button>
+
+        <button [class.active]="activeTab === 'manual'" (click)="setTab('manual')">
+          Nhập thủ công
+        </button>
+      </div>
+
+      <!-- ================= TAB UPLOAD ================= -->
+      <div *ngIf="activeTab === 'upload'" class="upload-tab">
+        <div class="upload-area">
+          <label class="upload-box">
+            <i class="fa-regular fa-file upload-trigger"></i>
+
+            <p class="title">Tải lên hóa đơn & xe</p>
+            <p class="desc">Kéo thả file PDF hoặc nhấn vào vùng này</p>
+            <p class="note">Hỗ trợ: PDF hóa đơn GTGT</p>
+
+            <input #fileInput type="file" accept=".xlsx,.xls,.pdf" (change)="onFileChange($event)" hidden />
+          </label>
+        </div>
+
+        <ul class="file-list" *ngIf="files.length">
+          <li *ngFor="let f of files">{{ f.name }}</li>
+        </ul>
+
+        <div class="actions space-between">
+          <button class="btn-outline" (click)="backToBrand()">Quay lại</button>
+          <button class="btn-primary" [disabled]="!files.length" (click)="processOcr()">
+            Xử lý hồ sơ
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= TAB MANUAL ================= -->
+      <div *ngIf="activeTab === 'manual'" class="manual-tab">
+
+        <!-- <h2 class="section-title">
+          <i class="fa-solid fa-pen-to-square"></i>
+          Nhập hồ sơ xe thủ công
+        </h2> -->
+
+        <!-- ================= HÓA ĐƠN ================= -->
+        <div class="card">
+          <h3>Thông tin hóa đơn</h3>
+
+          <div class="form-grid">
+            <div>
+              <label>Số hóa đơn</label>
+              <input type="text" formControlName="invoiceNumber" />
+            </div>
+
+            <div>
+              <label>Ngày hóa đơn</label>
+              <input type="date" formControlName="invoiceDate" />
+            </div>
+
+            <div>
+              <label>Tổng tiền</label>
+              <input type="number" formControlName="totalAmount" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= XE ================= -->
+        <div class="card">
+          <div formArrayName="vehicles">
+            <div class="vehicle-box" *ngFor="let v of vehicles.controls; let i = index" [formGroupName]="i">
+              <h4>Thông tin xe {{ i + 1 }}</h4>
+
+              <div class="form-grid">
+                <div>
+                  <label>Tên xe</label>
+                  <input type="text" formControlName="vehicleName" />
+                </div>
+
+                <div>
+                  <label>Số khung</label>
+                  <input type="text" formControlName="chassisNumber" />
+                </div>
+
+                <div>
+                  <label>Số máy</label>
+                  <input type="text" formControlName="engineNumber" />
+                </div>
+
+                <div>
+                  <label>Loại xe / Model</label>
+                  <input type="text" formControlName="modelType" />
+                </div>
+
+                <div>
+                  <label>Màu sắc</label>
+                  <input type="text" formControlName="color" />
+                </div>
+
+                <div>
+                  <label>Số chỗ</label>
+                  <input type="number" formControlName="seats" />
+                </div>
+
+                <div>
+                  <label>Giá xe</label>
+                  <input type="number" formControlName="price" />
+                </div>
+
+                <div>
+                  <label>Ngày nhập</label>
+                  <input type="date" formControlName="importDate" />
+                </div>
+              </div>
+              <!-- ===== UPLOAD FILE CHO XE ===== -->
+              <div class="upload-area small">
+                <label class="upload-box">
+                  <i class="fa-regular fa-file-lines"></i>
+                  <span>Upload file cho xe</span>
+                  <input type="file" multiple (change)="onVehicleFileChange($event, i)" hidden>
+                </label>
+
+                <ul class="file-list" *ngIf="vehicleFiles[i]?.length">
+                  <li *ngFor="let f of vehicleFiles[i]">
+                    {{ f.name }}
+                  </li>
+                </ul>
+              </div>
+              <button class="btn-remove" (click)="removeVehicle(i)">
+                <i class="fa-regular fa-circle-xmark"></i> Xóa xe
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-add" (click)="addVehicle()">
+            <i class="fa-regular fa-square-plus"></i> Thêm xe
+          </button>
+        </div>
+
+        <!-- ================= ACTIONS ================= -->
+        <div class="actions">
+          <button class="btn-outline" (click)="backToBrand()">Quay lại</button>
+          <button class="btn-primary" (click)="submit()">
+            Lưu hồ sơ
+          </button>
+        </div>
+
+      </div>
+
+    </form>
+  </div>
+</div>

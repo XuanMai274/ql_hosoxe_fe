@@ -1,0 +1,109 @@
+<div class="page-container">
+  <!-- FILTER -->
+  <form [formGroup]="filterForm" class="filter-box" (ngSubmit)="search(0)">
+    <div class="filter-row">
+      <select formControlName="manufacturerCode">
+        <option value="">Tất cả hãng xe</option>
+        <option *ngFor="let m of manufacturers" [value]="m.code">
+          {{ m.name }}
+        </option>
+      </select>
+
+      <input type="date" formControlName="fromDate" />
+      <select formControlName="hasLetterNumber">
+        <option value="">Tất cả trạng thái</option>
+        <option value="true">Đã phát hành thư</option>
+        <option value="false">Chưa phát hành thư</option>
+      </select>
+
+
+      <!-- <button type="submit">Áp dụng lọc</button> -->
+    </div>
+  </form>
+  <!-- QUICK SEARCH -->
+  <div class="quick-search"> <input type="text" placeholder="Nhập mã thư bảo lãnh hoặc số tham chiếu..."
+      [(ngModel)]="keyword" (keyup.enter)="searchByKeyword()" /> <button (click)="searchByKeyword()"><i
+        class="fa-solid fa-magnifying-glass"></i></button> </div>
+  <!-- LIST -->
+  <div class="card-grid">
+    <div class="card" *ngFor="let item of guaranteeLetters">
+      <div class="card-header">
+        <div class="contract">{{ item.guaranteeContractNumber }}</div>
+        <div class="manufacturer">{{ item.manufacturerDTO?.name }}</div>
+      </div>
+
+      <div class="card-body">
+        <div class="info">
+          <label>Số tiền bảo lãnh</label>
+          <span>{{ item.expectedGuaranteeAmount | number }} VND</span>
+        </div>
+        <div class="info">
+          <label>Số tiền đã bảo lãnh</label>
+          <span>{{ item.totalGuaranteeAmount | number }} VND</span>
+        </div>
+        <div class="info">
+          <label>Số tiền đã bảo lãnh còn lại</label>
+          <span>{{ item.remainingAmount | number }} VND</span>
+        </div>
+        <div class="info">
+          <label>Số xe đã nhập</label>
+          <span>{{ item.importedVehicleCount}} Xe</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-primary" [routerLink]="['/manager/chinh-sua-bao-lanh/', item.id]">Chỉnh sửa</button>
+      </div>
+      <!-- Upload file -->
+      <div class="file-actions">
+
+        <!-- Upload / Replace -->
+        <!-- <label class="btn-upload-file" [title]="item.file ? 'Thay thế file PDF' : 'Upload thư bảo lãnh'">
+          <i class="fa-solid" [ngClass]="item.file ? 'fa-rotate' : 'fa-file'">
+          </i>
+
+          <input type="file" accept="application/pdf" (change)="onUploadFile($event, item)" hidden />
+        </label> -->
+
+        <!-- Loading -->
+        <i *ngIf="item.uploading" class="fa fa-spinner fa-spin loading-icon">
+        </i>
+
+        <!-- Download -->
+        <!-- <button *ngIf="item.file" class="btn-action" (click)="downloadFile(item.file)" title="Download thư bảo lãnh">
+          <i class="fa-solid fa-download"></i>
+        </button> -->
+
+        <!-- File name -->
+        <!-- FILE STATUS -->
+        <!-- <div *ngIf="item.file" class="file-badge has-file">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span class="file-name" title="{{ item.file.fileName }}">
+            {{ item.file.fileName }}
+          </span>
+        </div> -->
+
+        <div *ngIf="!item.fileId" class="file-badge no-file">
+          <i class="fa-regular fa-circle-xmark"></i>
+          <span>Chưa có file</span>
+        </div>
+        <div *ngIf="item.fileId" class="file-badge has-file">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span>{{ item.fileId.fileName }}</span>
+        </div>
+      </div>
+    </div>z
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination-wrapper center">
+    <div class="pagination-actions">
+      <button class="page-btn" [disabled]="page === 0" (click)="prev()">
+        ‹ Trước
+      </button>
+      <button class="page-btn primary" [disabled]="page + 1 === totalPages" (click)="next()">
+        Sau ›
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
+import { Invoice } from '../models/invoice-data.model';
+import { Guarantee } from '../models/guarantee.model';
+import { Manufacturer } from '../models/manufacturer';
+import { BranchAuthorizedRepresentative } from '../models/branch-authorized-representative';
+@Injectable({
+    providedIn: 'root'
+})
+export class ManufacturerService {
+    private readonly API_URL = 'http://localhost:8080/officer/manufacturer';
+
+    constructor(private http: HttpClient) { }
+    getManufacture(): Observable<Manufacturer[]> {
+        return this.http
+            .get<any>(`${this.API_URL}/findAll`)
+            .pipe(
+                map(res => {
+                    if (res?.success && Array.isArray(res.manufacturerDTO)) {
+                        return res.manufacturerDTO as Manufacturer[];
+                    }
+                    return [];
+                })
+            );
+    }
+}

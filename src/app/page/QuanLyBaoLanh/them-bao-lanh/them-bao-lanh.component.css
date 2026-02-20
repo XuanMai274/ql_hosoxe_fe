@@ -1,0 +1,1198 @@
+/* ================= ROOT ================= */
+.invoice-management-container {
+  max-width: 1440px;
+  margin: auto;
+  padding: 24px;
+  background: var(--bg);
+  font-family: "Segoe UI", Roboto, system-ui, sans-serif;
+  color: var(--text-main);
+}
+
+/* ================= TABS ================= */
+.upload-tab > h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #245f5f; /* xanh đậm hơn #4b9e9e */
+  margin-bottom: 0px;
+}
+
+/* Nhập thủ công hóa đơn & xe */
+.manual-tab .header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #245f5f;
+}
+
+/* Icon trong tiêu đề */
+.manual-tab .header h2 i,
+.upload-tab > h2 i {
+  font-size: 20px;
+  color: #4b9e9e;
+}
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 0px;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-weight: 600;
+    color: var(--primary-dark);
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    &:hover {
+      border-color: var(--primary);
+      /* box-shadow: 0 4px 14px rgba(75, 158, 158, 0.25); */
+    }
+
+    &.active {
+      background: #057e7a ;
+      color: #fff;
+      border-color: transparent;
+      /* box-shadow: 0 8px 24px rgba(75, 158, 158, 0.45); */
+    }
+  }
+}
+
+/* ================= CARD ================= */
+.upload-tab,
+.manual-tab {
+  background: #fff;
+  padding: 0px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+
+/* ================= HEADER ================= */
+.manual-tab .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-dark);
+
+    i {
+      color: var(--primary);
+      font-size: 22px;
+    }
+  }
+}
+
+/* ================= UPLOAD ================= */
+/* ================= UPLOAD FILE - LABEL STYLE ================= */
+.upload-area {
+  margin-top: 16px;
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 64px 24px;
+  border: 2px dashed #d1d5db;
+  border-radius: 16px;
+  background: #fafefe;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: center;
+}
+
+/* Hover */
+.upload-label:hover {
+  border-color: #4b9e9e;
+  background: #eef8f8;
+}
+
+/* Icon */
+.upload-label i {
+  font-size: 42px;
+  color: #4b9e9e;
+  margin-bottom: 6px;
+}
+
+/* Title */
+.upload-label .title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #245f5f;
+  margin: 0;
+}
+
+/* Description */
+.upload-label .desc {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Note */
+.upload-label .note {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-top: 6px;
+}
+
+/* Hide input */
+.upload-label input[type="file"] {
+  display: none;
+}
+
+
+/* ================= FORM ================= */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px 24px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+input,
+select {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db; /* xám nhạt */
+  background-color: #fff;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Khi focus */
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #4b9e9e;
+  box-shadow: 0 0 0 2px rgba(75, 158, 158, 0.15);
+}
+
+
+.req {
+  color: #dc2626;
+}
+
+/* ================= BUTTONS ================= */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.btn-primary,
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 26px;
+  border-radius: 9px;
+  border: none;
+  font-weight: 600;
+  color: #fff;
+  /* background: linear-gradient(135deg, #4b9e9e, #6bbbbb); */
+  background-color: #4b9e9e;
+  /* box-shadow: 0 6px 18px rgba(75, 158, 158, 0.45); */
+  cursor: pointer;
+}
+
+.btn-cancel {
+  padding: 11px 26px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: #e6e6e6;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.btn-add-vehicle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0;
+  padding: 11px 26px;
+  border-radius: 9px;
+  border: none;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #4b9e9e, #6bbbbb);
+  box-shadow: 0 6px 18px rgba(75, 158, 158, 0.45);
+}
+
+/* ================= INVOICE INFO ================= */
+.invoice-header {
+  background: var(--primary-light);
+  border-left: 5px solid var(--primary);
+  padding: 18px 22px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--primary-dark);
+  }
+
+  p {
+    margin: 4px 0;
+    font-size: 14px;
+  }
+}
+
+/* ================= TABLE ================= */
+.vehicles-list {
+  margin-top: 28px;
+
+  h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 12px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th,
+    td {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #f0f7f7;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    tbody tr:hover {
+      background: #f9fefe;
+    }
+  }
+  
+}
+/* ===== FINISH ACTIONS ===== */
+.finish-actions {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px dashed #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ===== FINISH BUTTON ===== */
+.btn-finish {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  background: linear-gradient(135deg, #16a34a, #21934a);
+  color: #ffffff;
+
+  padding: 12px 28px;
+  border-radius: 10px;
+  border: none;
+
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(22, 163, 74, 0.25);
+  transition: all 0.25s ease;
+}
+
+/* Icon */
+.btn-finish i {
+  font-size: 16px;
+}
+
+/* Hover */
+.btn-finish:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(22, 163, 74, 0.35);
+  background: linear-gradient(135deg, #15803d, #1a8441);
+}
+
+/* Active */
+.btn-finish:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 8px rgba(22, 163, 74, 0.25);
+}
+
+/* Disabled (nếu sau này cần) */
+.btn-finish:disabled {
+  background: #d1fae5;
+  color: #6b7280;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ===== STEPPER ===== */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9ca3af;
+}
+
+.step.active {
+  color: #348d87;
+}
+
+.circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.line {
+  width: 80px;
+  height: 2px;
+  background: #e5e7eb;
+  margin: 0 12px;
+}
+
+.line.active {
+  background: #348d87;
+}
+
+/* ===== BRAND ===== */
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.brand-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fff;
+}
+
+.brand-card:hover {
+  border-color: #348d87;
+}
+
+.brand-card.selected {
+  border: 2px solid #348d87;
+  background: #f0fdfa;
+}
+
+.brand-logo {
+  height: 40px;
+  margin-bottom: 8px;
+}
+
+.models span {
+  display: inline-block;
+  font-size: 12px;
+  background: #e6fffa;
+  color: #047857;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin: 2px;
+}
+
+/* ===== UPLOAD ===== */
+.upload-area {
+  margin-top: 24px;
+}
+
+.upload-box {
+  display: block;
+  border: 2px dashed #9ca3af;
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.upload-box:hover {
+  border-color: #348d87;
+  background: #f0fdfa;
+}
+
+.upload-box input {
+  display: none;
+}
+
+/* ===== ACTIONS ===== */
+.actions {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.actions.space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-primary {
+  background: #348d87;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-outline {
+  border: 1px solid #348d87;
+  color: #348d87;
+  padding: 10px 24px;
+  border-radius: 10px;
+  background: transparent;
+}
+/* ================= LAYOUT CHUNG ================= */
+/* =====================================================
+   =============== UPLOAD TAB ONLY =====================
+   ===================================================== */
+
+/* ===== CONTAINER ===== */
+.upload-tab {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 24px 0px;
+  font-family: "Segoe UI", Roboto, system-ui, sans-serif;
+  color: #111827;
+  animation: fadeInUp 0.35s ease;
+}
+
+/* ===== TITLE ===== */
+.upload-tab .section-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f766e;
+  margin-bottom: 30px;
+  letter-spacing: 0.3px;
+}
+
+/* ===== STEPPER ===== */
+.upload-tab .stepper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  /* margin-bottom: 38px; */
+}
+
+.upload-tab .step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.upload-tab .step.active {
+  color: #348d87;
+}
+
+.upload-tab .circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.upload-tab .line {
+  width: 90px;
+  height: 2px;
+  background: #e5e7eb;
+}
+
+.upload-tab .line.active {
+  background: #348d87;
+}
+
+/* =====================================================
+   =============== BRAND SELECT ========================
+   ===================================================== */
+
+.upload-tab .brand-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 420px));
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 36px;
+}
+
+/* ===== CARD (CAO HƠN + ĐẸP HƠN) ===== */
+.upload-tab .brand-card {
+  min-height: 260px; /* ⭐ CAO HƠN */
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 26px 22px 22px;
+  text-align: center;
+  cursor: pointer;
+
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInCard 0.4s ease both;
+}
+
+.upload-tab .brand-card:hover {
+  transform: translateY(-6px);
+  border-color: #348d87;
+  box-shadow: 0 14px 28px rgba(52, 141, 135, 0.25);
+}
+
+.upload-tab .brand-card.selected {
+  border: 1px solid #246e69;
+  /* background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%); */
+  box-shadow: 0 5px 5px rgba(52, 141, 135, 0.35);
+}
+
+/* ===== LOGO ===== */
+.upload-tab .brand-logo {
+  height: 52px;
+  object-fit: contain;
+  margin-bottom: 14px;
+}
+
+/* ===== TEXT ===== */
+.upload-tab .brand-card h4 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #065f5b;
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+}
+
+.upload-tab .brand-card .desc {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 18px;
+  padding: 0 10px;
+}
+
+/* ===== MODELS ===== */
+.upload-tab .models {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.upload-tab .models span {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #ecfeff;
+  color: #036672;
+  border: 1px solid #c5f6fa;
+}
+
+/* =====================================================
+   ================= UPLOAD AREA =======================
+   ===================================================== */
+
+.upload-tab .upload-area {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ===== UPLOAD BOX (HẸP NGANG HƠN) ===== */
+.upload-tab .upload-box,
+.upload-tab .upload-label {
+  max-width: 720px; /* ⭐ RÚT NGANG */
+  width: 100%;
+  padding: 54px 24px;
+
+  border: 2px dashed #cbd5e1;
+  border-radius: 18px;
+  background: #fafefe;
+
+  text-align: center;
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+  animation: fadeInUp 0.35s ease;
+}
+
+.upload-tab .upload-box:hover,
+.upload-tab .upload-label:hover {
+  border-color: #4b9e9e;
+  background: #eef8f8;
+  box-shadow: 0 10px 24px rgba(75, 158, 158, 0.2);
+}
+
+/* ===== ICON ===== */
+.upload-tab .upload-label i {
+  font-size: 44px;
+  color: #4b9e9e;
+  margin-bottom: 10px;
+}
+
+/* ===== TEXT ===== */
+.upload-tab .upload-label .title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #245f5f;
+  margin-bottom: 6px;
+}
+
+.upload-tab .upload-label .desc {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.upload-tab .upload-label .note {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.upload-tab .upload-label input {
+  display: none;
+}
+
+/* =====================================================
+   ================= ACTIONS ===========================
+   ===================================================== */
+
+.upload-tab .actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}
+
+/* ===== BUTTON ===== */
+.upload-tab .btn-primary {
+  background: linear-gradient(135deg, #348d87, #2f7f79);
+  color: #ffffff;
+  padding: 13px 42px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 9px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+
+  /* box-shadow: 0 10px 22px rgba(52, 141, 135, 0.35); */
+  transition: all 0.25s ease;
+}
+
+.upload-tab .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 5px rgba(52, 141, 135, 0.45);
+}
+
+.upload-tab .btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* =====================================================
+   ================= ANIMATIONS ========================
+   ===================================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .upload-tab .brand-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-tab .upload-box,
+  .upload-tab .upload-label {
+    max-width: 100%;
+  }
+
+  .upload-tab .section-title {
+    font-size: 18px;
+  }
+}
+.text-error {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.req {
+  color: #dc2626;
+  font-weight: 600;
+}
+/* ===== GUARANTEE FORM CENTER ===== */
+.form-wrapper {
+  max-width: 720px;        /* ⭐ nhỏ gọn */
+  margin: 0 auto;          /* ⭐ căn giữa */
+  background: #ffffff;
+  padding: 28px 32px 34px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+}
+
+/* ===== 2 INPUT / 1 ROW ===== */
+.form-grid.two-col {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 26px;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .form-grid.two-col {
+    grid-template-columns: 1fr;
+  }
+}
+.finish-container {
+  max-width: 900px;
+  margin: 0 auto;
+  animation: fadeInUp 0.35s ease;
+}
+
+/* ===== SUMMARY CARD ===== */
+.guarantee-summary-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 30px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+  margin-bottom: 36px;
+}
+
+/* HEADER */
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.summary-header i {
+  font-size: 26px;
+  color: #16a34a;
+}
+
+.summary-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #065f5b;
+  margin: 0;
+}
+
+/* GRID INFO */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px 32px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-item .label {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.summary-item .value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.summary-item .value.highlight {
+  color: #0f766e;
+}
+
+.summary-item .value.amount {
+  font-size: 18px;
+  color: #047857;
+}
+
+/* ================= ACTION BUTTONS ================= */
+.finish-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* BUTTON BASE */
+.finish-actions button {
+  border-radius: 10px;
+  padding: 12px 26px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.25s ease;
+}
+
+/* PRIMARY */
+.btn-primary-lg {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(22, 163, 74, 0.35);
+}
+
+.btn-primary-lg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(22, 163, 74, 0.45);
+}
+
+/* SECONDARY */
+.btn-secondary {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.btn-secondary:hover {
+  background: #bae6fd;
+}
+
+/* WARNING */
+.btn-warning {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.btn-warning:hover {
+  background: #fed7aa;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .finish-actions {
+    justify-content: center;
+  }
+}
+/* ===== GROUP ===== */
+.input-flow-group {
+  position: relative;
+  padding-left: 24px;
+}
+
+/* ===== VERTICAL FLOW LINE ===== */
+.input-flow-group::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    #4b9e9e40,
+    #4b9e9e20,
+    transparent
+  );
+}
+
+/* ===== ITEM ===== */
+.flow-item {
+  position: relative;
+  margin-bottom: 22px;
+}
+
+/* DOT NODE */
+.flow-item::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 34px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4b9e9e;
+  box-shadow: 0 0 0 3px #e6f4f4;
+}
+
+/* LABEL STYLE */
+.flow-item label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Badge cần nhập */
+.flow-item label::after {
+  content: "Cần nhập";
+  font-size: 11px;
+  background: #ecfeff;
+  color: #036672;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+/* ===== Overlay ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;
+  padding: 20px;
+}
+
+/* ===== Container ===== */
+.modal-container {
+  width: 540px;
+  max-width: 100%;
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.15),
+    0 30px 70px rgba(0, 0, 0, 0.2);
+
+  padding: 26px 28px;
+  animation: modalAppear 0.3s ease;
+}
+
+/* ===== Header ===== */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* ===== Close ===== */
+.close-btn {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-btn:hover {
+  background: #f1f5f9;
+}
+
+/* ===== Form Layout ===== */
+.modal-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* ===== Label ===== */
+.modal-form label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Required star */
+.req {
+  color: #dc2626;
+  margin-left: 3px;
+}
+
+/* ===== Input ===== */
+.modal-form input {
+  width: 100%;
+  height: 44px;
+
+  padding: 0 12px;
+
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+/* Focus */
+.modal-form input:focus {
+  outline: none;
+  border-color:#036672;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* ===== Action Buttons ===== */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* ===== Primary Button ===== */
+.btn-primary {
+  height: 42px;
+  min-width: 110px;
+  text-align: center;
+  justify-content: center;
+  background:#206f78;
+  color: white;
+
+  border-radius: 10px;
+  border: none;
+
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  background: #024c5a;
+}
+
+/* ===== Outline Button ===== */
+.btn-outline {
+  height: 42px;
+  min-width: 110px;
+
+  background: #f1f5f9;
+  color: #334155;
+
+  border-radius: 10px;
+  border: none;
+
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-outline:hover {
+  background: #e2e8f0;
+}
+
+/* ===== Animation ===== */
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-25px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+
+  .modal-container {
+    padding: 20px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}

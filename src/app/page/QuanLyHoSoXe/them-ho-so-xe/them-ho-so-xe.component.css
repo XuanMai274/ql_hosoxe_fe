@@ -1,0 +1,850 @@
+/* CHỈ DÙNG CHO UPLOAD TAB */
+.upload-tab .upload-area {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* đảm bảo box luôn căn giữa */
+.upload-tab .upload-box {
+  margin: 0 auto;
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-weight: 600;
+    color: var(--primary-dark);
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    &:hover {
+      border-color: var(--primary);
+      /* box-shadow: 0 4px 14px rgba(75, 158, 158, 0.25); */
+    }
+
+    &.active {
+      background: #057e7a;
+      color: #fff;
+      border-color: transparent;
+      /* box-shadow: 0 8px 24px rgba(75, 158, 158, 0.45); */
+    }
+  }
+}
+
+.upload-tab {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 24px 56px;
+  font-family: "Segoe UI", Roboto, system-ui, sans-serif;
+  color: #111827;
+  animation: fadeInUp 0.35s ease;
+}
+
+.upload-tab>h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #245f5f;
+  margin-bottom: 20px;
+}
+
+.upload-tab .section-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f766e;
+  margin-bottom: 30px;
+  letter-spacing: 0.3px;
+}
+
+.upload-tab .stepper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 38px;
+}
+
+.upload-tab .step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.upload-tab .step.active {
+  color: #348d87;
+}
+
+.upload-tab .circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.upload-tab .line {
+  width: 90px;
+  height: 2px;
+  background: #e5e7eb;
+}
+
+.upload-tab .line.active {
+  background: #348d87;
+}
+
+.upload-tab .brand-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 420px));
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 36px;
+}
+
+.upload-tab .brand-card {
+  min-height: 260px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 26px 22px 22px;
+  text-align: center;
+  cursor: pointer;
+
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInCard 0.4s ease both;
+}
+
+.upload-tab .brand-card:hover {
+  transform: translateY(-6px);
+  border-color: #348d87;
+  box-shadow: 0 14px 28px rgba(52, 141, 135, 0.25);
+}
+
+.upload-tab .brand-card.selected {
+  border: 1px solid #246e69;
+  box-shadow: 0 5px 5px rgba(52, 141, 135, 0.35);
+}
+
+.upload-tab .brand-logo {
+  height: 52px;
+  object-fit: contain;
+  margin-bottom: 14px;
+}
+
+.upload-tab .brand-card h4 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #065f5b;
+  margin-bottom: 8px;
+}
+
+.upload-tab .brand-card .desc {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+upload-tab .upload-area {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.upload-tab .upload-box,
+.upload-tab .upload-label {
+  max-width: 720px;
+  width: 100%;
+  padding: 54px 24px;
+
+  border: 2px dashed #cbd5e1;
+  border-radius: 18px;
+  background: #fafefe;
+
+  text-align: center;
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+  animation: fadeInUp 0.35s ease;
+}
+
+.upload-tab .upload-box:hover,
+.upload-tab .upload-label:hover {
+  border-color: #4b9e9e;
+  background: #eef8f8;
+  box-shadow: 0 10px 24px rgba(75, 158, 158, 0.2);
+}
+
+.upload-tab .upload-label i {
+  font-size: 44px;
+  color: #4b9e9e;
+  margin-bottom: 10px;
+}
+
+.upload-tab .upload-label .title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #245f5f;
+}
+
+.upload-tab .upload-label .desc {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.upload-tab .upload-label .note {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.upload-tab .upload-label input {
+  display: none;
+}
+
+.upload-tab .actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}
+
+.upload-tab .btn-primary {
+  background: linear-gradient(135deg, #348d87, #2f7f79);
+  color: #ffffff;
+  padding: 13px 42px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 9px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+  transition: all 0.25s ease;
+}
+
+.upload-tab .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 5px rgba(52, 141, 135, 0.45);
+}
+
+.upload-tab .btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .upload-tab .brand-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-tab .upload-box,
+  .upload-tab .upload-label {
+    max-width: 100%;
+  }
+
+  .upload-tab .section-title {
+    font-size: 18px;
+  }
+}
+
+.manual-tab {
+  margin-top: 28px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid #e5e7eb;
+  animation: fadeInUp 0.35s ease;
+}
+
+/* ================= TITLE ================= */
+.manual-tab .section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f766e;
+  margin-bottom: 32px;
+}
+
+.manual-tab .section-title i {
+  color: #14b8a6;
+  font-size: 22px;
+}
+
+/* ======================================================
+   CARD – KHỐI NGHIỆP VỤ
+====================================================== */
+.manual-tab .card {
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  padding: 24px 26px;
+  margin-bottom: 28px;
+  background: #ffffff;
+}
+
+.manual-tab .card h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f766e;
+  margin-bottom: 18px;
+}
+
+/* ======================================================
+   FORM GRID
+====================================================== */
+.manual-tab .form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px 24px;
+}
+
+.manual-tab label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.manual-tab input {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.manual-tab input:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.15);
+}
+
+/* ======================================================
+   VEHICLE FORM – TỪNG XE
+====================================================== */
+.manual-tab .vehicle-box {
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background: #fafefe;
+}
+
+.manual-tab .vehicle-box h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #065f5b;
+  margin-bottom: 14px;
+}
+
+/* Nút xóa xe */
+.manual-tab .btn-remove {
+  margin-top: 14px;
+  background: transparent;
+  border: none;
+  color: #dc2626;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 0px solid #14b8a6;
+  color: #0f766e;
+  padding: 12px 30px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ======================================================
+   BUTTONS
+====================================================== */
+.manual-tab .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.upload-tab .upload-trigger {
+  font-size: 46px;
+  color: #4b9e9e;
+  cursor: pointer;
+  margin-bottom: 12px;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.upload-tab .upload-trigger:hover {
+  color: #0f766e;
+  transform: scale(1.08);
+}
+
+.manual-tab .btn-primary {
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  color: #ffffff;
+  padding: 12px 30px;
+  border-radius: 999px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.manual-tab .btn-outline {
+  background: transparent;
+  border: 2px solid #14b8a6;
+  color: #0f766e;
+  padding: 12px 30px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.manual-tab .btn-add,
+.manual-tab .btn-save {
+  background: transparent;
+  border: none;
+  color: #0f766e;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ======================================================
+   DANH SÁCH XE – TABLE
+====================================================== */
+.manual-tab .vehicles-list {
+  margin-top: 36px;
+}
+
+.manual-tab .vehicles-list h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f766e;
+  margin-bottom: 14px;
+}
+
+.manual-tab table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.manual-tab th {
+  background: #ecfeff;
+  color: #065f5b;
+  font-weight: 700;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.manual-tab td {
+  padding: 13px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.manual-tab tbody tr:hover {
+  background: #f0fdfa;
+}
+
+/* ======================================================
+   ERROR TEXT
+====================================================== */
+.manual-tab .text-error {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+@media (max-width: 768px) {
+  .manual-tab {
+    padding: 20px;
+  }
+
+  .manual-tab .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .manual-tab .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.autocomplete {
+  position: relative;
+}
+
+.suggest-list {
+  position: absolute;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.suggest-list li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.suggest-list li:hover {
+  background: #f5f7fa;
+}
+
+.code {
+  font-weight: 600;
+}
+
+.meta {
+  font-size: 12px;
+  color: #666;
+}
+
+.selected {
+  margin-top: 10px;
+  background: #eef6ff;
+  padding: 8px 10px;
+  border-radius: 4px;
+}
+
+.selected .remove {
+  margin-left: 10px;
+  cursor: pointer;
+  color: red;
+}
+
+/* ======================================================
+   GUARANTEE BLOCK – KHỐI CHUNG
+====================================================== */
+.guarantee-block {
+  max-width: 860px;
+  margin: 0 auto 36px;
+}
+
+.guarantee-block h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f766e;
+  margin-bottom: 14px;
+}
+
+/* ======================================================
+   MODE TABS – CHỌN CÁCH NHẬP
+====================================================== */
+.mode-tabs {
+  display: flex;
+  justify-content: center;
+  margin: 32px 0 20px;
+}
+
+/* ======================================================
+   TAB CONTENT SPACING
+====================================================== */
+.upload-tab+.manual-tab,
+.mode-tabs+.upload-tab,
+.mode-tabs+.manual-tab {
+  animation: fadeInUp 0.35s ease;
+}
+
+.guarantee-block .autocomplete input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.guarantee-block .autocomplete input:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.18);
+}
+
+/* Dropdown */
+.guarantee-block .suggest-list {
+  position: absolute;
+  width: 100%;
+  margin-top: 6px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Item */
+.guarantee-block .suggest-list li {
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.guarantee-block .suggest-list li:hover {
+  background: #f0fdfa;
+}
+
+/* Code */
+.guarantee-block .code {
+  font-weight: 700;
+  color: #065f5b;
+}
+
+/* Meta */
+.guarantee-block .meta {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Selected guarantee */
+.guarantee-block .selected {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #ecfeff;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.guarantee-block .selected strong {
+  color: #0f766e;
+}
+
+.guarantee-block .remove {
+  margin-left: 12px;
+  cursor: pointer;
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.step2-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.brand-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-info img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.brand-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.brand-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.brand-guarantee-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 28px;
+  padding: 20px 24px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  margin-bottom: 28px;
+}
+
+.inline-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.brand-info-line {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-info-line img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.brand-text h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f766e;
+}
+
+.brand-text p {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: #6b7280;
+}
+
+.brand-col button {
+  align-self: flex-start;
+}
+
+.guarantee-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guarantee-col input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+}
+
+.guarantee-col input:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.18);
+}
+
+/* Dropdown select styling */
+.guarantee-col .dropdown-select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23334155' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+
+.guarantee-col .dropdown-select:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.18);
+}
+
+.guarantee-col .dropdown-select:hover {
+  border-color: #14b8a6;
+}
+
+.guarantee-col .dropdown-select option {
+  padding: 10px;
+  font-size: 14px;
+}
+
+.guarantee-col .selected {
+  /* background: #d6dada; */
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13.5px;
+}
+
+.guarantee-col .remove {
+  margin-left: 350px;
+  cursor: pointer;
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.manual-tab .upload-storage {
+  background: #f9fafb;
+}
+
+.manual-tab .upload-storage .note {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.manual-tab .upload-storage .upload-box {
+  border: 2px dashed #94a3b8;
+  background: #ffffff;
+}
+
+.manual-tab .upload-storage .upload-box:hover {
+  border-color: #14b8a6;
+  background: #f0fdfa;
+}

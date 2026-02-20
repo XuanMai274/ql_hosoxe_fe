@@ -1,0 +1,483 @@
+/* =========================
+   ROOT
+========================= */
+:host {
+  display: block;
+  background: #f4f9f9;
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  color: #1f2937;
+}
+
+/* =========================
+   PAGE CONTAINER
+========================= */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* =========================
+   FILTER
+========================= */
+.filter-box {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px 20px;
+  box-shadow: 0 8px 20px rgba(2, 148, 147, 0.08);
+  margin-bottom: 20px;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: 220px 180px 180px auto;
+  gap: 12px;
+  align-items: center;
+}
+.quick-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 380px;              /* không chiếm full màn */
+  background: #ffffff;
+  padding: 0px;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(2, 148, 147, 0.12);
+  border: 1px solid #d9f0ee;
+  margin-bottom: 10px;
+}
+
+/* INPUT */
+.quick-search input {
+  flex: 1;
+  height: 28px;
+  padding: 0 14px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  border-radius: 10px;
+  color: #111827;
+  background: transparent;
+}
+
+.quick-search input::placeholder {
+  color: #9ca3af;
+}
+
+/* BUTTON */
+.quick-search button {
+  width: 60px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #029493, #027f7a);
+  color: #ffffff;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+/* HOVER */
+.quick-search button:hover {
+  background: linear-gradient(135deg, #027f7a, #026c68);
+  transform: scale(1.05);
+}
+
+/* ACTIVE */
+.quick-search button:active {
+  transform: scale(0.95);
+}
+
+/* FOCUS TRONG */
+.quick-search:focus-within {
+  border-color: #029493;
+  box-shadow: 0 0 0 3px rgba(2, 148, 147, 0.18);
+}
+.filter-row select,
+.filter-row input {
+  height: 38px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid #cfe8e6;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.filter-row select:focus,
+.filter-row input:focus {
+  outline: none;
+  border-color: #029493;
+  box-shadow: 0 0 0 2px rgba(2, 148, 147, 0.15);
+}
+
+.filter-row button {
+  height: 38px;
+  padding: 0 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #029493, #027f7a);
+  color: #ffffff;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 150px;
+}
+
+.filter-row button:hover {
+  background: linear-gradient(135deg, #027f7a, #026c68);
+}
+
+/* =========================
+   CARD GRID
+========================= */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+/* =========================
+   CARD
+========================= */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  border-left: px solid #029493;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(2, 148, 147, 0.18);
+}
+
+/* =========================
+   CARD HEADER
+========================= */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.contract {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+}
+
+.manufacturer {
+  font-size: 13px;
+  color: #029493;
+  font-weight: 500;
+  background: rgba(2, 148, 147, 0.1);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* =========================
+   CARD BODY
+========================= */
+.card-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.info label {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.info span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* =========================
+   CARD ACTIONS
+========================= */
+.card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-outline {
+  flex: 1;
+  height: 36px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 0px solid #029493;
+  color: #029493;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: rgba(2, 148, 147, 0.1);
+}
+
+.btn-primary {
+  flex: 1;
+  height: 36px;
+  border-radius: 10px;
+  background: #029493;
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #027f7a;
+}
+
+/* =========================
+   PAGINATION
+========================= */
+
+.pagination-wrapper {
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  padding: 14px 18px;
+  /* background: #ffffff; */
+  border-radius: 14px;
+  /* box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06); */
+}
+
+/* căn giữa khi chỉ có nút */
+.pagination-wrapper.center {
+  justify-content: center;
+}
+
+.pagination-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.page-btn {
+  height: 36px;
+  min-width: 90px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid #cfe8e6;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #f0fdfa;
+  transform: translateY(-1px);
+}
+
+.page-btn.primary {
+  background: #029493;
+  color: #ffffff;
+  border-color: #029493;
+}
+
+.page-btn.primary:hover:not(:disabled) {
+  background: #027f7a;
+}
+
+.page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1024px) {
+  .filter-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .pagination-wrapper {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+}
+/* MODAL */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  width: 520px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group input,
+.form-group select {
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.modal-backdrop {
+  z-index: 999;
+}
+.modal {
+  position: relative;
+  z-index: 1000;
+}
+.card-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* nút upload file dạng icon */
+.btn-upload-file {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-upload-file i {
+  font-size: 16px;
+  color: #374151;
+}
+
+/* hover */
+.btn-upload-file:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-upload-file:hover i {
+  color: #ffffff;
+}
+
+/* active */
+.btn-upload-file:active {
+  transform: scale(0.95);
+}
+.btn-upload-file.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* =========================
+   FILE BADGE (LIST VIEW)
+========================= */
+.file-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  margin-top: 10px;
+}
+
+/* ===== HAS FILE ===== */
+.file-badge.has-file {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.file-badge.has-file i {
+  color: #dc2626;
+}
+
+/* truncate tên file dài */
+.file-name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== NO FILE ===== */
+.file-badge.no-file {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px dashed #cbd5e1;
+}
+
+.file-badge.no-file i {
+  color: #94a3b8;
+}
