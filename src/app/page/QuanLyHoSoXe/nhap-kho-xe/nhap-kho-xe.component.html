@@ -1,0 +1,259 @@
+<div class="page-container">
+  <div class="stepper">
+
+    <div class="step" [class.active]="currentStep >= 1">
+      <span class="circle">1</span>
+      <span class="label">Chọn phương tiện</span>
+    </div>
+
+    <div class="line" [class.active]="currentStep >= 2"></div>
+
+    <div class="step" [class.active]="currentStep >= 2">
+      <span class="circle">2</span>
+      <span class="label">Thiết lập khoản vay</span>
+    </div>
+    <div class="line" [class.active]="currentStep >= 3"></div>
+    <div class="step" [class.active]="currentStep >= 3">
+      <span class="circle">3</span>
+      <span class="label">Xuất hồ sơ</span>
+    </div>
+
+
+    <div class="line" [class.active]="currentStep >= 4"></div>
+
+    <div class="step" [class.active]="currentStep >= 4">
+      <span class="circle">4</span>
+      <span class="label">Hoàn tất</span>
+    </div>
+
+  </div>
+  <div class="page-header">
+    <!-- <h2>Danh sách phương tiện</h2> -->
+  </div>
+  <div *ngIf="currentStep === 1">
+    <!-- FILTER -->
+    <div class="filter-bar">
+
+      <select [(ngModel)]="manufacturer">
+        <option value="">Tất cả hãng</option>
+        <option value="VINFAST">VinFast</option>
+        <option value="HYUNDAI">Hyundai</option>
+      </select>
+
+      <select [(ngModel)]="status">
+        <option value="">Tất cả hạn</option>
+        <option value="Giữ két">Chưa đến hạn</option>
+        <option value="Giữ trong kho">Hôm nay</option>
+        <option value="Đã trả khách hàng">Quá hạn</option>
+      </select>
+
+      <input type="text" placeholder="Tìm theo số khung" [(ngModel)]="chassisNumber" />
+
+      <input type="text" placeholder="Tìm theo số REF" [(ngModel)]="ref" />
+
+      <button class="btn-primary" (click)="search()">Tìm kiếm</button>
+    </div>
+
+    <!-- TABLE -->
+    <div style="margin-bottom:12px">
+      <!-- <button class="btn-primary" [disabled]="selectedVehicles.length === 0" (click)="openNhapKho()">
+        Nhập kho
+      </button> -->
+    </div>
+    <table class="vehicle-table">
+
+      <thead>
+        <tr>
+          <th>Tên xe</th>
+          <th>Số khung</th>
+          <th>Số máy</th>
+          <th>Giá</th>
+          <th>Trạng thái</th>
+          <th>REF</th>
+          <th>Chọn</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let v of vehicles">
+
+          <td>
+            <div class="vehicle-name">
+              {{ v.vehicleName }}
+
+              <span *ngIf="v.deadlineLabel" class="deadline-badge" [ngClass]="getDeadlineClass(v.deadlineLabel)">
+                {{ v.deadlineLabel }}
+              </span>
+
+            </div>
+          </td>
+
+          <td>{{ v.chassisNumber }}</td>
+          <td>{{ v.engineNumber }}</td>
+          <td>{{ v.price }}</td>
+          <td>{{ v.status }}</td>
+          <td>{{ v.guaranteeLetterDTO?.referenceCode }}</td>
+
+          <td>
+            <input type="checkbox" [checked]="isSelected(v)" (change)="onSelectVehicle(v,$event)" />
+          </td>
+
+        </tr>
+      </tbody>
+
+    </table>
+    <div class="pagination">
+
+      <button (click)="changePage(page-1)" [disabled]="page===0">
+        ‹
+      </button>
+
+      <span>
+        Trang {{page + 1}} / {{totalPages || 1}}
+      </span>
+
+      <button (click)="changePage(page+1)" [disabled]="page+1 >= totalPages">
+        ›
+      </button>
+
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" [disabled]="selectedVehicles.length === 0" (click)="nextStep()">
+        Tiếp tục
+      </button>
+    </div>
+  </div>
+  <div *ngIf="currentStep === 2">
+
+    <h2>Tạo khoản vay hàng loạt</h2>
+
+    <div class="total-box">
+      Tổng tiền vay: {{ getTotalLoanAmount() | number }}
+    </div>
+
+    <table class="batch-loan-table">
+      <thead>
+        <tr>
+          <th>Tên xe</th>
+          <th>Số khung</th>
+          <th>Số tiền vay</th>
+          <th>Số HĐ vay *</th>
+          <th>Thời hạn *</th>
+          <th>Ngày vay</th>
+          <th>Ngày đến hạn</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let f of loanForms">
+          <td>{{ f.vihicleName }}</td>
+          <td>{{ f.chassisNumber }}</td>
+          <td>{{ f.guaranteeAmount | number }}</td>
+
+          <td>
+            <input [(ngModel)]="f.loanContractNumber">
+          </td>
+
+          <td>
+            <input type="number" [(ngModel)]="f.loanTerm" (input)="calculateDueDate(f)">
+          </td>
+
+          <td>{{ today | date:'dd/MM/yyyy' }}</td>
+          <td>{{ f.dueDate | date:'dd/MM/yyyy' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="actions">
+      <button (click)="prevStep()" class="btn btn-back">Quay lại</button>
+      <button class="btn btn-create" [disabled]="!isBatchValid() || loading" (click)="submitBatchLoans()">
+        {{ loading ? 'Đang xử lý...' : 'Tạo khoản vay' }}
+      </button>
+    </div>
+
+  </div>
+
+
+  <div *ngIf="currentStep === 3">
+    <div class="page-header">
+      <h2>Danh sách xe nhập kho</h2>
+    </div>
+
+    <table class="vehicle-table">
+      <thead>
+        <tr>
+          <th>Tên xe</th>
+          <th>Số khung</th>
+          <th>Số máy</th>
+          <th>Giá</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let v of selectedVehicles">
+          <td>{{ v.vehicleName }}</td>
+          <td>{{ v.chassisNumber }}</td>
+          <td>{{ v.engineNumber }}</td>
+          <td>{{ v.price }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- BUTTON ACTION -->
+    <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap">
+      <button class="btn-primary" (click)="goToStep(1)">
+        <i class="fa-solid fa-angles-left"></i>
+      </button>
+      <button class="btn-primary" (click)="exportAll()">
+        Xuất bộ hồ sơ
+      </button>
+      <button class="btn-primary" (click)="finishNhapKho()">
+        Hoàn tất
+      </button>
+
+    </div>
+    <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap">
+
+      <button class="btn-link" (click)="exportPNK()">
+        PNK
+      </button>
+
+      <button class="btn-link" (click)="exportBaoCao()">
+        Báo cáo định giá
+      </button>
+
+      <button class="btn-link" (click)="exportBienBan()">
+        Biên bản định giá
+      </button>
+
+      <button class="btn-link" (click)="exportHyundai()">
+        Phụ lục Hyundai
+      </button>
+
+      <button class="btn-link" (click)="exportVinfast()">
+        Phụ lục Vinfast
+      </button>
+
+    </div>
+  </div>
+  <div *ngIf="currentStep === 3" class="finish-container">
+    <!-- 
+    <div class="guarantee-summary-card">
+
+      <div class="summary-header">
+        <i class="fa-solid fa-check"></i>
+        <h3>Nhập kho thành công</h3>
+      </div>
+
+      <p>Đã nhập {{ selectedVehicles.length }} phương tiện</p>
+
+    </div> -->
+
+    <!-- <div class="finish-actions">
+      <button class="btn btn-create" (click)="goToStep(1)">
+        Nhập kho mới
+      </button>
+    </div> -->
+
+  </div>

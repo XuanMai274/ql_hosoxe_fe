@@ -1,0 +1,17 @@
+<div class="g-sidenav-show bg-gray-100 d-flex">
+  <!-- <div class="min-height-300  position-absolute w-100"></div> -->
+  <!-- Sidebar -->
+  <app-can-bo-sidebar class="sidebar"></app-can-bo-sidebar>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <!-- Header -->
+    <app-can-bo-header></app-can-bo-header>
+
+    <!-- Nội dung sẽ thay đổi dựa trên URL -->
+    <router-outlet></router-outlet>
+
+    <!-- Footer -->
+    <app-can-bo-footer></app-can-bo-footer>
+  </div>
+</div>

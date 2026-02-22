@@ -1,0 +1,185 @@
+/* ================= MODERN PREMIUM SIDEBAR (REMAINING INITIAL COLORS) ================= */
+:host {
+  /* Transition Token */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar {
+  width: 280px;
+  min-height: 100vh;
+  height: auto;
+  padding: 32px 18px;
+  display: flex;
+  position: sticky;
+  top: 0;
+  flex-direction: column;
+  /* Reverting to Initial Gradient Colors */
+  background: linear-gradient(to bottom, #4b9e9e 0%, #029493 40%, #006b68 100%);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  z-index: 100;
+}
+
+/* ================= BANK LOGO SECTION ================= */
+.bank-logo {
+  text-align: center;
+  margin-bottom: 35px;
+  padding: 0 10px;
+}
+
+.bank-logo img {
+  width: 120px;
+  height: auto;
+  margin-bottom: 15px;
+  filter: brightness(0) invert(1);
+  /* Ensure logo stands out on dark bg if needed */
+}
+
+.bank-name {
+  font-size: 12px;
+  font-weight: 600;
+  color:white;
+  line-height: 1.5;
+  padding: 0 5px;
+}
+
+/* ================= NAVIGATION LINKS ================= */
+.nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  text-decoration: none;
+ color:white;
+  /* White text for dark bg */
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.nav-links i {
+  width: 20px;
+  text-align: center;
+  font-size: 17px;
+ color:white;
+  transition: var(--transition);
+}
+
+/* Hover State */
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+.nav-links a:hover i {
+  color: #006b68;
+}
+
+/* Active State (Direct Link) */
+.nav-links li.active>a {
+
+  background-color: #ffffff;
+  color: #006b68;
+  /* Green text on white bg */
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.nav-links li.active>a i {
+  color: #006b68;
+}
+
+/* ================= SUBMENU ================= */
+.has-submenu .submenu-toggle {
+  cursor: pointer;
+}
+
+.has-submenu .arrow {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.6;
+  transition: transform 0.3s;
+}
+
+.has-submenu.open .arrow {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+.has-submenu.open>a {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.submenu {
+  list-style: none;
+  padding-left: 36px;
+  margin: 6px 0;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.has-submenu.open .submenu {
+  display: flex;
+}
+
+.submenu a {
+  padding: 10px 14px;
+  font-size: 13px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  border-radius: 10px;
+}
+
+.submenu a:hover {
+  background-color: #ffffff;
+  color: #006b68;
+  padding-left: 18px;
+}
+
+.submenu li.active a {
+  background-color: #ffffff;
+  color: #006b68;
+  font-weight: 700;
+}
+
+/* Keyframes */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}

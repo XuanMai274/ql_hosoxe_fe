@@ -1,0 +1,325 @@
+<div class="invoice-management-container">
+  <div class="upload-tab">
+    <div class="stepper">
+      <div class="step" [class.active]="currentStep >= 1">
+        <span class="circle">1</span>
+        <span class="label">Chọn hãng xe</span>
+      </div>
+      <div class="line" [class.active]="currentStep >= 2"></div>
+      <div class="step" [class.active]="currentStep >= 2">
+        <span class="circle">2</span>
+        <span class="label">Nhập thông tin bảo lãnh</span>
+      </div>
+      <div class="line" [class.active]="currentStep >= 3"></div>
+      <div class="step" [class.active]="currentStep >= 3">
+        <span class="circle">3</span>
+        <span class="label">Xuất hồ sơ</span>
+      </div>
+    </div>
+    <div *ngIf="currentStep === 1">
+      <h2 class="section-title">Chọn hãng xe</h2>
+
+      <div class="brand-grid">
+        <div class="brand-card" *ngFor="let brand of brands" (click)="selectBrand(brand)"
+          [class.selected]="selectedBrand?.id === brand.id">
+
+          <img src="assets/public/img/{{ brand.logo }}" class="brand-logo" />
+          <h4>{{ brand.name }}</h4>
+          <p class="desc">{{ brand.description }}</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" [disabled]="!selectedBrand" (click)="goToGuaranteeForm()">
+          Tiếp tục
+        </button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="currentStep === 2">
+    <div class="form-wrapper">
+      <form [formGroup]="guaranteeForm" (ngSubmit)="submitGuarantee()">
+        <div class="form-grid two-col">
+          <div>
+            <label>Khách hàng<span class="req">*</span></label>
+
+            <select formControlName="customer">
+              <option *ngFor="let c of customers" [ngValue]="c">
+                {{ c.customerName }} - {{ c.cif }} </option>
+            </select>
+
+            <small class="text-error" *ngIf="guaranteeForm.get('customer')?.touched
+        && guaranteeForm.get('customer')?.invalid">
+              Vui lòng chọn khách hàng
+            </small>
+          </div>
+          <div>
+            <label>Người đại diện <span class="req">*</span></label>
+            <select formControlName="authorizedRepresentativeId">
+              <option *ngFor="let r of authorizedRepresentatives" [value]="r.id">
+                {{ r.representativeName }} - {{ r.representativeTitle }}
+              </option>
+
+              <option disabled>--------------------------------------------</option>
+              <option value="NEW" class="add-new-option">
+                <i class="fa-regular fa-user"></i> Thêm người đại diện mới
+              </option>
+            </select>
+
+            <small class="text-error" *ngIf="guaranteeForm.get('authorizedRepresentativeId')?.touched
+        && guaranteeForm.get('authorizedRepresentativeId')?.invalid">
+              Vui lòng chọn người đại diện
+            </small>
+          </div>
+          <div>
+            <label>Số hợp đồng bảo lãnh <span class="req">*</span></label>
+            <input formControlName="guaranteeContractNumber" />
+
+            <small class="text-error" *ngIf="guaranteeForm.get('guaranteeContractNumber')?.touched
+        && guaranteeForm.get('guaranteeContractNumber')?.invalid">
+              Số hợp đồng bảo lãnh không được để trống
+            </small>
+          </div>
+          <div>
+            <label>Hợp đồng mua bán <span class="req">*</span></label>
+            <input formControlName="saleContract" />
+          </div>
+
+          <div>
+            <label>Giá trị hợp đồng mua bán <span class="req">*</span></label>
+
+            <input type="text" [value]="formatMoney(guaranteeForm.get('saleContractAmount')?.value)"
+              (input)="onMoneyInput($event,'saleContractAmount', undefined, guaranteeForm)" />
+
+            <small class="text-error" *ngIf="guaranteeForm.get('saleContractAmount')?.touched
+    && guaranteeForm.get('saleContractAmount')?.invalid">
+
+              <span *ngIf="guaranteeForm.get('saleContractAmount')?.errors?.['required']">
+                Giá trị hợp đồng là bắt buộc
+              </span>
+
+              <span *ngIf="guaranteeForm.get('saleContractAmount')?.errors?.['min']">
+                Giá trị phải ≥ 0
+              </span>
+
+            </small>
+          </div>
+
+          <div>
+            <label>Tổng tiền bảo lãnh dự kiến</label>
+
+            <input type="text" [value]="formatMoney(guaranteeForm.get('expectedGuaranteeAmount')?.value)" />
+          </div>
+          <div>
+            <label>Số lượng xe dự kiến <span class="req">*</span></label>
+            <input type="number" formControlName="expectedVehicleCount" />
+            <small class="text-error" *ngIf="guaranteeForm.get('expectedVehicleCount')?.touched
+        && guaranteeForm.get('expectedVehicleCount')?.invalid">
+              <span *ngIf="guaranteeForm.get('expectedVehicleCount')?.errors?.['required']">
+                Vui lòng nhập số lượng xe
+              </span>
+              <span *ngIf="guaranteeForm.get('expectedVehicleCount')?.errors?.['min']">
+                Số lượng xe phải ≥ 1
+              </span>
+            </small>
+          </div>
+        </div>
+        <div class="actions space-between">
+          <button type="button" class="btn-outline" (click)="backToBrand()">
+            Quay lại
+          </button>
+
+          <button type="submit" class="btn-primary">
+            Lưu thư bảo lãnh
+          </button>
+        </div>
+      </form>
+    </div>
+    <div *ngIf="showAddRepresentativeForm" class="modal-overlay">
+
+      <div class="modal-container">
+
+        <div class="modal-header">
+          <h3>Thêm người đại diện</h3>
+          <button class="close-btn" (click)="cancelAddRepresentative()">×</button>
+        </div>
+
+        <form [formGroup]="representativeForm" class="modal-form">
+
+          <input placeholder="Mã chi nhánh" formControlName="branchCode" />
+          <input placeholder="Tên chi nhánh" formControlName="branchName" />
+          <input placeholder="Tên người đại diện" formControlName="representativeName" />
+          <input placeholder="Chức danh" formControlName="representativeTitle" />
+          <input placeholder="Số văn bản ủy quyền" formControlName="authorizationDocNo" />
+          <label>Ngày văn bản ủy quyền<span class="req">*</span></label>
+          <input type="date" formControlName="authorizationDocDate" />
+          <input placeholder="Người ban hành" formControlName="authorizationIssuer" />
+          <label>Ngày hiệu lực<span class="req">*</span></label>
+          <input type="date" formControlName="effectiveFrom" />
+
+          <div class="modal-actions">
+            <button type="button" class="btn-primary" (click)="addRepresentative()">
+              Lưu
+            </button>
+
+            <button type="button" class="btn-outline" (click)="cancelAddRepresentative()">
+              Hủy
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+  <!-- ================= STEP 3 ================= -->
+  <!-- STEP 3 -->
+  <div *ngIf="currentStep === 3" class="finish-container">
+
+    <!-- ===== SUMMARY CARD ===== -->
+    <div class="guarantee-summary-card">
+
+      <div class="summary-header">
+        <i class="fa-solid fa-file-contract"></i>
+        <h3>Thông tin hợp đồng tín dụng</h3>
+      </div>
+
+      <div class="summary-grid">
+
+        <div class="summary-item">
+          <span class="label">HĐTC</span>
+          <span class="value">
+            {{ selectedCreditContract?.contractNumber }}
+          </span>
+        </div>
+
+        <div class="summary-item">
+          <span class="label">Số hợp đồng bảo lãnh</span>
+          <span class="value highlight">
+            {{ currentGuarantee?.guaranteeContractNumber }}
+          </span>
+        </div>
+
+        <div class="summary-item">
+          <span class="label">Giá trị bảo lãnh</span>
+          <span class="value amount">
+            {{ currentGuarantee?.expectedGuaranteeAmount | number }}
+          </span>
+        </div>
+
+        <div class="summary-item">
+          <span class="label">Hãng xe</span>
+          <span class="value">
+            {{ currentGuarantee?.manufacturerDTO?.name }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== FORM ===== -->
+    <div class="form-wrapper">
+      <form *ngIf="exportForm" [formGroup]="exportForm">
+
+        <div class="form-grid two-col">
+
+          <!-- GHTD -->
+          <div>
+            <label>GHTD được sử dụng</label>
+            <input type="text" formControlName="creditLimit" readonly />
+          </div>
+
+          <!-- Đã sử dụng -->
+          <div>
+            <label>GHTD đã sử dụng</label>
+            <input type="text" formControlName="usedLimit" readonly />
+          </div>
+
+          <div class="input-flow-group">
+
+            <!-- Dư vay xe -->
+            <div class="flow-item">
+              <label>Dư nợ vay xe <span class="req">*</span></label>
+
+              <input type="text" formControlName="vehicleLoanBalance"
+                (input)="onMoneyInput($event, 'vehicleLoanBalance')" />
+
+              <span class="text-error" *ngIf="exportForm.get('vehicleLoanBalance')?.touched &&
+                     exportForm.get('vehicleLoanBalance')?.invalid">
+                Vui lòng nhập dư nợ vay xe
+              </span>
+            </div>
+
+            <!-- Dư bảo lãnh -->
+            <div class="flow-item">
+              <label>Số dư cấp bảo lãnh <span class="req">*</span></label>
+
+              <input type="text" formControlName="guaranteeBalance"
+                (input)="onMoneyInput($event, 'guaranteeBalance')" />
+
+              <span class="text-error" *ngIf="exportForm.get('guaranteeBalance')?.touched &&
+                     exportForm.get('guaranteeBalance')?.invalid">
+                Vui lòng nhập số dư bảo lãnh
+              </span>
+            </div>
+
+            <!-- Dư BĐS -->
+            <div class="flow-item">
+              <label>Số dư vay BĐS <span class="req">*</span></label>
+
+              <input type="text" formControlName="realEstateLoanBalance"
+                (input)="onMoneyInput($event, 'realEstateLoanBalance', 9000000000)" />
+
+              <span class="text-error" *ngIf="exportForm.get('realEstateLoanBalance')?.touched &&
+                     exportForm.get('realEstateLoanBalance')?.invalid">
+                Vui lòng nhập số dư vay BĐS
+              </span>
+            </div>
+
+          </div>
+
+          <!-- Remaining -->
+          <div>
+            <label>GHTD còn được sử dụng</label>
+            <input type="text" formControlName="remainingLimit" readonly />
+          </div>
+
+        </div>
+      </form>
+
+    </div>
+
+    <!-- ===== ACTION BUTTONS ===== -->
+    <div class="finish-actions">
+      <button class="btn-primary-lg" (click)="ThemBaoLanhMoi()">
+        Thêm thư bảo lãnh mới
+      </button>
+      <button class="btn-primary-lg" (click)="xuatBoHoSoBaoLanh()">
+        Xuất bộ hồ sơ bảo lãnh
+      </button>
+    </div>
+    <div class="finish-actions">
+
+
+      <button class="btn-primary-lg" (click)="export()">
+        Xuất thư bảo lãnh
+      </button>
+
+      <button class="btn-secondary" (click)="exportDeXuatCapBaoLanh()">
+        Xuất đề xuất cấp bảo lãnh
+      </button>
+
+      <button class="btn-warning" (click)="exportPhanXetDuyet()">
+        Xuất phần xét duyệt
+      </button>
+
+      <button class="btn-secondary" (click)="exportPhanYKien()">
+        Xuất phần ý kiến
+      </button>
+
+    </div>
+  </div>
+
+
+</div>

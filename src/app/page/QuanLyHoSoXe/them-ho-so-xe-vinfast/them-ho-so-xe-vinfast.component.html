@@ -1,0 +1,297 @@
+<div class="main-content">
+
+  <!-- BRAND HEADER BAR -->
+  <div class="brand-header-bar vinfast">
+    <div class="brand-logo-container">
+      <img src="assets/public/img/logo-vinfast.png" alt="VinFast Logo" class="header-brand-logo">
+    </div>
+    <div class="brand-identity">
+      <span class="brand-name">VINFAST</span>
+      <!-- <span class="brand-tagline">Hệ thống quản lý dữ liệu bảo lãnh</span> -->
+    </div>
+  </div>
+
+  <!-- HEADER SECTION (Title & Actions) -->
+  <div class="page-header">
+    <div class="header-title">
+      <!-- <h2>Hồ sơ chuyển nhượng & Bảo lãnh</h2>
+      <p>Xử lý đồng thời nhiều mã bảo lãnh và hóa đơn</p> -->
+    </div>
+    <div class="header-actions">
+      <!-- Header buttons can be added here if needed -->
+    </div>
+  </div>
+
+  <!-- FILE UPLOAD SECTION (Initial State) -->
+  <div class="upload-container" *ngIf="!hasData">
+    <div class="upload-card">
+      <div class="upload-area" [class.dragging]="isDragging" (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+        <div class="upload-icon">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+        </div>
+        <h3>Kéo thả hoặc chọn File để bắt đầu</h3>
+        <p>Hỗ trợ: 1 File Excel (.xlsx) và nhiều File PDF hóa đơn</p>
+
+        <div class="file-inputs">
+          <label class="btn-upload excel">
+            <i class="fa-solid fa-file-excel"></i>
+            Chọn File Excel
+            <input type="file" (change)="onFileSelected($event, 'excel')" accept=".xlsx, .xls" hidden />
+          </label>
+          <label class="btn-upload pdf">
+            <i class="fa-solid fa-file-pdf"></i>
+            Chọn PDF Hóa đơn
+            <input type="file" (change)="onFileSelected($event, 'pdf')" accept=".pdf" multiple hidden />
+          </label>
+        </div>
+
+        <!-- Manual Entry Link -->
+        <div class="manual-entry-hint">
+          <p>Hoặc <a href="javascript:void(0)" (click)="startManualEntry()">Nhập dữ liệu thủ công</a></p>
+        </div>
+      </div>
+
+      <!-- List of Selected Files -->
+      <div class="selected-files" *ngIf="excelFile || pdfFiles.length > 0">
+        <div class="file-item excel" *ngIf="excelFile">
+          <i class="fa-solid fa-file-excel"></i>
+          <span class="file-name">{{ excelFile.name }}</span>
+          <button class="remove-btn" (click)="removeFile('excel')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="file-item pdf" *ngFor="let file of pdfFiles; let i = index">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span class="file-name">{{ file.name }}</span>
+          <button class="remove-btn" (click)="removeFile('pdf', i)"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="process-action">
+          <button class="btn-process" (click)="processFiles()" [disabled]="isProcessing">
+            <span *ngIf="!isProcessing"><i class="fa-solid fa-magnifying-glass-chart"></i> Phân tích Hồ sơ
+              VinFast</span>
+            <span *ngIf="isProcessing"><i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA DISPLAY SECTION (3 LEVELS) -->
+  <div class="data-section" *ngIf="hasData">
+
+    <!-- GLOBAL SUMMARY HEADER -->
+    <div class="summary-header">
+      <div class="summary-icon">
+        <i class="fa-solid fa-file-shield"></i>
+      </div>
+      <div class="summary-content">
+        <h3>Tổng hợp dữ liệu hồ sơ VinFast</h3>
+        <div class="summary-stats">
+          <div class="stat-item">
+            <span class="stat-label">SL bảo lãnh:</span>
+            <span class="stat-value">{{ guaranteeGroups.length }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">SL hóa đơn:</span>
+            <span class="stat-value">{{ globalTotalInvoices }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">SL xe:</span>
+            <span class="stat-value">{{ globalTotalVehicles }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Tổng giá trị:</span>
+            <span class="stat-value highlight">{{ formatCurrency(globalTotalAmount) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL 1: GUARANTEE LIST -->
+    <div class="guarantee-container">
+      <div class="guarantee-group-card" *ngFor="let group of guaranteeGroups; let gIdx = index">
+
+        <!-- Guarantee Header -->
+        <div class="guarantee-header" (click)="toggleGuarantee(gIdx)">
+          <div class="guarantee-title">
+            <i class="fa-solid fa-file-shield"></i>
+            <input type="text" [(ngModel)]="group.code" placeholder="Nhập mã bảo lãnh..."
+              (click)="$event.stopPropagation()" class="guarantee-input-inline" />
+          </div>
+          <div class="guarantee-actions">
+            <span class="badge info">{{ group.invoices.length }} Hóa đơn</span>
+            <button class="btn-icon-del" (click)="removeGuarantee(gIdx); $event.stopPropagation()">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+            <i class="fa-solid fa-circle-chevron-down toggle-icon" [class.open]="group.expanded"></i>
+          </div>
+        </div>
+
+        <!-- Guarantee Body (Level 2: Invoices) -->
+        <div class="guarantee-body" *ngIf="group.expanded">
+
+          <div class="invoice-list-container">
+            <div class="invoice-accordion-item" *ngFor="let invoice of group.invoices; let iIdx = index">
+
+              <!-- Invoice Header -->
+              <div class="invoice-header-row" (click)="toggleInvoice(gIdx, iIdx)">
+                <div class="invoice-info-main">
+                  <i class="fa-solid fa-file-invoice"></i>
+                  <input type="text" [(ngModel)]="invoice.invoiceNumber" placeholder="Nhập số hóa đơn..."
+                    (click)="$event.stopPropagation()" class="invoice-input-inline"
+                    [class.is-invalid]="!invoice.invoiceNumber" />
+                  <span class="invoice-date-display" *ngIf="invoice.day">
+                    {{ invoice.day }}/{{ invoice.month }}/{{ invoice.year }}
+                  </span>
+                </div>
+                <div class="invoice-info-side">
+                  <span class="invoice-amount-sum">{{ formatCurrency(getInvoiceTotal(invoice))
+                                        }}</span>
+                  <button class="btn-icon-del-sm" (click)="removeInvoice(gIdx, iIdx); $event.stopPropagation()">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                  <i class="fa-solid fa-circle-chevron-down toggle-icon-sm" [class.open]="invoice.expanded"></i>
+                </div>
+              </div>
+
+              <!-- Invoice Content (Level 3: Vehicles Table) -->
+              <div class="invoice-content-body" *ngIf="invoice.expanded">
+                <div class="invoice-actions-toolbar">
+                  <div class="left-tools">
+                    <label class="btn-outline-action">
+                      <i class="fa-solid fa-file-circle-plus"></i> Upload PDF HĐ
+                      <input type="file" (change)="uploadInvoicePdf($event, gIdx, iIdx)" hidden />
+                    </label>
+                    <button class="btn-primary-action" (click)="addVehicleToInvoice(gIdx, iIdx)">
+                      <i class="fa-solid fa-circle-plus"></i> Thêm xe
+                    </button>
+                  </div>
+                </div>
+
+                <!-- VEHICLE MODERN LIST -->
+                <div class="vehicle-modern-list">
+                  <div class="vehicle-card" *ngFor="let v of invoice.vehicleList; let vIdx = index">
+                    <!-- Card Index Badge -->
+                    <div class="card-index">
+                      <span>{{ vIdx + 1 }}</span>
+                    </div>
+
+                    <!-- Card Content Grid -->
+                    <div class="card-content">
+                      <!-- Section 1: Brand & Model -->
+                      <div class="content-section brand-model">
+                        <div class="input-group-modern">
+                          <label><i class="fa-solid fa-car"></i> Tên xe</label>
+                          <input type="text" [(ngModel)]="v.modelName" (blur)="generateVehicleDescription(v, 'VINFAST')"
+                            placeholder="Vd: VinFast VF8" class="modern-input" [class.is-invalid]="!v.modelName" />
+                        </div>
+                        <div class="input-group-modern">
+                          <label><i class="fa-solid fa-earth-asia"></i> Xuất xứ</label>
+                          <input type="text" [(ngModel)]="v.origin" (blur)="generateVehicleDescription(v, 'VINFAST')"
+                            placeholder="Vd: Việt Nam" class="modern-input" />
+                        </div>
+                      </div>
+
+                      <!-- Section 2: Product Description -->
+                      <div class="content-section product-desc">
+                        <div class="input-group-modern">
+                          <label><i class="fa-solid fa-file-invoice"></i>Mô tả</label>
+                          <div class="desc-input-wrapper">
+                            <textarea [(ngModel)]="v.vehicleDescription" class="modern-textarea"
+                              placeholder="Mô tả sản phẩm..." [class.is-invalid]="!v.vehicleDescription"></textarea>
+                            <button class="magic-btn" (click)="generateVehicleDescription(v, 'VINFAST')"
+                              title="Tự động tạo mô tả">
+                              <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Section 3: Identity Codes -->
+                      <div class="content-section identity">
+                        <div class="input-group-modern">
+                          <label><i class="fa-solid fa-barcode"></i> Số khung (VIN)</label>
+                          <input type="text" [(ngModel)]="v.chassisNumber" placeholder="VIN Number"
+                            class="modern-input highlight" [class.is-invalid]="!v.chassisNumber" />
+                        </div>
+                        <div class="input-group-modern">
+                          <label><i class="fa-solid fa-gears"></i> Số máy</label>
+                          <input type="text" [(ngModel)]="v.engineNumber" placeholder="Engine Number"
+                            class="modern-input" [class.is-invalid]="!v.engineNumber" />
+                        </div>
+                      </div>
+
+                      <!-- Section 4: Specs & Pricing -->
+                      <div class="content-section specs-price">
+                        <div class="specs-row">
+                          <div class="input-group-modern compact">
+                            <label>Màu xe</label>
+                            <input type="text" [(ngModel)]="v.color" placeholder="Màu..." class="modern-input"
+                              [class.is-invalid]="!v.color" />
+                          </div>
+                          <div class="input-group-modern compact">
+                            <label>Số chỗ</label>
+                            <input type="text" [(ngModel)]="v.numberOfSeats" placeholder="Chỗ"
+                              class="modern-input text-center" [class.is-invalid]="!v.numberOfSeats" />
+                          </div>
+                        </div>
+                        <div class="input-group-modern">
+                          <label><i class="fa-solid fa-tag"></i> Giá</label>
+                          <input type="text" [ngModel]="v.unitPrice"
+                            (ngModelChange)="updateVehicle(gIdx, iIdx, vIdx, 'unitPrice', $event)"
+                            class="modern-input price text-right"
+                            [class.is-invalid]="!v.unitPrice || v.unitPrice === '0'" />
+                        </div>
+                      </div>
+
+                      <!-- Section 5: Actions -->
+                      <div class="card-actions">
+                        <label class="action-btn upload" [class.active]="v.file"
+                          [title]="v.file ? v.file.name : 'Đính kèm tệp'">
+                          <i class="fa-solid" [class.fa-paperclip]="!v.file" [class.fa-file-circle-check]="v.file"></i>
+                          <input type="file" (change)="uploadVehicleFile($event, gIdx, iIdx, vIdx)" hidden />
+                        </label>
+                        <button class="action-btn delete" (click)="removeVehicle(gIdx, iIdx, vIdx)" title="Xóa xe này">
+                          <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Empty State -->
+                  <div class="empty-vehicle-state" *ngIf="invoice.vehicleList.length === 0">
+                    <div class="empty-icon"><i class="fa-solid fa-car-rear"></i></div>
+                    <h4>Chưa có dữ liệu xe</h4>
+                    <p>Vui lòng thêm xe thủ công hoặc tải tệp lên để xử lý</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ADD INVOICE BUTTON -->
+            <button class="btn-add-invoice-dashed" (click)="addInvoiceToGuarantee(gIdx)">
+              <i class="fa-solid fa-circle-plus"></i> Thêm hóa đơn mới vào mã {{ group.code || (gIdx + 1)
+                            }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD GUARANTEE BUTTON -->
+      <div class="add-guarantee-wrapper">
+        <button class="btn-add-guarantee-full" (click)="addGuaranteeGroup()">
+          <i class="fa-solid fa-circle-plus"></i> Thêm mã bảo lãnh mới
+        </button>
+      </div>
+
+      <!-- ACTIONS FOOTER -->
+      <div class="action-footer-sticky">
+        <button class="btn-reset-light" (click)="resetAll()">
+          <i class="fa-solid fa-rotate-left"></i> Nhập lại từ đầu
+        </button>
+        <button class="btn-submit-primary" (click)="submitData()">
+          <i class="fa-solid fa-floppy-disk"></i> Hoàn tất hồ sơ ({{ globalTotalVehicles }} xe)
+        </button>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,52 @@
+<div class="login-wrapper">
+  <div class="login-card">
+
+    <!-- Logo / Icon -->
+    <div class="login-header">
+      <div>
+        <img src="assets\public\img\logo.webp" alt="BIDV Logo" class="logo-img" width="200" height="67" />
+      </div>
+
+      <h1>HỆ THỐNG QUẢN LÝ HỒ SƠ XE</h1>
+      <p>Ngân hàng TMCP Đầu tư và Phát triển Việt Nam</p>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+
+      <!-- Username -->
+      <div class="form-group">
+        <label>Tên đăng nhập</label>
+        <input type="text" formControlName="username" placeholder="Nhập tên đăng nhập" />
+        <small *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.invalid">
+          Tên đăng nhập không được để trống
+        </small>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label>Mật khẩu</label>
+        <input type="password" formControlName="password" placeholder="Nhập mật khẩu" />
+        <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+          Mật khẩu không được để trống
+        </small>
+      </div>
+
+      <!-- Button -->
+      <button type="submit" class="btn-login" [disabled]="isLoading">
+        <span *ngIf="!isLoading">Đăng nhập</span>
+        <span *ngIf="isLoading" class="loading">
+          <span class="spinner"></span>
+          Đang đăng nhập...
+        </span>
+      </button>
+
+    </form>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      © 2026 BIDV – Vehicle Profile Management System
+    </div>
+
+  </div>
+</div>

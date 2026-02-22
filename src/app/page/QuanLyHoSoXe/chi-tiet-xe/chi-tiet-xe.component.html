@@ -1,0 +1,301 @@
+<div class="detail-container" *ngIf="detail">
+
+  <!-- ================= HEADER ================= -->
+  <div class="header-actions">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </button>
+
+    <div class="edit-actions">
+      <button *ngIf="!isEdit" class="btn-edit" (click)="toggleEdit()">
+        <i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa
+      </button>
+
+      <ng-container *ngIf="isEdit">
+        <button class="btn-cancel" (click)="toggleEdit()">Hủy</button>
+        <button class="btn-edit" (click)="save()">Lưu thay đổi</button>
+      </ng-container>
+    </div>
+  </div>
+  <div class="vehicle-file-upload">
+
+    <!-- Hidden input -->
+    <input type="file" multiple #fileInput (change)="onSelectFiles($event)" hidden />
+
+    <!-- Icon chọn file -->
+    <button type="button" class="btn-file-icon" (click)="fileInput.click()" title="Chọn file">
+      <i class="fa-regular fa-file"></i>
+    </button>
+
+    <!-- Preview tên file -->
+    <div *ngIf="selectedFiles.length" class="file-preview">
+      <i class="fa-solid fa-paperclip"></i>
+      {{ selectedFiles.length }} file đã chọn
+    </div>
+
+    <!-- Upload button -->
+    <button class="btn-upload" [disabled]="!selectedFiles.length" (click)="uploadVehicleFiles(detail.id!)">
+      <i class="fa-solid fa-cloud-arrow-up"></i>
+      Upload
+    </button>
+
+  </div>
+  <!-- ================= FORM ================= -->
+  <form [formGroup]="vehicleForm" class="detail-layout">
+    <div class="vehicle-files" *ngIf="documents?.length">
+
+      <div class="file-card" *ngFor="let doc of documents">
+
+        <!-- ICON -->
+        <div class="file-icon">
+          <i class="fa-solid" [ngClass]="getFileIcon(doc.fileType)"></i>
+        </div>
+
+        <!-- FILE NAME -->
+        <div class="file-info">
+          <span class="file-name">{{ doc.fileName }}</span>
+        </div>
+
+        <!-- ACTION -->
+        <div class="file-actions">
+
+          <button class="btn-file" (click)="previewVehicleFile(doc)">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+
+          <button class="btn-file" (click)="downloadVehicleFile(doc)">
+            <i class="fa-solid fa-download"></i>
+          </button>
+
+          <button class="btn-file btn-delete" (click)="deleteVehicleFile(doc)">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= ROW 1 : THÔNG TIN XE ================= -->
+    <div class="card full-row">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-car"></i> Thông tin xe</h3>
+      </div>
+
+      <div class="grid single-col">
+
+        <div class="field-group">
+          <label>Tên xe</label>
+          <div *ngIf="!isEdit" class="view-val">{{ detail.vehicleName }}</div>
+          <input *ngIf="isEdit" formControlName="vehicleName">
+        </div>
+
+        <div class="field-group">
+          <label>Số khung</label>
+          <div *ngIf="!isEdit" class="view-val">{{ detail.chassisNumber }}</div>
+          <input *ngIf="isEdit" formControlName="chassisNumber">
+        </div>
+
+        <div class="field-group">
+          <label>Số máy</label>
+          <div *ngIf="!isEdit" class="view-val">{{ detail.engineNumber }}</div>
+          <input *ngIf="isEdit" formControlName="engineNumber">
+        </div>
+
+        <div class="field-group">
+          <label>Trạng thái</label>
+          <div *ngIf="!isEdit" class="view-val status-tag">
+            {{ detail.status }}
+          </div>
+
+          <select *ngIf="isEdit" formControlName="status">
+            <option value="Giữ két">Giữ két</option>
+            <option value="Giữ trong kho">Giữ trong kho</option>
+            <option value="Đã trả khách hàng">Đã trả khách hàng</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Giá xe</label>
+          <div *ngIf="!isEdit" class="view-val highlight-text">
+            {{ detail.price | number }}
+          </div>
+          <input *ngIf="isEdit" type="number" formControlName="price">
+        </div>
+
+        <div class="field-group">
+          <label>Màu sắc / Số chỗ</label>
+
+          <div *ngIf="!isEdit" class="view-val">
+            {{ detail.color }} - {{ detail.seats }} chỗ
+          </div>
+
+          <div *ngIf="isEdit" class="side-by-side">
+            <input type="text" formControlName="color">
+            <input type="number" formControlName="seats">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= ROW 2 : HÓA ĐƠN + HỒ SƠ ================= -->
+    <div class="row-2col">
+
+      <!-- ===== HÓA ĐƠN ===== -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-file-invoice-dollar"></i> Hóa đơn</h3>
+        </div>
+
+        <div class="grid single-col">
+
+          <!-- VIEW -->
+          <ng-container *ngIf="!isEdit">
+            <div class="field-group">
+              <label>Số hóa đơn</label>
+              <div class="view-val">
+                {{ detail.invoiceId?.invoiceNumber }}
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label>Ngày hóa đơn</label>
+              <div class="view-val">
+                {{ detail.invoiceId?.invoiceDate }}
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label>Tổng tiền</label>
+              <div class="view-val">
+                {{ detail.invoiceId?.totalAmount | number }}
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- EDIT -->
+          <ng-container *ngIf="isEdit">
+            <div class="field-group dropdown-wrapper">
+              <label>Số hóa đơn</label>
+
+              <input type="text" formControlName="invoiceNumber" (focus)="onInvoiceFocus()"
+                (input)="onInvoiceInput($event)" (blur)="onInvoiceBlur()" />
+
+              <ul class="dropdown" *ngIf="showInvoiceDropdown">
+                <li *ngFor="let i of filteredInvoices" (mousedown)="selectInvoice(i)">
+                  {{ i.invoiceNumber }}
+                </li>
+              </ul>
+            </div>
+          </ng-container>
+
+        </div>
+      </div>
+
+      <!-- ===== HỒ SƠ & THỜI GIAN ===== -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-clock"></i> Hồ sơ & Thời gian</h3>
+        </div>
+
+        <div class="grid single-col">
+
+          <div class="field-group">
+            <label>Ngày nhận xe</label>
+
+            <div *ngIf="!isEdit" class="view-val">
+              {{ detail.createdAt | date:'dd/MM/yyyy' }}
+            </div>
+
+            <input *ngIf="isEdit" type="date" formControlName="createdAt" readonly />
+          </div>
+
+          <div class="field-group">
+            <label>Ngày nhập kho</label>
+
+            <div *ngIf="!isEdit" class="view-val">
+              {{ detail.importDate || 'Chưa có ngày nhập kho' }}
+            </div>
+
+            <input *ngIf="isEdit" type="date" formControlName="importDate" readonly />
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= ROW 3 : THƯ BẢO LÃNH ================= -->
+    <div class="card full-row highlight">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-building-columns"></i> Thư bảo lãnh</h3>
+      </div>
+
+      <div class="grid single-col">
+
+        <!-- VIEW -->
+        <ng-container *ngIf="!isEdit">
+
+          <div class="field-group">
+            <label>Số Thư</label>
+            <div class="view-val">
+              {{ detail.guaranteeLetterDTO?.guaranteeNoticeNumber }}
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Mã REF</label>
+            <div class="view-val">
+              {{ detail.guaranteeLetterDTO?.referenceCode }}
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Số hợp đồng</label>
+            <div class="view-val">
+              {{ detail.guaranteeLetterDTO?.guaranteeContractNumber }}
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Số tiền bảo lãnh</label>
+            <div class="view-val">
+              {{ detail.guaranteeLetterDTO?.totalGuaranteeAmount| number }}
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Số tiền bảo lãnh còn lại</label>
+            <div class="view-val">
+              {{ detail.guaranteeLetterDTO?.totalGuaranteeAmount| number }}
+            </div>
+          </div>
+
+        </ng-container>
+
+        <!-- EDIT -->
+        <ng-container *ngIf="isEdit">
+          <div class="field-group dropdown-wrapper">
+            <label>Số Thư</label>
+
+            <input type="text" formControlName="guaranteeNoticeNumber" (focus)="onGuaranteeFocus()"
+              (input)="onGuaranteeInput($event)" (blur)="onGuaranteeBlur()" />
+
+            <ul class="dropdown" *ngIf="showGuaranteeDropdown">
+              <li *ngFor="let g of filteredGuarantees" (mousedown)="selectGuarantee(g)">
+                <div class="dropdown-main">
+                  {{ g.guaranteeNoticeNumber }}
+                </div>
+                <div class="dropdown-sub">
+                  REF: {{ g.referenceCode || '---' }}
+                  • HĐ: {{ g.guaranteeContractNumber || '---' }}
+                </div>
+              </li>
+            </ul>
+          </div>
+        </ng-container>
+
+      </div>
+    </div>
+
+  </form>
+</div>

@@ -1,0 +1,75 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>Danh sách phương tiện</h2>
+    <button class="btn-primary" (click)="exportExcel()">Xuất Excel</button>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filter-bar">
+
+    <select [(ngModel)]="manufacturer">
+      <option value="">Chọn Hãng xe</option>
+      <option value="">Tất cả</option>
+      <option value="VINFAST">VinFast</option>
+      <option value="HYUNDAI">Hyundai</option>
+    </select>
+    <select [(ngModel)]="status">
+      <option value="">Tất cả</option>
+      <option value="Giữ két">Giữ két</option>
+      <option value="Giữ trong kho">Giữ trong kho</option>
+      <option value="Đã trả khách hàng">Đã trả khách hàng</option>
+    </select>
+    <input type="text" placeholder="Tìm theo số khung" [(ngModel)]="chassisNumber" />
+
+
+
+    <input type="text" placeholder="Tìm theo số REF của thư" [(ngModel)]="ref" />
+    <button class="btn-primary" (click)="search()">Tìm kiếm</button>
+  </div>
+
+  <!-- TABLE -->
+  <table class="vehicle-table">
+    <thead>
+      <tr>
+        <!-- <th>STT</th> -->
+        <th>Tên xe</th>
+        <th>Số khung</th>
+        <th>Số máy</th>
+        <th>Giá</th>
+        <th>Trạng thái</th>
+        <th>Số REF</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let v of vehicles">
+        <!-- <td>{{ v.stt }}</td> -->
+        <td>{{ v.vehicleName }}</td>
+        <td>{{ v.chassisNumber }}</td>
+        <td>{{ v.engineNumber }}</td>
+        <td>{{ v.price | number }}</td>
+        <td>{{ v.status }}</td>
+        <td>{{ v.ref }}</td>
+        <td>
+          <button class="btn-link" (click)="viewDetail(v.id)">
+            Xem
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PAGINATION -->
+  <div class="pagination">
+    <button (click)="changePage(page - 1)" [disabled]="page === 0">
+      ‹
+    </button>
+
+    <span>Trang {{ page + 1 }} / {{ totalPages }}</span>
+
+    <button (click)="changePage(page + 1)" [disabled]="page + 1 >= totalPages">
+      ›
+    </button>
+  </div>
+</div>

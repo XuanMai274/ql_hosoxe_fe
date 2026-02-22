@@ -1,0 +1,347 @@
+/* =========================
+   PAGE
+========================= */
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+  background: linear-gradient(180deg, #f4f9f9, #eef7f7);
+  min-height: 100vh;
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  color: #1f2937;
+}
+
+/* =========================
+   TITLE
+========================= */
+h2 {
+  width: 80%;
+  max-width: 1400px;
+  margin: 0 auto 28px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #0f172a;
+  position: relative;
+  padding-left: 16px;
+}
+
+/* thanh nhấn bên trái */
+h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 4px;
+  height: 26px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #029493, #027f7a);
+}
+
+/* =========================
+   FORM CONTAINER
+========================= */
+form.form-container {
+  width: 80%;
+  max-width: 1400px;
+  background: #ffffff;
+  padding: 32px 36px;
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(2, 148, 147, 0.12);
+
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* =========================
+   FIELDSET
+========================= */
+fieldset {
+  border: 1px solid #dbecec;
+  border-radius: 14px;
+  padding: 20px 22px 22px;
+}
+
+legend {
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #036672;
+}
+
+/* =========================
+   GRID INSIDE FIELDSET
+========================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 28px;
+  row-gap: 18px;
+}
+
+/* =========================
+   FORM ITEM
+========================= */
+.grid > div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   LABEL
+========================= */
+label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+/* =========================
+   INPUT & SELECT
+========================= */
+input,
+select {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #cfe8e6;
+  font-size: 14px;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+/* ❗ bỏ margin-left hoàn toàn để căn đều */
+input,
+select {
+  margin: 0;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #029493;
+  box-shadow: 0 0 0 3px rgba(2, 148, 147, 0.15);
+}
+
+/* disabled / readonly */
+input:disabled,
+select:disabled {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  padding-top: 8px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn-primary {
+  height: 42px;
+  min-width: 140px;
+  padding: 0 22px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #029493, #027f7a);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #027f7a, #026c68);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  height: 42px;
+  min-width: 120px;
+  padding: 0 20px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #cfe8e6;
+  color: #029493;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: #f0fdfa;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1024px) {
+  h2,
+  form.form-container {
+    width: 95%;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  form.form-container {
+    padding: 24px;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-primary,
+  .btn-outline {
+    width: 100%;
+    cursor: pointer;
+  }
+}
+.file-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-upload-file {
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #f3f3f3;
+}
+
+.btn-upload-file:hover {
+  background: #e3e3e3;
+}
+
+.btn-action {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.loading-icon {
+  color: #029493;
+}
+/* =========================
+   FILE UPLOAD UX
+========================= */
+.file-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-upload-file {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #ecfeff;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: 1px dashed #67e8f9;
+}
+
+.btn-upload-file:hover {
+  background: #cffafe;
+  transform: translateY(-1px);
+}
+
+/* download */
+.btn-file-download {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  background: #f0fdfa;
+  color: #059669;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-file-download:hover {
+  background: #ccfbf1;
+}
+
+/* loading */
+.loading-icon {
+  font-size: 18px;
+  color: #029493;
+}
+
+/* =========================
+   FILE STATUS
+========================= */
+.file-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.file-status.has-file {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.file-status.has-file i {
+  color: #dc2626;
+}
+
+.file-status.no-file {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.file-status.no-file i {
+  color: #94a3b8;
+}
+.btn-upload-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #029493;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.btn-upload-confirm:hover {
+  background: #027373;
+}
+
+.file-preview {
+  font-size: 13px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
