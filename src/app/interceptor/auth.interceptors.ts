@@ -16,8 +16,8 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     // tự động gửi kèm token trong mỗi request
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const token = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
+        const token = sessionStorage.getItem('accessToken');
+        const refreshToken = sessionStorage.getItem('refreshToken');
         let authReq = req;
         if (token) {
             authReq = req.clone({
@@ -65,8 +65,8 @@ export class AuthInterceptor implements HttpInterceptor {
                     this.isRefreshing = false;
                     const newToken = response.accessToken;
 
-                    // Lưu token mới vào localStorage
-                    localStorage.setItem('accessToken', newToken);
+                    // Lưu token mới vào sessionStorage
+                    sessionStorage.setItem('accessToken', newToken);
                     this.refreshTokenSubject.next(newToken);
 
                     // Gửi lại request ban đầu với token mới

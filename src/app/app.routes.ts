@@ -13,16 +13,13 @@ import { ChiTietXeComponent } from './page/QuanLyHoSoXe/chi-tiet-xe/chi-tiet-xe.
 import { NhapKhoXeComponent } from './page/QuanLyHoSoXe/nhap-kho-xe/nhap-kho-xe.component';
 export const routes: Routes = [
     {
-        path: 'login',
-        component: LoginComponent,
-        children: [
-        ]
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full'
     },
     {
-        path: 'them-ho-so-xee',
-        component: ThemHoSoXeComponent,
-        children: [
-        ]
+        path: 'login',
+        component: LoginComponent
     },
     {
         path: 'manager',
@@ -31,90 +28,41 @@ export const routes: Routes = [
             {
                 path: 'them-ho-so-xe',
                 component: ThemHoSoXeComponent
-            }
-        ]
-    },
-    {
-        path: 'manager',
-        component: CanBoComponent,
-        children: [
+            },
+            {
+                path: 'them-ho-so-xe-hyundai',
+                component: ThemHoSoXeHyundaiComponent
+            },
+            {
+                path: 'them-ho-so-xe-vinfast',
+                component: ThemHoSoXeVinfastComponent
+            },
             {
                 path: 'danh-sach-ho-so-xe',
                 component: DanhSachHoSoXeComponent
-            }
-        ]
-    },
-    {
-        path: 'manager',
-        component: CanBoComponent,
-        children: [
+            },
             {
                 path: 'vehicles/detail/:id',
                 component: ChiTietXeComponent
-            }
-        ]
-    },
-    {
-        path: 'manager',
-        component: CanBoComponent,
-        children: [
+            },
+            {
+                path: 'nhap-kho-xe',
+                component: NhapKhoXeComponent
+            },
             {
                 path: 'them-bao-lanh',
                 component: ThemBaoLanhComponent
-            }
-        ]
-    },
-    {
-        path: 'manager',
-        component: CanBoComponent,
-        children: [
+            },
             {
                 path: 'danh-sach-bao-lanh',
                 component: DanhSachBaoLanhComponent
-            }
-        ]
-    },
-    {
-        path: 'manager',
-        component: CanBoComponent,
-        children: [
+            },
             {
                 path: 'chinh-sua-bao-lanh/:id',
                 component: ChinhSuaBaoLanhComponent
             }
         ]
-    },
-    {
-        path: 'manager',
-        component: CanBoComponent,
-        children: [
-            {
-                path: 'them-ho-so-xe-hyundai',
-                component: ThemHoSoXeHyundaiComponent
-            }
-        ]
-    },
-    {
-        path: 'manager',
-        component: CanBoComponent,
-        children: [
-            {
-                path: 'them-ho-so-xe-vinfast',
-                component: ThemHoSoXeVinfastComponent
-            }
-        ]
-    },
-    {
-        path: 'manager',
-        component: CanBoComponent,
-        children: [
-            {
-                path: 'nhap-kho-xe',
-                component: NhapKhoXeComponent
-            }
-        ]
-    },
-
+    }
 ];
 @NgModule({
     imports: [
