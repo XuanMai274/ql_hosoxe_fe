@@ -270,7 +270,7 @@ export class ThemHoSoXeHyundaiComponent {
           // Ưu tiên trích xuất tên xe từ các trường khả thi nhất
           modelName: v.modelName || (v as any).vehicle_name || (v as any).asset_name || v.vehicleDescription || '',
           origin: v.origin || 'Việt Nam',
-          numberOfSeats: v.numberOfSeats || '7',
+          numberOfSeats: v.numberOfSeats || '',
           isAutoFilled: true,
           file: null
         };
@@ -381,7 +381,7 @@ export class ThemHoSoXeHyundaiComponent {
       chassisNumber: '',
       engineNumber: '',
       color: '',
-      numberOfSeats: '7',
+      numberOfSeats: '',
       guaranteeNumber: this.guaranteeGroups[gIdx].code,
       contractNumber: this.guaranteeGroups[gIdx].invoices[iIdx].contractNumber,
       invoiceNumber: this.guaranteeGroups[gIdx].invoices[iIdx].invoiceNumber,
@@ -494,7 +494,7 @@ export class ThemHoSoXeHyundaiComponent {
             engineNumber: v.engineNumber,
             modelType: v.modelName, // Vẫn giữ modelType nếu backend cần
             color: v.color || '',
-            seats: Number(v.numberOfSeats) || 7,
+            seats: Number(v.numberOfSeats) || 0,
             price: this.parsePrice(v.unitPrice),
             status: 'Giữ két',
             guaranteeLetterDTO: {
