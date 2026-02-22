@@ -23,12 +23,13 @@ export class AuthInterceptor implements HttpInterceptor {
     // tự động gửi kèm token trong mỗi request
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const token = localStorage.getItem('accessToken');
+        const isRefreshRequest = req.url.includes('/api/auth/refresh');
 
         let authReq = req.clone({
             withCredentials: true // Luôn gửi kèm Cookie cho các request (để Backend lấy Refresh Token)
         });
 
-        if (token) {
+        if (token && !isRefreshRequest) {
             authReq = authReq.clone({
                 setHeaders: {
                     Authorization: `Bearer ${token}`
@@ -71,8 +72,12 @@ export class AuthInterceptor implements HttpInterceptor {
                 switchMap((response: AuthenticationResponse) => {
                     this.isRefreshing = false;
                     const newToken = response.accessToken;
+                    const newRefreshToken = response.refreshToken;
 
-                    sessionStorage.setItem('accessToken', newToken);
+                    localStorage.setItem('accessToken', newToken);
+                    if (newRefreshToken) {
+                        localStorage.setItem('refreshToken', newRefreshToken);
+                    }
                     this.refreshTokenSubject.next(newToken);
 
                     return next.handle(request.clone({

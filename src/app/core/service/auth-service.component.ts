@@ -38,10 +38,11 @@ export class AuthServiceComponent {
                 })
             );
     }
-    // refresh token sử dụng HttpOnly Cookie từ backend
+    // refresh token sử dụng HttpOnly Cookie hoặc gửi trực tiếp từ body
     refreshToken(): Observable<AuthenticationResponse> {
-        return this.http.post<AuthenticationResponse>(`http://localhost:8080/api/auth/refresh`, {}, {
-            withCredentials: true // Quan trọng: Gửi kèm HttpOnly Cookie (refreshToken)
+        const refreshToken = localStorage.getItem('refreshToken');
+        return this.http.post<AuthenticationResponse>(`http://localhost:8080/api/auth/refresh`, { refreshToken }, {
+            withCredentials: true // Gửi kèm Cookie nếu có
         });
     }
 

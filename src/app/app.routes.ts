@@ -19,6 +19,8 @@ import { HomeRouterComponent } from './page/home-router.component';
 
 import { AuthGuard } from './core/guard/auth.guard';
 import { RoleGuard } from './core/guard/role.guard';
+import { DanhSachKhoanVayComponent } from './page/QuanLyKhoanVay/danh-sach-khoan-vay/danh-sach-khoan-vay.component';
+import { ChiTietKhoanVayComponent } from './page/QuanLyKhoanVay/chi-tiet-khoan-vay/chi-tiet-khoan-vay.component';
 
 export const routes: Routes = [
     {
@@ -74,6 +76,14 @@ export const routes: Routes = [
             {
                 path: 'chinh-sua-bao-lanh/:id',
                 component: ChinhSuaBaoLanhComponent
+            },
+            {
+                path: 'danh-sach-khoan-vay',
+                component: DanhSachKhoanVayComponent
+            },
+            {
+                path: 'chinh-sua-khoan-vay/:id',
+                component: ChiTietKhoanVayComponent
             },
             // ADMIN ROUTES
             {
