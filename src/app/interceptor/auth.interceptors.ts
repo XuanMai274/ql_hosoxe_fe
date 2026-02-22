@@ -5,57 +5,64 @@ import { catchError, switchMap, filter, take } from 'rxjs/operators';
 import { AuthServiceComponent } from '../core/service/auth-service.component';
 import { AuthenticationResponse } from '../models/authentication-response.model';
 import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     private refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
     private isRefreshing = false;
 
-    constructor(private authService: AuthServiceComponent) {
+    constructor(
+        private authService: AuthServiceComponent,
+        private toastr: ToastrService,
+        private router: Router
+    ) {
         console.log("interceptor đã được khởi tạo")
     }
     // tự động gửi kèm token trong mỗi request
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const token = sessionStorage.getItem('accessToken');
-        const refreshToken = sessionStorage.getItem('refreshToken');
-        let authReq = req;
+        const token = localStorage.getItem('accessToken');
+
+        let authReq = req.clone({
+            withCredentials: true // Luôn gửi kèm Cookie cho các request (để Backend lấy Refresh Token)
+        });
+
         if (token) {
-            authReq = req.clone({
+            authReq = authReq.clone({
                 setHeaders: {
-                    Authorization: `Bearer ${token}`,
-                    'Authorization-Refresh': refreshToken || ''
+                    Authorization: `Bearer ${token}`
                 }
             });
-            console.log("đã set token: " + token)
-            console.log("đã set refresh: " + refreshToken)
         }
 
         return next.handle(authReq).pipe(
             catchError((error: HttpErrorResponse) => {
                 if (error.status === 401) {
-                    Swal.fire({
-                        title: 'Phiên đăng nhập hết hạn!',
-                        text: 'Vui lòng đăng nhập lại.',
-                        icon: 'warning',
-                        confirmButtonText: 'OK',
-                        timer: 3000,
-                        timerProgressBar: true,
-                        customClass: {
-                            popup: 'custom-popup',
-                        }
-                    });
-                    this.authService.logout(); // Gọi hàm logout khi gặp lỗi 401
-                } else if (error.status === 403) {
-                    return this.handle403Response(authReq, next);
+                    // Token hết hạn, thử refresh
+                    return this.handle401Error(authReq, next);
                 }
+
+                if (error.status === 403) {
+                    // Xử lý 403 Forbidden: Truy cập vùng cấm
+                    this.toastr.error('Bạn không có quyền thực hiện hành động này!', 'Truy cập bị từ chối', {
+                        progressBar: true,
+                        closeButton: true
+                    });
+
+                    this.authService.logout(); // Xóa session và về trang login
+                }
+
+                if (error.status === 404 && authReq.url.includes('/api/')) {
+                    this.toastr.warning('Không tìm thấy nội dung yêu cầu hoặc quyền hạn không đủ.', 'Cảnh báo');
+                }
+
                 return throwError(() => error);
             })
         );
     }
 
-    private handle403Response(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<AuthenticationResponse>> {
-        console.log("đã vào handle403Response");
-
+    private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         if (!this.isRefreshing) {
             this.isRefreshing = true;
             this.refreshTokenSubject.next(null);
@@ -65,21 +72,18 @@ export class AuthInterceptor implements HttpInterceptor {
                     this.isRefreshing = false;
                     const newToken = response.accessToken;
 
-                    // Lưu token mới vào sessionStorage
                     sessionStorage.setItem('accessToken', newToken);
                     this.refreshTokenSubject.next(newToken);
 
-                    // Gửi lại request ban đầu với token mới
                     return next.handle(request.clone({
                         setHeaders: {
-                            Authorization: `Bearer ${newToken}`,
-                            'Refresh-Token': response.refreshToken || ''
+                            Authorization: `Bearer ${newToken}`
                         }
-                    })) as Observable<HttpEvent<AuthenticationResponse>>;
+                    }));
                 }),
                 catchError(err => {
                     this.isRefreshing = false;
-                    this.authService.logout();
+                    this.authService.logout(); // Refresh fail thì đăng xuất
                     return throwError(() => err);
                 })
             );

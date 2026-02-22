@@ -1,29 +1,66 @@
-<header class="header">
-  <!-- Logo -->
-  <div class="logo d-flex align-items-center">
-    <img src="assets\public\img\logo.webp" alt="BIDV Logo" width="120" height="40" />
-    <div class="school-info ms-2">
-      <p class="text-red fw-bold">HỆ THỐNG QUẢN LÝ HỒ SƠ XE</p>
+<header class="header glass-container">
+  <!-- Left: Welcome & Search -->
+  <div class="header-left">
+    <div class="welcome-msg">
+      <span class="greeting">Xin chào,</span>
+      <h2 class="user-display-name">{{ username }}</h2>
+    </div>
+
+    <div class="search-wrapper glass-element">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Tìm kiếm hồ sơ, bảo lãnh..." />
     </div>
   </div>
 
-  <!-- Search -->
-  <div class="search-box">
-    <input type="text" placeholder="Tìm kiếm..." />
-    <i class="fa fa-search"></i>
-  </div>
-
-  <!-- Menu -->
-  <div class="menu d-flex align-items-center">
-    <a routerLink="/manager/home" class="menu-item">
-      <i class="fa fa-home"></i> Trang chủ
-    </a>
-    <div class="menu-item">
-      <i class="fa fa-user-circle"></i>
-      <span class="ms-1">{{ username }}</span>
+  <!-- Right: Actions & Profile -->
+  <div class="header-right">
+    <!-- Utility Buttons -->
+    <div class="utility-actions">
+      <button class="action-btn glass-element" title="Thông báo">
+        <i class="fa-regular fa-bell"></i>
+        <span class="btn-badge">3</span>
+      </button>
+      <button class="action-btn glass-element" title="Trợ giúp">
+        <i class="fa-regular fa-circle-question"></i>
+      </button>
     </div>
-    <a style="cursor: pointer;" (click)="onLogout()" class="menu-item position-relative">
-      <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
-    </a>
+
+    <!-- Divider -->
+    <div class="v-divider"></div>
+
+    <!-- User Profile Dropdown -->
+    <div class="user-profile-dropdown" [class.active]="showUserDropdown">
+      <div class="profile-trigger glass-element" (click)="toggleUserDropdown()">
+        <div class="avatar-circle">
+          <i class="fa-solid fa-user-tie"></i>
+        </div>
+        <div class="user-info-text">
+          <span class="role-badge">{{ userRole }}</span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </div>
+      </div>
+
+      <!-- Dropdown Content -->
+      <div class="dropdown-content glass-card" *ngIf="showUserDropdown">
+        <div class="dropdown-header">
+          <p class="full-name">{{ username }}</p>
+          <p class="role-text">{{ userRole }}</p>
+        </div>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item">
+          <i class="fa-regular fa-id-card"></i>
+          Hồ sơ cá nhân
+        </a>
+        <a class="dropdown-item">
+          <i class="fa-solid fa-gear"></i>
+          Cài đặt hệ thống
+        </a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item logout" (click)="onLogout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          Đăng xuất
+        </a>
+      </div>
+    </div>
   </div>
 </header>

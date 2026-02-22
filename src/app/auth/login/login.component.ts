@@ -68,9 +68,10 @@ export class LoginComponent {
         // Lưu username riêng biệt nếu cần thiết cho các mục đích khác
         localStorage.setItem('username', response.username);
 
-        // Lưu token vào sessionStorage (tự xóa khi đóng trình duyệt)
-        sessionStorage.setItem('accessToken', response.accessToken);
-        sessionStorage.setItem('refreshToken', response.refreshToken);
+        // Lưu token và role vào localStorage (để đồng bộ giữa các Tab)
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('refreshToken', response.refreshToken);
+        localStorage.setItem('userRole', response.role);
 
         // Điều hướng sau login
         const returnUrl = sessionStorage.getItem('returnUrl');
@@ -103,18 +104,7 @@ export class LoginComponent {
   }
 
   private navigateByRole(role: string): void {
-    switch (role) {
-      case 'MANAGER':
-      case 'MANAGER_1':
-      case 'ADMIN':
-        // Điều hướng vào trang danh sách hồ sơ xe của cán bộ
-        this.router.navigate(['/manager/danh-sach-ho-so-xe']);
-        break;
-
-      default:
-        // Nếu không khớp role nào, mặc định vào danh sách hồ sơ hoặc trang chủ hiện có
-        this.router.navigate(['/manager/danh-sach-ho-so-xe']);
-        break;
-    }
+    // Luôn điều hướng về trang Home tổng hợp (HomeRouterComponent sẽ điều phối theo Role)
+    this.router.navigate(['/manager/home']);
   }
 }

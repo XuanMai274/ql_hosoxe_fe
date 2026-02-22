@@ -1,0 +1,24 @@
+<div class="error-container">
+    <div class="error-content">
+        <div class="error-code">404</div>
+        <div class="error-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h1 class="error-title">Không tìm thấy trang</h1>
+        <p class="error-message">
+            Rất tiếc, trang bạn đang tìm kiếm không tồn tại hoặc đã được chuyển sang địa chỉ khác.
+        </p>
+        <div class="error-actions">
+            <button (click)="goBack()" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </button>
+            <button routerLink="/" class="btn-home">
+                <i class="fa-solid fa-house"></i> Về trang chủ
+            </button>
+        </div>
+    </div>
+
+    <div class="error-footer">
+        © 2026 BIDV – Hệ thống Quản lý Hồ sơ xe
+    </div>
+</div>
