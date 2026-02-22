@@ -11,8 +11,14 @@ import { ChinhSuaBaoLanhComponent } from './page/QuanLyBaoLanh/chinh-sua-bao-lan
 import { DanhSachHoSoXeComponent } from './page/QuanLyHoSoXe/danh-sach-ho-so-xe/danh-sach-ho-so-xe.component';
 import { ChiTietXeComponent } from './page/QuanLyHoSoXe/chi-tiet-xe/chi-tiet-xe.component';
 import { NhapKhoXeComponent } from './page/QuanLyHoSoXe/nhap-kho-xe/nhap-kho-xe.component';
-import { DanhSachKhoanVayComponent } from './page/QuanLyKhoanVay/danh-sach-khoan-vay/danh-sach-khoan-vay.component';
-import { ChiTietKhoanVayComponent } from './page/QuanLyKhoanVay/chi-tiet-khoan-vay/chi-tiet-khoan-vay.component';
+import { NotFoundComponent } from './page/not-found/not-found.component';
+import { EmployeeManagementComponent } from './page/admin/employee-management/employee-management.component';
+import { CustomerManagementComponent } from './page/admin/customer-management/customer-management.component';
+import { RoleManagementComponent } from './page/admin/role-management/role-management.component';
+import { HomeRouterComponent } from './page/home-router.component';
+
+import { AuthGuard } from './core/guard/auth.guard';
+import { RoleGuard } from './core/guard/role.guard';
 
 export const routes: Routes = [
     {
@@ -27,7 +33,12 @@ export const routes: Routes = [
     {
         path: 'manager',
         component: CanBoComponent,
+        canActivate: [AuthGuard], // Bảo vệ toàn bộ cụm manager
         children: [
+            {
+                path: 'home',
+                component: HomeRouterComponent
+            },
             {
                 path: 'them-ho-so-xe',
                 component: ThemHoSoXeComponent
@@ -64,15 +75,30 @@ export const routes: Routes = [
                 path: 'chinh-sua-bao-lanh/:id',
                 component: ChinhSuaBaoLanhComponent
             },
+            // ADMIN ROUTES
             {
-                path: 'danh-sach-khoan-vay',
-                component: DanhSachKhoanVayComponent
+                path: 'admin/employees',
+                component: EmployeeManagementComponent,
+                canActivate: [RoleGuard],
+                data: { roles: ['admin'] }
             },
             {
-                path: 'chinh-sua-khoan-vay/:id',
-                component: ChiTietKhoanVayComponent
+                path: 'admin/customers',
+                component: CustomerManagementComponent,
+                canActivate: [RoleGuard],
+                data: { roles: ['admin'] }
             },
+            {
+                path: 'admin/roles',
+                component: RoleManagementComponent,
+                canActivate: [RoleGuard],
+                data: { roles: ['admin'] }
+            }
         ]
+    },
+    {
+        path: '**',
+        component: NotFoundComponent
     }
 ];
 

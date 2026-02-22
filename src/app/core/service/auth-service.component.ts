@@ -15,7 +15,20 @@ export class AuthServiceComponent {
 
     private apiUrl = 'http://localhost:8080/api/auth/login';
 
-    constructor(private http: HttpClient, private router: Router) { }
+    constructor(private http: HttpClient, private router: Router) {
+        // Lắng nghe sự kiện thay đổi storage từ các Tab khác
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'accessToken') {
+                if (!event.newValue) {
+                    // Nếu Tab khác xóa token (logout), Tab này cũng về login
+                    this.finalizeLogout();
+                } else {
+                    // Nếu Tab khác đổi token (login tài khoản khác), Tab này load lại để cập nhật giao diện
+                    window.location.reload();
+                }
+            }
+        });
+    }
 
     login(credentials: { username: string; password: string }): Observable<any> {
         return this.http.post<AuthenticationResponse>(this.apiUrl, credentials)
@@ -25,59 +38,63 @@ export class AuthServiceComponent {
                 })
             );
     }
-    // refresh token
+    // refresh token sử dụng HttpOnly Cookie từ backend
     refreshToken(): Observable<AuthenticationResponse> {
-        const token = sessionStorage.getItem('accessToken');
-        return this.http.post<AuthenticationResponse>(`http://localhost:8080/api/auth/refreshToken`, {}, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Authorization-Refresh': sessionStorage.getItem('refreshToken') || ''
-            }
+        return this.http.post<AuthenticationResponse>(`http://localhost:8080/api/auth/refresh`, {}, {
+            withCredentials: true // Quan trọng: Gửi kèm HttpOnly Cookie (refreshToken)
         });
     }
 
     // đăng xuất
     logout() {
-        this.http.post('http://localhost:8080/api/auth/logout', {}).subscribe({
+        this.http.post('http://localhost:8080/api/auth/logout', {}, { withCredentials: true }).subscribe({
             next: () => {
                 this.finalizeLogout();
             },
             error: () => {
-                // Vẫn thực hiện logout ở client ngay cả khi gọi API lỗi
                 this.finalizeLogout();
             }
         });
     }
 
     private finalizeLogout() {
-        sessionStorage.removeItem("accessToken");
-        sessionStorage.removeItem("refreshToken");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("userRole");
         console.log("đã đăng xuất");
         this.router.navigate(["/login"]);
     }
     // hàm kiểm tra người dùng đã đăng nhập chưa
     isAuthenticate(): boolean {
         // lấy token nếu có thì đã đăng nhập    
-        const token = sessionStorage.getItem("accessToken");
+        const token = localStorage.getItem("accessToken");
         if (token !== null) {
             return true;
         } else {
             return false;
         }
     }
-    // lấy role từ token để kiểm tra 
-    getUserRole(): String {
-        const token = sessionStorage.getItem("accessToken");
-        if (!token) {
-            return "";
-        }
+    // lấy role của người dùng
+    getUserRole(): string {
+        // Ưu tiên lấy trực tiếp từ localStorage đã lưu lúc login
+        const storedRole = localStorage.getItem("userRole");
+        if (storedRole) return storedRole;
+
+        // Nếu không có (ví dụ: f5 trang), thử giải mã từ accessToken
+        const token = localStorage.getItem("accessToken");
+        if (!token) return "";
         try {
             const decodeToken: any = jwtDecode(token);
             return decodeToken.role || "";
         } catch {
-            console.error('Lỗi khi giải mã token:', Error);
-            return '';
+            return "";
         }
+    }
+
+    // kiểm tra phân quyền
+    hasRole(allowedRoles: string[]): boolean {
+        const role = this.getUserRole();
+        return allowedRoles.some(r => r.toLowerCase() === role.toLowerCase());
     }
     // gửi email đặt lại mật khẩu
     sendResetPasswordEmail(email: string): Observable<any> {

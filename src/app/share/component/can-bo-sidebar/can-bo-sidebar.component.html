@@ -1,119 +1,165 @@
 <nav class="sidebar">
-  <div class="bank-logo">
-    <img src="assets\public\img\logo.webp" alt="BIDV Logo" width="120" height="40" />
+  <!-- Logo Section -->
+  <div class="bank-logo" routerLink="/manager/home">
+    <img src="assets/public/img/logo.webp" alt="BIDV Logo" />
     <p class="bank-name">
-      Ngân hàng TMCP Đầu tư và Phát triển Việt Nam
+      Hệ thống Quản lý <br> Hồ sơ xe & Bảo lãnh
     </p>
   </div>
 
+  <!-- Navigation Menu -->
   <ul class="nav-links">
     <!-- Dashboard -->
     <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <a [routerLink]="'/manager/home'">
-        <i class="fa-solid fa-chart-line"></i>
-        <span>Dashboard</span>
+        <i class="fa-solid fa-house-chimney"></i>
+        <span>Trang chủ</span>
       </a>
     </li>
-    <!-- Quản lý thông tin bảo lãnh -->
-    <li class="has-submenu" [class.open]="activeSubmenu === 'baolanh'">
-      <a href="javascript:void(0)" (click)="toggleSubmenu('baolanh')" class="submenu-toggle">
-        <i class="fa-regular fa-envelope"></i>
-        <span>Quản lý bảo lãnh</span>
-        <i class="fa-solid fa-chevron-down arrow"></i>
-      </a>
 
-      <ul class="submenu">
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/them-bao-lanh'">
-            <i class="fa-solid fa-plus-circle"></i>
-            <span>Thêm bảo lãnh</span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/danh-sach-bao-lanh'">
-            <i class="fa-regular fa-pen-to-square"></i>
-            <span>Danh sách bảo lãnh</span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/tao-dot-ren-luyen'">
-            <i class="fa-solid fa-list"></i>
-            <span>Thống kê bảo lãnh</span>
-          </a>
-        </li>
-      </ul>
-    </li>
-    <!-- Quản lý hồ sơ xe -->
-    <li class="has-submenu" [class.open]="activeSubmenu === 'hosoxe'">
-      <a href="javascript:void(0)" (click)="toggleSubmenu('hosoxe')" class="submenu-toggle">
-        <i class="fa-solid fa-car"></i>
-        <span>Quản lý hồ sơ xe</span>
-        <i class="fa-solid fa-chevron-down arrow"></i>
-      </a>
-      <ul class="submenu">
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/them-ho-so-xe-hyundai'">
-            <i class="fa-solid fa-h"></i>
-            <span>Thêm hồ sơ Hyundai</span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/them-ho-so-xe-vinfast'">
-            <i class="fa-solid fa-v"></i>
-            <span>Thêm hồ sơ VinFast</span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/danh-sach-ho-so-xe'">
-            <i class="fa-regular fa-pen-to-square"></i>
-            <span>Danh sách hồ sơ xe</span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/nhap-kho-xe'">
-            <i class="fa-solid fa-arrow-right-to-bracket"></i>
-            <span>Nhập kho xe</span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/tao-dot-ren-luyen'">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            <span>Rút hồ sơ xe</span>
-          </a>
-        </li>
+    <!-- NHÓM CHỨC NĂNG NGHIỆP VỤ -->
+    <ng-container *ngIf="hasRole(['officer', 'manager', 'manager_1'])">
+      <li class="separator"><span>NGHIỆP VỤ</span></li>
 
-      </ul>
-    </li>
+      <!-- Quản lý thông tin bảo lãnh -->
+      <li class="has-submenu" [class.open]="activeSubmenu === 'baolanh'">
+        <a href="javascript:void(0)" (click)="toggleSubmenu('baolanh')" class="submenu-toggle">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Quản lý bảo lãnh</span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </a>
 
-    <!-- Quản lý hồ sơ vay (Merged from mamthui) -->
-    <li class="has-submenu" [class.open]="activeSubmenu === 'vay'">
-      <a href="javascript:void(0)" (click)="toggleSubmenu('vay')" class="submenu-toggle">
-        <i class="fa-regular fa-address-card"></i>
-        <span>Quản lý hồ sơ vay</span>
-        <i class="fa-solid fa-chevron-down arrow"></i>
-      </a>
+        <ul class="submenu">
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/them-bao-lanh'">
+              <i class="fa-solid fa-circle-plus"></i>
+              <span>Thêm bảo lãnh</span>
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/danh-sach-bao-lanh'">
+              <i class="fa-solid fa-rectangle-list"></i>
+              <span>Danh sách</span>
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/tao-dot-ren-luyen'">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Thống kê</span>
+            </a>
+          </li>
+        </ul>
+      </li>
 
-      <ul class="submenu">
-        <!-- <li routerLinkActive="active">
-          <a [routerLink]="'/manager/them-bao-lanh'">
-            <i class="fa-solid fa-plus-circle"></i>
-            <span>Thêm khoản vay</span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/danh-sach-bao-lanh'">
-            <i class="fa-regular fa-pen-to-square"></i>
-            <span>Sửa khoản vay</span>
-          </a>
-        </li> -->
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/danh-sach-khoan-vay'">
-            <i class="fa-solid fa-list"></i>
-            <span>Danh sách khoản vay</span>
-          </a>
-        </li>
-      </ul>
-    </li>
+      <!-- Quản lý hồ sơ xe -->
+      <li class="has-submenu" [class.open]="activeSubmenu === 'hosoxe'">
+        <a href="javascript:void(0)" (click)="toggleSubmenu('hosoxe')" class="submenu-toggle">
+          <i class="fa-solid fa-car-side"></i>
+          <span>Quản lý hồ sơ xe</span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </a>
+        <ul class="submenu">
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/them-ho-so-xe-hyundai'">
+              <i class="fa-solid fa-file-circle-plus"></i>
+              <span>Hồ sơ Hyundai</span>
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/them-ho-so-xe-vinfast'">
+              <i class="fa-solid fa-file-circle-plus"></i>
+              <span>Hồ sơ VinFast</span>
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/nhap-kho-xe'">
+              <i class="fa-solid fa-warehouse"></i>
+              <span>Nhập kho xe</span>
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/tao-dot-ren-luyen'">
+              <i class="fa-solid fa-file-export"></i>
+              <span>Rút hồ sơ xe</span>
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/danh-sach-ho-so-xe'">
+              <i class="fa-solid fa-list-check"></i>
+              <span>Xem tất cả</span>
+            </a>
+          </li>
+        </ul>
+      </li>
 
+      <!-- Quản lý hồ sơ vay -->
+      <li class="has-submenu" [class.open]="activeSubmenu === 'vay'">
+        <a href="javascript:void(0)" (click)="toggleSubmenu('vay')" class="submenu-toggle">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <span>Quản lý hồ sơ vay</span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </a>
+
+        <ul class="submenu">
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/them-bao-lanh'">
+              <i class="fa-solid fa-plus"></i>
+              <span>Thêm khoản vay</span>
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/danh-sach-bao-lanh'">
+              <i class="fa-solid fa-table-list"></i>
+              <span>Danh sách khoản vay</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ng-container>
+
+    <!-- NHÓM CHỨC NĂNG ADMIN -->
+    <ng-container *ngIf="hasRole(['admin'])">
+      <li class="separator"><span>HỆ THỐNG</span></li>
+
+      <!-- Quản lý Nhân viên -->
+      <li class="has-submenu" [class.open]="activeSubmenu === 'employees'">
+        <a href="javascript:void(0)" (click)="toggleSubmenu('employees')" class="submenu-toggle">
+          <i class="fa-solid fa-users-gear"></i>
+          <span>Nhân viên</span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </a>
+        <ul class="submenu">
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/admin/employees'">
+              <span>Danh sách cán bộ</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Quản lý Khách hàng -->
+      <li class="has-submenu" [class.open]="activeSubmenu === 'customers'">
+        <a href="javascript:void(0)" (click)="toggleSubmenu('customers')" class="submenu-toggle">
+          <i class="fa-solid fa-building-user"></i>
+          <span>Khách hàng</span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </a>
+        <ul class="submenu">
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/admin/customers'">
+              <span>Danh sách KH</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Quản lý Vai trò -->
+      <li routerLinkActive="active">
+        <a [routerLink]="'/manager/admin/roles'">
+          <i class="fa-solid fa-user-lock"></i>
+          <span>Phân quyền</span>
+        </a>
+      </li>
+    </ng-container>
   </ul>
 </nav>

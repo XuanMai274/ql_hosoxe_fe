@@ -1,78 +1,110 @@
-/* ================= MODERN PREMIUM SIDEBAR (REMAINING INITIAL COLORS) ================= */
+/* ============================================================ 
+   PREMIUM GLASSMORPHISM SIDEBAR - BIDV AESTHETIC 
+   ============================================================ */
+
 :host {
-  /* Transition Token */
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --sidebar-width: 280px;
+  --transition-speed: 0.4s;
+  --primary-teal: #028B89;
+  --dark-teal: #004d40;
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-hover: rgba(255, 255, 255, 0.15);
+  --glass-active: #ffffff;
 }
 
 .sidebar {
-  width: 280px;
+  width: var(--sidebar-width);
   min-height: 100vh;
-  height: auto;
-  padding: 32px 18px;
-  display: flex;
+  height: 100vh;
   position: sticky;
   top: 0;
+  padding: 30px 15px;
+  display: flex;
   flex-direction: column;
-  /* Reverting to Initial Gradient Colors */
-  background: linear-gradient(to bottom, #4b9e9e 0%, #029493 40%, #006b68 100%);
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  z-index: 100;
+  background: linear-gradient(165deg, #006b68 0%, #028B89 50%, #004d40 100%);
+  box-shadow: 10px 0 40px rgba(0, 77, 64, 0.2);
+  z-index: 1000;
+  overflow: hidden;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ================= BANK LOGO SECTION ================= */
+/* Decorative background circle for more "Premium" feel */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ================= LOGO SECTION ================= */
 .bank-logo {
-  text-align: center;
-  margin-bottom: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
   padding: 0 10px;
+  animation: fadeInDown 1s ease;
 }
 
 .bank-logo img {
-  width: 120px;
+  width: 130px;
   height: auto;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   filter: brightness(0) invert(1);
-  /* Ensure logo stands out on dark bg if needed */
+  transition: transform 0.3s ease;
+}
+
+.bank-logo:hover img {
+  transform: scale(1.05);
 }
 
 .bank-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-  line-height: 1.5;
-  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  line-height: 1.6;
 }
 
-/* ================= NAVIGATION LINKS ================= */
+/* ================= NAVIGATION ================= */
 .nav-links {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .nav-links a {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  border-radius: 12px;
+  gap: 15px;
+  padding: 14px 18px;
+  border-radius: 15px;
   text-decoration: none;
-  color:white;
-  /* White text for dark bg */
-  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14.5px;
   font-weight: 500;
-  transition: var(--transition);
+  background: transparent;
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .nav-links i {
+  font-size: 18px;
   width: 20px;
   text-align: center;
-  font-size: 17px;
-  color:white;
-  transition: var(--transition);
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
 }
 .nav-links i:hover {
   background-color: rgba(255, 255, 255, 0.15);
@@ -80,92 +112,131 @@
   transform: translateX(4px);
 }
 
-/* Hover State */
+/* Hover effect */
 .nav-links a:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: white;
-  transform: translateX(4px);
+  background: var(--glass-hover);
+  color: #ffffff;
+  transform: translateX(5px);
 }
 
 .nav-links a:hover i {
-  color: #006b68;
+  color: #ffffff;
+  transform: scale(1.1);
 }
 
-/* Active State (Direct Link) */
+/* Active state for main items */
 .nav-links li.active>a {
-  background-color: #ffffff;
-  color: #006b68;
-  /* Green text on white bg */
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--glass-active);
+  color: var(--dark-teal);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
 }
 
 .nav-links li.active>a i {
-  color: #006b68;
+  color: var(--primary-teal);
 }
 
 /* ================= SUBMENU ================= */
-.has-submenu .submenu-toggle {
-  cursor: pointer;
-}
-
 .has-submenu .arrow {
   margin-left: auto;
-  font-size: 11px;
-  opacity: 0.6;
-  transition: transform 0.3s;
+  font-size: 10px;
+  transition: transform 0.4s;
 }
 
 .has-submenu.open .arrow {
   transform: rotate(180deg);
-  opacity: 1;
-}
-
-.has-submenu.open>a {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .submenu {
   list-style: none;
-  padding-left: 36px;
-  margin: 6px 0;
+  padding: 5px 0 5px 45px;
+  margin: 0;
   display: none;
   flex-direction: column;
-  gap: 4px;
-  animation: slideDown 0.3s ease-out;
+  gap: 5px;
+  position: relative;
+}
+
+/* Line connecting submenus */
+.submenu::before {
+  content: '';
+  position: absolute;
+  left: 25px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
 }
 
 .has-submenu.open .submenu {
   display: flex;
+  animation: slideIn 0.4s ease-out;
 }
 
 .submenu a {
-  padding: 10px 14px;
-  font-size: 13px;
-  background-color: rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
   color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
-  border-radius: 10px;
+  /* Chữ trắng rõ hơn */
+  border-radius: 12px;
+}
+
+.submenu i {
+  font-size: 14px;
+  width: 18px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .submenu a:hover {
-  background-color: #ffffff;
-  color: #006b68;
-  padding-left: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding-left: 20px;
+}
+
+.submenu a:hover i {
+  color: white;
 }
 
 .submenu li.active a {
-  background-color: #ffffff;
-  color: #006b68;
-  font-weight: 700;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 600;
 }
 
-/* Keyframes */
-@keyframes slideDown {
+/* ================= SEPARATOR ================= */
+.separator {
+  margin: 25px 10px 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.separator span {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.separator::after {
+  content: '';
+  height: 1px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-20px);
   }
 
   to {
@@ -174,16 +245,16 @@
   }
 }
 
-/* Scrollbar */
-.sidebar::-webkit-scrollbar {
-  width: 5px;
-}
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateX(-10px);
+  }
 
-.sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: transparent;
+  to {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateX(0);
+  }
 }
