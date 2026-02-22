@@ -267,4 +267,137 @@
 
 .finish-actions {
   margin-top: 24px;
+<<<<<<< HEAD
+=======
+}
+.batch-table-wrapper {
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+  overflow-x: auto;
+}
+
+.batch-loan-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.batch-loan-table th {
+  background: #f3f8f8;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #045c5a;
+}
+
+.batch-loan-table td {
+  padding: 12px;
+  border-bottom: 1px solid #edf2f2;
+  font-size: 13px;
+}
+
+.batch-loan-table input {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #dfeeee;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.batch-loan-table input:focus {
+  border-color: #028B89;
+  box-shadow: 0 0 0 2px rgba(2,139,137,0.1);
+}
+
+.amount {
+  font-weight: 600;
+  color: #028B89;
+}
+
+.summary-badge {
+  background: rgba(2,139,137,0.1);
+  color: #028B89;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* ===== Nút Quay lại ===== */
+.btn-back {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.btn-back:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+/* ===== Nút Tạo khoản vay ===== */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* ===== Quay lại ===== */
+.btn-back {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.btn-back:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+/* ===== Tạo khoản vay (enabled) ===== */
+.btn-create {
+  background-color: #028B89;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(2, 139, 137, 0.35);
+}
+
+.btn-create:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(2, 139, 137, 0.45);
+}
+
+/* ===== Disabled rõ ràng hơn ===== */
+.btn-create:disabled {
+  background-color: #cfd8dc;   /* xám sáng */
+  color: #78909c;              /* chữ xám */
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 1;                  /* bỏ opacity để không bị mờ text */
+>>>>>>> origin/mamthui
 }

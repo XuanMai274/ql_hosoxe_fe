@@ -3,10 +3,19 @@
 ========================= */
 .login-wrapper {
   min-height: 100vh;
+<<<<<<< HEAD
   background: linear-gradient(to bottom,
       #eaf6f5 0%,
       #cdebea 40%,
       #a9d9d6 100%);
+=======
+  background: linear-gradient(
+    to bottom,
+    #eaf6f5 0%,
+    #cdebea 40%,
+    #a9d9d6 100%
+  );
+>>>>>>> origin/mamthui
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,8 +27,12 @@
 ========================= */
 .login-card {
   width: 100%;
+<<<<<<< HEAD
   max-width: 480px;
   /* 🔥 RỘNG HƠN */
+=======
+  max-width: 480px; /* 🔥 RỘNG HƠN */
+>>>>>>> origin/mamthui
   background-color: #ffffff;
   padding: 40px 36px;
   border-radius: 10px;
@@ -42,8 +55,12 @@
 
 /* LOGO */
 .logo-img {
+<<<<<<< HEAD
   width: 120px;
   /* 🔥 TO HƠN */
+=======
+  width: 120px;   /* 🔥 TO HƠN */
+>>>>>>> origin/mamthui
   height: 120px;
   object-fit: contain;
   margin-bottom: 14px;
@@ -67,6 +84,7 @@
 }
 
 /* =========================
+<<<<<<< HEAD
    WELCOME BACK
 ========================= */
 .welcome-back {
@@ -101,6 +119,8 @@
 }
 
 /* =========================
+=======
+>>>>>>> origin/mamthui
    FORM
 ========================= */
 .login-form {
@@ -113,8 +133,12 @@
 
 /* GROUP */
 .form-group {
+<<<<<<< HEAD
   width: 85%;
   /* 🔥 RỘNG HƠN */
+=======
+  width: 85%; /* 🔥 RỘNG HƠN */
+>>>>>>> origin/mamthui
   display: flex;
   flex-direction: column;
 }
@@ -130,8 +154,12 @@
 /* INPUT */
 .form-group input {
   width: 100%;
+<<<<<<< HEAD
   padding: 12px 14px;
   /* 🔥 CAO HƠN */
+=======
+  padding: 12px 14px; /* 🔥 CAO HƠN */
+>>>>>>> origin/mamthui
   border: 1.5px solid #a7d8d5;
   border-radius: 8px;
   font-size: 14px;
@@ -164,9 +192,17 @@
   width: 85%;
   padding: 12px;
   margin-top: 6px;
+<<<<<<< HEAD
   background: linear-gradient(to right,
       #028B89,
       #016f6c);
+=======
+  background: linear-gradient(
+    to right,
+    #028B89,
+    #016f6c
+  );
+>>>>>>> origin/mamthui
   color: #ffffff;
   font-size: 15px;
   font-weight: 700;
@@ -178,9 +214,17 @@
 }
 
 .btn-login:hover:not(:disabled) {
+<<<<<<< HEAD
   background: linear-gradient(to right,
       #016f6c,
       #015c59);
+=======
+  background: linear-gradient(
+    to right,
+    #016f6c,
+    #015c59
+  );
+>>>>>>> origin/mamthui
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(2, 139, 137, 0.35);
 }
@@ -223,4 +267,8 @@
   text-align: center;
   font-size: 12px;
   color: #065f5b;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/mamthui

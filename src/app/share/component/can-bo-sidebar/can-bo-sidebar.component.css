@@ -38,7 +38,11 @@
 .bank-name {
   font-size: 12px;
   font-weight: 600;
+<<<<<<< HEAD
   color: rgba(255, 255, 255, 0.9);
+=======
+  color:white;
+>>>>>>> origin/mamthui
   line-height: 1.5;
   padding: 0 5px;
 }
@@ -60,7 +64,11 @@
   padding: 12px 16px;
   border-radius: 12px;
   text-decoration: none;
+<<<<<<< HEAD
   color: rgba(255, 255, 255, 0.85);
+=======
+ color:white;
+>>>>>>> origin/mamthui
   /* White text for dark bg */
   font-size: 14px;
   font-weight: 500;
@@ -71,7 +79,11 @@
   width: 20px;
   text-align: center;
   font-size: 17px;
+<<<<<<< HEAD
   color: rgba(255, 255, 255, 0.7);
+=======
+ color:white;
+>>>>>>> origin/mamthui
   transition: var(--transition);
 }
 
@@ -83,11 +95,19 @@
 }
 
 .nav-links a:hover i {
+<<<<<<< HEAD
   color: #ffffff;
+=======
+  color: #006b68;
+>>>>>>> origin/mamthui
 }
 
 /* Active State (Direct Link) */
 .nav-links li.active>a {
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/mamthui
   background-color: #ffffff;
   color: #006b68;
   /* Green text on white bg */

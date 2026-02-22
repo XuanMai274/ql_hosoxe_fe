@@ -6,6 +6,12 @@ import { PageResponse } from '../../../models/page-response';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Vehicle } from '../../../models/vehicle';
+<<<<<<< HEAD
+=======
+import { VehicleLoanForm } from '../../../models/vehicle_loan_form.model';
+import { LoanService } from '../../../service/loan.service';
+import { LoanDTO } from '../../../models/loan.model';
+>>>>>>> origin/mamthui
 
 @Component({
   selector: 'app-nhap-kho-xe',
@@ -17,9 +23,17 @@ export class NhapKhoXeComponent {
   vehicles: Vehicle[] = [];
   vehiclesAll: Vehicle[] = [];
   filteredVehicles: Vehicle[] = [];
+<<<<<<< HEAD
 
   loading = false;
   selectedVehicles: Vehicle[] = [];
+=======
+  today = new Date();
+  loading = false;
+  selectedVehicles: Vehicle[] = [];
+  loanForms: VehicleLoanForm[] = [];
+
+>>>>>>> origin/mamthui
   showNhapKho = false;
   currentStep = 1;
   // ===== FILTER =====
@@ -36,6 +50,10 @@ export class NhapKhoXeComponent {
 
   constructor(
     private vehicleService: VehicleService,
+<<<<<<< HEAD
+=======
+    private loanService: LoanService,
+>>>>>>> origin/mamthui
     private router: Router
   ) { }
 
@@ -59,6 +77,85 @@ export class NhapKhoXeComponent {
       }
     });
   }
+<<<<<<< HEAD
+=======
+  calculateDueDate(vehicle: any) {
+    if (!vehicle.loanTerm || vehicle.loanTerm <= 0) return;
+
+    const loanDate = new Date(this.today);
+    const due = new Date(loanDate);
+
+    due.setDate(loanDate.getDate() + Number(vehicle.loanTerm));
+
+    vehicle.loanDate = loanDate;
+    vehicle.dueDate = due;
+  }
+  private buildLoanForms() {
+    this.loanForms = this.selectedVehicles.map(v => ({
+      vehicleId: v.id!,
+      vihicleName: v.assetName || '',
+      chassisNumber: v.chassisNumber!,
+      vehicleName: v.vehicleName!,
+      guaranteeLetterId: v.guaranteeLetterDTO?.id,
+      guaranteeAmount: v.guaranteeAmount || 0
+    }));
+  }
+  getTotalLoanAmount() {
+    return this.selectedVehicles.reduce(
+      (sum, v) => sum + (v.guaranteeAmount || 0),
+      0
+    );
+  }
+  isBatchValid(): boolean {
+    return this.loanForms.length > 0 &&
+      this.loanForms.every(f =>
+        f.loanContractNumber &&
+        f.loanTerm &&
+        f.loanTerm > 0
+      );
+  }
+  submitBatchLoans() {
+
+    if (!this.isBatchValid()) return;
+
+    this.loading = true;
+
+    const payload: LoanDTO[] = this.loanForms.map(f => ({
+
+      loanContractNumber: f.loanContractNumber!,
+      loanTerm: f.loanTerm!,
+
+      // 👇 convert Date sang string yyyy-MM-dd
+      loanDate: this.formatDate(this.today),
+      dueDate: f.dueDate ? this.formatDate(f.dueDate) : undefined,
+
+      loanAmount: f.guaranteeAmount,
+      withdrawnChassisNumber: f.chassisNumber,
+
+      loanStatus: 'ACTIVE',
+      loanType: 'VEHICLE',
+
+      customerDTO: { id: 2 },
+      vehicleDTO: { id: f.vehicleId }
+
+    }));
+
+    this.loanService.createBatchLoans(payload)
+      .subscribe({
+        next: () => {
+          this.loading = false;
+          this.currentStep = 3;
+        },
+        error: () => {
+          this.loading = false;
+          alert('Có lỗi xảy ra');
+        }
+      });
+  }
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
+>>>>>>> origin/mamthui
   openNhapKho() {
     this.currentStep = 2;
   }
@@ -68,6 +165,12 @@ export class NhapKhoXeComponent {
   }
 
   nextStep() {
+<<<<<<< HEAD
+=======
+    if (this.currentStep === 1) {
+      this.buildLoanForms();
+    }
+>>>>>>> origin/mamthui
     this.currentStep++;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -76,6 +179,13 @@ export class NhapKhoXeComponent {
     this.currentStep--;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+<<<<<<< HEAD
+=======
+  // kiểm tra xem xe đã được chọn chưa
+  isSelected(vehicle: Vehicle): boolean {
+    return this.selectedVehicles.some(v => v.id === vehicle.id);
+  }
+>>>>>>> origin/mamthui
   // ===== SEARCH =====
   search(): void {
 
@@ -256,6 +366,11 @@ export class NhapKhoXeComponent {
   finishNhapKho() {
     this.showNhapKho = false;
     this.selectedVehicles = [];
+<<<<<<< HEAD
     this.currentStep = 3;
+=======
+    this.currentStep = 1;
+
+>>>>>>> origin/mamthui
   }
 }

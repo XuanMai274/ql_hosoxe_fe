@@ -51,12 +51,6 @@
         <i class="fa-solid fa-chevron-down arrow"></i>
       </a>
       <ul class="submenu">
-        <!-- <li routerLinkActive="active">
-          <a [routerLink]="'/manager/them-ho-so-xe'">
-            <i class="fa-solid fa-plus-circle"></i>
-            <span>Thêm hồ sơ xe</span>
-          </a>
-        </li> -->
         <li routerLinkActive="active">
           <a [routerLink]="'/manager/them-ho-so-xe-hyundai'">
             <i class="fa-solid fa-car"></i>
@@ -90,12 +84,35 @@
       </ul>
     </li>
 
-
-    <!-- <li routerLinkActive="active">
-      <a [routerLink]="'/manager/quan-ly-tieu-chi'">
-        <i class="fa-solid fa-calendar"></i>
-        <span>Tiêu chí</span>
+    <!-- Quản lý hồ sơ vay (Merged from mamthui) -->
+    <li class="has-submenu" [class.open]="activeSubmenu === 'vay'">
+      <a href="javascript:void(0)" (click)="toggleSubmenu('vay')" class="submenu-toggle">
+        <i class="fa-regular fa-address-card"></i>
+        <span>Quản lý hồ sơ vay</span>
+        <i class="fa-solid fa-chevron-down arrow"></i>
       </a>
-    </li> -->
+
+      <ul class="submenu">
+        <li routerLinkActive="active">
+          <a [routerLink]="'/manager/them-bao-lanh'">
+            <i class="fa-solid fa-plus-circle"></i>
+            <span>Thêm khoản vay</span>
+          </a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="'/manager/danh-sach-bao-lanh'">
+            <i class="fa-regular fa-pen-to-square"></i>
+            <span>Sửa khoản vay</span>
+          </a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="'/manager/tao-dot-ren-luyen'">
+            <i class="fa-solid fa-list"></i>
+            <span>Danh sách khoản vay</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+
   </ul>
 </nav>

@@ -1,4 +1,5 @@
 export interface AuthenticationResponse {
+<<<<<<< HEAD
     id: number;
     username: string;
     fullName: string;
@@ -8,4 +9,9 @@ export interface AuthenticationResponse {
     role: string;
     message: string;
     success: boolean;
+=======
+    accessToken: string;
+    refreshToken: string;
+    role: string;
+>>>>>>> origin/mamthui
 }

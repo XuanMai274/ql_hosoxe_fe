@@ -11,6 +11,7 @@ import { ChinhSuaBaoLanhComponent } from './page/QuanLyBaoLanh/chinh-sua-bao-lan
 import { DanhSachHoSoXeComponent } from './page/QuanLyHoSoXe/danh-sach-ho-so-xe/danh-sach-ho-so-xe.component';
 import { ChiTietXeComponent } from './page/QuanLyHoSoXe/chi-tiet-xe/chi-tiet-xe.component';
 import { NhapKhoXeComponent } from './page/QuanLyHoSoXe/nhap-kho-xe/nhap-kho-xe.component';
+
 export const routes: Routes = [
     {
         path: '',
@@ -64,6 +65,7 @@ export const routes: Routes = [
         ]
     }
 ];
+
 @NgModule({
     imports: [
         RouterModule.forRoot(routes, {
