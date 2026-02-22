@@ -20,11 +20,7 @@ export interface Vehicle {
   color: string;
   seats?: number;
   price: number;
-<<<<<<< HEAD
-
-=======
   guaranteeAmount?: number;
->>>>>>> origin/mamthui
   originalCopy?: string;
   importDocs?: string;
   registrationOrderNumber?: string;

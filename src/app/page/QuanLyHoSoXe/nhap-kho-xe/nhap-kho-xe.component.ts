@@ -6,12 +6,9 @@ import { PageResponse } from '../../../models/page-response';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Vehicle } from '../../../models/vehicle';
-<<<<<<< HEAD
-=======
 import { VehicleLoanForm } from '../../../models/vehicle_loan_form.model';
 import { LoanService } from '../../../service/loan.service';
 import { LoanDTO } from '../../../models/loan.model';
->>>>>>> origin/mamthui
 
 @Component({
   selector: 'app-nhap-kho-xe',
@@ -23,17 +20,11 @@ export class NhapKhoXeComponent {
   vehicles: Vehicle[] = [];
   vehiclesAll: Vehicle[] = [];
   filteredVehicles: Vehicle[] = [];
-<<<<<<< HEAD
-
-  loading = false;
-  selectedVehicles: Vehicle[] = [];
-=======
   today = new Date();
   loading = false;
   selectedVehicles: Vehicle[] = [];
   loanForms: VehicleLoanForm[] = [];
 
->>>>>>> origin/mamthui
   showNhapKho = false;
   currentStep = 1;
   // ===== FILTER =====
@@ -50,10 +41,7 @@ export class NhapKhoXeComponent {
 
   constructor(
     private vehicleService: VehicleService,
-<<<<<<< HEAD
-=======
     private loanService: LoanService,
->>>>>>> origin/mamthui
     private router: Router
   ) { }
 
@@ -77,8 +65,6 @@ export class NhapKhoXeComponent {
       }
     });
   }
-<<<<<<< HEAD
-=======
   calculateDueDate(vehicle: any) {
     if (!vehicle.loanTerm || vehicle.loanTerm <= 0) return;
 
@@ -155,7 +141,6 @@ export class NhapKhoXeComponent {
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
   }
->>>>>>> origin/mamthui
   openNhapKho() {
     this.currentStep = 2;
   }
@@ -165,12 +150,9 @@ export class NhapKhoXeComponent {
   }
 
   nextStep() {
-<<<<<<< HEAD
-=======
     if (this.currentStep === 1) {
       this.buildLoanForms();
     }
->>>>>>> origin/mamthui
     this.currentStep++;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -179,13 +161,10 @@ export class NhapKhoXeComponent {
     this.currentStep--;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-<<<<<<< HEAD
-=======
   // kiểm tra xem xe đã được chọn chưa
   isSelected(vehicle: Vehicle): boolean {
     return this.selectedVehicles.some(v => v.id === vehicle.id);
   }
->>>>>>> origin/mamthui
   // ===== SEARCH =====
   search(): void {
 
@@ -366,11 +345,7 @@ export class NhapKhoXeComponent {
   finishNhapKho() {
     this.showNhapKho = false;
     this.selectedVehicles = [];
-<<<<<<< HEAD
-    this.currentStep = 3;
-=======
     this.currentStep = 1;
 
->>>>>>> origin/mamthui
   }
 }

@@ -10,15 +10,6 @@
 
     <div class="step" [class.active]="currentStep >= 2">
       <span class="circle">2</span>
-<<<<<<< HEAD
-      <span class="label">Xuất hồ sơ</span>
-    </div>
-
-    <div class="line" [class.active]="currentStep >= 3"></div>
-
-    <div class="step" [class.active]="currentStep >= 3">
-      <span class="circle">3</span>
-=======
       <span class="label">Thiết lập khoản vay</span>
     </div>
     <div class="line" [class.active]="currentStep >= 3"></div>
@@ -32,7 +23,6 @@
 
     <div class="step" [class.active]="currentStep >= 4">
       <span class="circle">4</span>
->>>>>>> origin/mamthui
       <span class="label">Hoàn tất</span>
     </div>
 
@@ -105,11 +95,7 @@
           <td>{{ v.guaranteeLetterDTO?.referenceCode }}</td>
 
           <td>
-<<<<<<< HEAD
-            <input type="checkbox" (change)="onSelectVehicle(v,$event)" />
-=======
             <input type="checkbox" [checked]="isSelected(v)" (change)="onSelectVehicle(v,$event)" />
->>>>>>> origin/mamthui
           </td>
 
         </tr>
@@ -138,12 +124,6 @@
       </button>
     </div>
   </div>
-<<<<<<< HEAD
-
-
-  <!-- PAGINATION -->
-  <div *ngIf="currentStep === 2">
-=======
   <div *ngIf="currentStep === 2">
 
     <h2>Tạo khoản vay hàng loạt</h2>
@@ -196,7 +176,6 @@
 
 
   <div *ngIf="currentStep === 3">
->>>>>>> origin/mamthui
     <div class="page-header">
       <h2>Danh sách xe nhập kho</h2>
     </div>
@@ -259,11 +238,7 @@
     </div>
   </div>
   <div *ngIf="currentStep === 3" class="finish-container">
-<<<<<<< HEAD
-
-=======
     <!-- 
->>>>>>> origin/mamthui
     <div class="guarantee-summary-card">
 
       <div class="summary-header">
@@ -273,15 +248,6 @@
 
       <p>Đã nhập {{ selectedVehicles.length }} phương tiện</p>
 
-<<<<<<< HEAD
-    </div>
-
-    <div class="finish-actions">
-      <button class="btn-primary-lg" (click)="goToStep(1)">
-        Nhập kho mới
-      </button>
-    </div>
-=======
     </div> -->
 
     <!-- <div class="finish-actions">
@@ -289,6 +255,5 @@
         Nhập kho mới
       </button>
     </div> -->
->>>>>>> origin/mamthui
 
   </div>
