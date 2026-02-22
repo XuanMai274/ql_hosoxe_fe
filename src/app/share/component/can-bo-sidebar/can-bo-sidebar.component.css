@@ -106,11 +106,6 @@
   color: rgba(255, 255, 255, 0.9);
   transition: all 0.3s ease;
 }
-.nav-links i:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: white;
-  transform: translateX(4px);
-}
 
 /* Hover effect */
 .nav-links a:hover {
@@ -126,14 +121,14 @@
 
 /* Active state for main items */
 .nav-links li.active>a {
-  background: var(--glass-active);
-  color: var(--dark-teal);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   font-weight: 600;
 }
 
 .nav-links li.active>a i {
-  color: var(--primary-teal);
+  color: #ffffff;
 }
 
 /* ================= SUBMENU ================= */
@@ -206,6 +201,10 @@
   background: rgba(255, 255, 255, 0.2);
   color: white;
   font-weight: 600;
+}
+
+.submenu li.active a i {
+  color: white;
 }
 
 /* ================= SEPARATOR ================= */
