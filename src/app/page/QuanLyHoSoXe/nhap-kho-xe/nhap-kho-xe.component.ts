@@ -122,7 +122,7 @@ export class NhapKhoXeComponent {
       loanType: 'VEHICLE',
 
       customerDTO: { id: 2 },
-      vehicleDTO: { id: f.vehicleId }
+      vehicleId: f.vehicleId
 
     }));
 

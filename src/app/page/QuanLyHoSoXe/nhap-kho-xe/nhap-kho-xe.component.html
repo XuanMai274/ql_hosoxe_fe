@@ -126,10 +126,11 @@
   </div>
   <div *ngIf="currentStep === 2">
 
-    <h2>Tạo khoản vay hàng loạt</h2>
+    <h2 class="section-title">Tạo khoản vay</h2>
 
     <div class="total-box">
-      Tổng tiền vay: {{ getTotalLoanAmount() | number }}
+      <div class="label">Tổng tiền vay</div>
+      <div class="amount">{{ getTotalLoanAmount() | number }} VNĐ</div>
     </div>
 
     <table class="batch-loan-table">

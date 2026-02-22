@@ -1,0 +1,127 @@
+<div class="page-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="header-actions">
+      <button class="btn-primary" (click)="goToCreate()">
+        Tạo khoản vay
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTER CARD -->
+  <div class="loan-filter-card">
+
+    <div class="filter-row">
+
+      <input type="text" placeholder="Tìm theo số HĐ vay" [(ngModel)]="contractNumber" />
+
+      <input type="text" placeholder="Tìm theo số khung xe" [(ngModel)]="chassisNumber" />
+
+      <input type="text" placeholder="Tìm theo docId" [(ngModel)]="docId" />
+
+      <input type="number" placeholder="Gần đến hạn (số ngày)" [(ngModel)]="dueInDays" />
+
+      <select [(ngModel)]="loanStatus">
+        <option value="">Tất cả trạng thái</option>
+        <option value="ACTIVE">Đang hiệu lực</option>
+        <option value="CLOSED">Đã tất toán</option>
+        <option value="OVERDUE">Quá hạn</option>
+      </select>
+
+      <button class="btn-primary" (click)="search()">
+        Tìm kiếm
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- SUMMARY BAR -->
+  <div class="loan-summary-bar">
+
+    <div class="summary-item">
+      <span class="label">Tổng khoản vay:</span>
+      <span class="value"> {{ totalElements }}</span>
+    </div>
+
+    <div class="summary-item highlight">
+      <span class="label">Tổng dư nợ:</span>
+      <span class="value"> {{ totalAmount | number }} VNĐ</span>
+    </div>
+
+  </div>
+
+  <!-- TABLE CARD -->
+  <div class="loan-table-card">
+
+    <table class="loan-table">
+
+      <thead>
+        <tr>
+          <th>Số HĐ vay</th>
+          <th>Số khung</th>
+          <th>Doc_id</th>
+          <th>Số tiền vay</th>
+          <th>Ngày vay</th>
+          <th>Đến hạn</th>
+          <th>Trạng thái</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let loan of loans">
+
+          <td class="contract">
+            {{ loan.loanContractNumber }}
+            <div class="sub-text">
+              {{ loan.accountNumber }}
+            </div>
+          </td>
+
+          <td>
+            {{ loan.vehicleDTO?.chassisNumber }}
+          </td>
+
+          <td>
+            {{ loan.docId||'N/A' }}
+          </td>
+          <td class="amount">
+            {{ loan.loanAmount }} VNĐ
+          </td>
+
+          <td>{{ loan.loanDate }}</td>
+          <td>{{ loan.dueDate }}</td>
+
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(loan.loanStatus || '')">
+              {{ loan.loanStatus }}
+            </span>
+          </td>
+
+          <td class="actions-col">
+            <button class="btn-link" [routerLink]="['/manager/chinh-sua-khoan-vay', loan.id]">
+              Sửa
+            </button>
+          </td>
+
+        </tr>
+      </tbody>
+
+    </table>
+
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination">
+
+    <button (click)="changePage(page-1)" [disabled]="page===0">‹</button>
+
+    <span>Trang {{page + 1}} / {{totalPages || 1}}</span>
+
+    <button (click)="changePage(page+1)" [disabled]="page+1 >= totalPages">›</button>
+
+  </div>
+
+</div>

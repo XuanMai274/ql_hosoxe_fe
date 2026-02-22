@@ -38,7 +38,7 @@
 .bank-name {
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: white;
   line-height: 1.5;
   padding: 0 5px;
 }
@@ -60,7 +60,7 @@
   padding: 12px 16px;
   border-radius: 12px;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.85);
+  color:white;
   /* White text for dark bg */
   font-size: 14px;
   font-weight: 500;
@@ -71,19 +71,24 @@
   width: 20px;
   text-align: center;
   font-size: 17px;
-  color: rgba(255, 255, 255, 0.7);
+  color:white;
   transition: var(--transition);
+}
+.nav-links i:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  transform: translateX(4px);
 }
 
 /* Hover State */
 .nav-links a:hover {
   background-color: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
+  color: white;
   transform: translateX(4px);
 }
 
 .nav-links a:hover i {
-  color: #ffffff;
+  color: #006b68;
 }
 
 /* Active State (Direct Link) */

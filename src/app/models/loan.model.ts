@@ -1,3 +1,8 @@
+import { CreditContract } from "./credit_contract";
+import { Customer } from "./customer.model";
+import { GuaranteeLetter } from "./guarantee_letter";
+import { Vehicle } from "./vehicle";
+
 export interface LoanDTO {
 
   id?: number;
@@ -23,10 +28,11 @@ export interface LoanDTO {
   loanType?: string;
 
   // ===== Relation =====
-  customerId?: number;
+  customerId?: Customer;
   vehicleId?: number;
-  guaranteeLetterId?: number;
-
+  guaranteeLetterDTO?: GuaranteeLetter;
+  creditContractDTO?: CreditContract;
+  vehicleDTO?: Vehicle;
   createdAt?: string;
   updatedAt?: string;
 }

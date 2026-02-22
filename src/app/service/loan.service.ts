@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LoanDTO } from '../models/loan.model';
+import { PageResponse } from '../models/page-response';
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +28,43 @@ export class LoanService {
     return this.http.get<LoanDTO>(`${this.apiUrl}/${id}`);
   }
 
-  // ===== GET ALL =====
-  getAll(): Observable<LoanDTO[]> {
-    return this.http.get<LoanDTO[]>(this.apiUrl);
+  getLoans(
+    page: number,
+    size: number,
+    loanContractNumber?: string,
+    chassisNumber?: string,
+    status?: string,
+    docId?: string,
+    dueInDays?: number
+  ): Observable<PageResponse<LoanDTO>> {
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (loanContractNumber) {
+      params = params.set('loanContractNumber', loanContractNumber);
+    }
+
+    if (chassisNumber) {
+      params = params.set('chassisNumber', chassisNumber);
+    }
+
+    if (status) {
+      params = params.set('status', status);
+    }
+
+    if (docId) {
+      params = params.set('docId', docId);
+    }
+
+    if (dueInDays !== undefined && dueInDays !== null) {
+      params = params.set('dueInDays', dueInDays.toString());
+    }
+
+    return this.http.get<PageResponse<LoanDTO>>(this.apiUrl, { params });
+  }
+  getDetail(id: number) {
+    return this.http.get<LoanDTO>(`http://localhost:8080/officer/loans/${id}`);
   }
 }

@@ -1,0 +1,112 @@
+<div class="page-container">
+
+  <div class="card">
+
+    <div class="card-header">
+      <button class="btn-back" (click)="goBack()">
+        <i class="fa-solid fa-angle-left"></i> Trở về
+      </button>
+      <div class="contract">
+        {{ loanForm.value.loanContractNumber }}
+      </div>
+      <div class="manufacturer" [ngClass]="{
+       'status-active': loanForm.getRawValue().loanStatus === 'ACTIVE',
+       'status-closed': loanForm.getRawValue().loanStatus === 'CLOSED',
+       'status-overdue': loanForm.getRawValue().loanStatus === 'OVERDUE'
+     }">
+        {{ loanForm.getRawValue().loanStatus }}
+      </div>
+    </div>
+    <div class="section-title">Thông tin khoản vay</div>
+    <form [formGroup]="loanForm" class="card-body">
+
+      <div class="info">
+        <label>Số tài khoản</label>
+        <input formControlName="accountNumber" />
+      </div>
+      <div class="info">
+        <label>Doc_id</label>
+        <input formControlName="docId" />
+      </div>
+
+      <div class="info">
+        <label>Kỳ hạn vay (ngày)</label>
+        <input type="number" formControlName="loanTerm" />
+      </div>
+
+      <div class="info">
+        <label>Ngày vay</label>
+        <input type="date" formControlName="loanDate" />
+      </div>
+
+      <div class="info">
+        <label>Ngày đến hạn</label>
+        <input type="date" formControlName="dueDate" />
+      </div>
+
+      <div class="info">
+        <label>Số tiền vay</label>
+        <input type="number" formControlName="loanAmount" />
+      </div>
+
+      <div class="info full">
+        <label>Mục đích & TSĐB</label>
+        <textarea formControlName="collateralAndPurpose"></textarea>
+      </div>
+
+      <div class="info">
+        <label>Trạng thái</label>
+        <select formControlName="loanStatus">
+          <option value="ACTIVE">ACTIVE</option>
+          <option value="CLOSED">CLOSED</option>
+          <option value="OVERDUE">OVERDUE</option>
+        </select>
+      </div>
+
+    </form>
+    <!-- VEHICLE INFO -->
+    <div class="section-title">Thông tin xe đảm bảo</div>
+    <div class="vehicle-box" *ngIf="vehicle">
+      <div class="info">
+        <label>Tên xe</label>
+        <span>{{ vehicle.vehicleName }}</span>
+      </div>
+
+      <div class="info">
+        <label>Số khung</label>
+        <span>{{ vehicle.chassisNumber }}</span>
+      </div>
+
+      <div class="info">
+        <label>Số máy</label>
+        <span>{{ vehicle.engineNumber }}</span>
+      </div>
+
+      <div class="info">
+        <label>Màu sắc</label>
+        <span>{{ vehicle.color }}</span>
+      </div>
+
+      <div class="info">
+        <label>Số chỗ</label>
+        <span>{{ vehicle.seats }}</span>
+      </div>
+
+      <div class="info">
+        <label>Giá xe</label>
+        <span>{{ vehicle.price | number }}</span>
+      </div>
+    </div>
+
+    <div class="card-actions">
+      <button class="btn-back" (click)="goBack()">
+        <i class="fa-solid fa-angle-left"></i> Trở về
+      </button>
+      <button class="btn-primary" (click)="save()" [disabled]="loading">
+        Lưu thay đổi
+      </button>
+    </div>
+
+  </div>
+
+</div>

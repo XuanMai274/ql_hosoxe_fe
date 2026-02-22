@@ -17,7 +17,7 @@
     <!-- Quản lý thông tin bảo lãnh -->
     <li class="has-submenu" [class.open]="activeSubmenu === 'baolanh'">
       <a href="javascript:void(0)" (click)="toggleSubmenu('baolanh')" class="submenu-toggle">
-        <i class="fa-solid fa-car"></i>
+        <i class="fa-regular fa-envelope"></i>
         <span>Quản lý bảo lãnh</span>
         <i class="fa-solid fa-chevron-down arrow"></i>
       </a>
@@ -53,34 +53,35 @@
       <ul class="submenu">
         <li routerLinkActive="active">
           <a [routerLink]="'/manager/them-ho-so-xe-hyundai'">
-            <i class="fa-solid fa-car"></i>
+            <i class="fa-solid fa-h"></i>
             <span>Thêm hồ sơ Hyundai</span>
           </a>
         </li>
         <li routerLinkActive="active">
           <a [routerLink]="'/manager/them-ho-so-xe-vinfast'">
-            <i class="fa-solid fa-car"></i>
+            <i class="fa-solid fa-v"></i>
             <span>Thêm hồ sơ VinFast</span>
           </a>
         </li>
         <li routerLinkActive="active">
-          <a [routerLink]="'/manager/nhap-kho-xe'">
+          <a [routerLink]="'/manager/danh-sach-ho-so-xe'">
             <i class="fa-regular fa-pen-to-square"></i>
+            <span>Danh sách hồ sơ xe</span>
+          </a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="'/manager/nhap-kho-xe'">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
             <span>Nhập kho xe</span>
           </a>
         </li>
         <li routerLinkActive="active">
           <a [routerLink]="'/manager/tao-dot-ren-luyen'">
-            <i class="fa-solid fa-list"></i>
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
             <span>Rút hồ sơ xe</span>
           </a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="'/manager/danh-sach-ho-so-xe'">
-            <i style="color:#028B89" class="fa-regular fa-pen-to-square"></i>
-            <span>Danh sách hồ sơ xe</span>
-          </a>
-        </li>
+
       </ul>
     </li>
 
@@ -93,7 +94,7 @@
       </a>
 
       <ul class="submenu">
-        <li routerLinkActive="active">
+        <!-- <li routerLinkActive="active">
           <a [routerLink]="'/manager/them-bao-lanh'">
             <i class="fa-solid fa-plus-circle"></i>
             <span>Thêm khoản vay</span>
@@ -104,9 +105,9 @@
             <i class="fa-regular fa-pen-to-square"></i>
             <span>Sửa khoản vay</span>
           </a>
-        </li>
+        </li> -->
         <li routerLinkActive="active">
-          <a [routerLink]="'/manager/tao-dot-ren-luyen'">
+          <a [routerLink]="'/manager/danh-sach-khoan-vay'">
             <i class="fa-solid fa-list"></i>
             <span>Danh sách khoản vay</span>
           </a>

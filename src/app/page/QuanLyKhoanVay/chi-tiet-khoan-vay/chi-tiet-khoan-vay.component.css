@@ -1,0 +1,341 @@
+.page-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.contract {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.manufacturer {
+  background: #02949320;
+  color: #029493;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.card-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.info.full {
+  grid-column: 1 / -1;
+}
+
+input, select, textarea {
+  height: 36px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+textarea {
+  height: 80px;
+}
+
+.card-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-primary {
+  height: 36px;
+  padding: 0 20px;
+  border-radius: 10px;
+  background: #029493;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+/* =========================
+   VEHICLE BOX
+========================= */
+.vehicle-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: #f8fdfd;
+  border-radius: 12px;
+  border: 1px solid #d9f0ee;
+}
+
+.vehicle-box .info label {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.vehicle-box .info span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* FORM INPUT STYLE MATCH LIST */
+.card-body input,
+.card-body select,
+.card-body textarea {
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid #cfe8e6;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.card-body textarea {
+  height: 70px;
+  padding: 8px 10px;
+  resize: none;
+}
+
+.card-body input:focus,
+.card-body select:focus,
+.card-body textarea:focus {
+  outline: none;
+  border-color: #029493;
+  box-shadow: 0 0 0 2px rgba(2, 148, 147, 0.15);
+}
+
+/* FULL WIDTH */
+.info.full {
+  grid-column: span 2;
+}
+/* =========================
+   HEADER IMPROVE
+========================= */
+.card-header {
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.contract {
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.3px;
+  color: #111827;
+}
+
+/* =========================
+   STATUS COLORS
+========================= */
+.status-active {
+  background: rgba(34,197,94,0.15);
+  color: #15803d;
+}
+
+.status-closed {
+  background: rgba(239,68,68,0.15);
+  color: #b91c1c;
+}
+
+.status-overdue {
+  background: rgba(245,158,11,0.18);
+  color: #b45309;
+}
+
+/* =========================
+   SECTION TITLE
+========================= */
+.section-title {
+  margin: 22px 0 12px 0;
+  font-weight: 600;
+  font-size: 15px;
+  color: #029493;
+  position: relative;
+  padding-left: 14px;
+}
+
+.section-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  height: 14px;
+  width: 4px;
+  background: #029493;
+  border-radius: 4px;
+}
+
+/* =========================
+   VEHICLE BOX IMPROVE
+========================= */
+.vehicle-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 18px;
+  background: linear-gradient(145deg, #f8fdfd, #f1fbfb);
+  border-radius: 14px;
+  border: 1px solid #d9f0ee;
+  box-shadow: 0 6px 16px rgba(2, 148, 147, 0.08);
+}
+
+/* nổi bật giá xe */
+.vehicle-box .info:nth-child(6) span {
+  font-size: 16px;
+  font-weight: 700;
+  color: #029493;
+}
+
+/* =========================
+   INPUT HOVER EFFECT
+========================= */
+.card-body input:hover,
+.card-body select:hover,
+.card-body textarea:hover {
+  border-color: #029493;
+}
+
+/* =========================
+   SAVE BUTTON IMPROVE
+========================= */
+.btn-primary {
+  height: 40px;
+  padding: 0 26px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #029493, #027f7a);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 18px rgba(2, 148, 147, 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(2, 148, 147, 0.35);
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+/* =========================
+   CARD POLISH
+========================= */
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 16px 40px rgba(2, 148, 147, 0.12);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 20px 50px rgba(2, 148, 147, 0.18);
+}
+
+/* =========================
+   LABEL STYLE IMPROVE
+========================= */
+.info label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .card-body,
+  .vehicle-box {
+    grid-template-columns: 1fr;
+  }
+
+  .info.full {
+    grid-column: span 1;
+  }
+}
+.contract {
+  font-weight: 600;
+  font-size: 18px;
+  color: #111827;
+
+  padding-bottom: 6px;
+  border-bottom: 3px solid #029493;
+}
+.btn-back {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background: #f3f4f6;
+  border-color: #029493;
+  color: #029493;
+}
+.card-actions {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Back button nhẹ hơn */
+.btn-back {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  padding: 8px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background: #e5e7eb;
+}
+
+/* Primary nổi bật hơn */
+.btn-primary {
+  height: 38px;
+  padding: 0 22px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #029493, #017a79);
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 16px rgba(2, 148, 147, 0.25);
+  transform: translateY(-1px);
+}

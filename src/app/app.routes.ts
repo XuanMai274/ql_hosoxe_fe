@@ -11,6 +11,8 @@ import { ChinhSuaBaoLanhComponent } from './page/QuanLyBaoLanh/chinh-sua-bao-lan
 import { DanhSachHoSoXeComponent } from './page/QuanLyHoSoXe/danh-sach-ho-so-xe/danh-sach-ho-so-xe.component';
 import { ChiTietXeComponent } from './page/QuanLyHoSoXe/chi-tiet-xe/chi-tiet-xe.component';
 import { NhapKhoXeComponent } from './page/QuanLyHoSoXe/nhap-kho-xe/nhap-kho-xe.component';
+import { DanhSachKhoanVayComponent } from './page/QuanLyKhoanVay/danh-sach-khoan-vay/danh-sach-khoan-vay.component';
+import { ChiTietKhoanVayComponent } from './page/QuanLyKhoanVay/chi-tiet-khoan-vay/chi-tiet-khoan-vay.component';
 
 export const routes: Routes = [
     {
@@ -61,7 +63,15 @@ export const routes: Routes = [
             {
                 path: 'chinh-sua-bao-lanh/:id',
                 component: ChinhSuaBaoLanhComponent
-            }
+            },
+            {
+                path: 'danh-sach-khoan-vay',
+                component: DanhSachKhoanVayComponent
+            },
+            {
+                path: 'chinh-sua-khoan-vay/:id',
+                component: ChiTietKhoanVayComponent
+            },
         ]
     }
 ];
