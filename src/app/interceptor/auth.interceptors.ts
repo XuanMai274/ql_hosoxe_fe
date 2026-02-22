@@ -23,13 +23,13 @@ export class AuthInterceptor implements HttpInterceptor {
     // tự động gửi kèm token trong mỗi request
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const token = localStorage.getItem('accessToken');
-        const isRefreshRequest = req.url.includes('/api/auth/refresh');
+        const isAuthEndpoint = req.url.includes('/api/auth/');
 
         let authReq = req.clone({
-            withCredentials: true // Luôn gửi kèm Cookie cho các request (để Backend lấy Refresh Token)
+            withCredentials: true // Luôn gửi kèm Cookie
         });
 
-        if (token && !isRefreshRequest) {
+        if (token && !isAuthEndpoint) {
             authReq = authReq.clone({
                 setHeaders: {
                     Authorization: `Bearer ${token}`
@@ -39,7 +39,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
         return next.handle(authReq).pipe(
             catchError((error: HttpErrorResponse) => {
-                if (error.status === 401) {
+                if (error.status === 401 && !isAuthEndpoint) {
                     // Token hết hạn, thử refresh
                     return this.handle401Error(authReq, next);
                 }
@@ -88,6 +88,11 @@ export class AuthInterceptor implements HttpInterceptor {
                 }),
                 catchError(err => {
                     this.isRefreshing = false;
+                    // Báo lỗi cho các request đang đợi để không bị treo
+                    this.refreshTokenSubject.error(err);
+                    // Reset lại subject cho các lần login sau
+                    this.refreshTokenSubject = new BehaviorSubject<string | null>(null);
+
                     this.authService.logout(); // Refresh fail thì đăng xuất
                     return throwError(() => err);
                 })
