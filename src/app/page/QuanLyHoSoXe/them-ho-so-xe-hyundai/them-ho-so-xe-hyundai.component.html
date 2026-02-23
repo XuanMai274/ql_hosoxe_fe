@@ -19,6 +19,16 @@
     </div>
     <div class="header-actions">
     </div>
+    <div class="vat-global-setting">
+      <label>
+        % VAT áp dụng toàn bộ:
+      </label>
+
+      <input type="number" [ngModel]="vatPercent" (ngModelChange)="updateVatPercent($event)" min="0"
+        class="vat-input-global" />
+
+      <span>%</span>
+    </div>
   </div>
 
   <!-- FILE UPLOAD SECTION (Initial State) -->
@@ -220,12 +230,25 @@
                               class="modern-input text-center" [class.is-invalid]="!v.numberOfSeats" />
                           </div>
                         </div>
-                        <div class="input-group-modern">
+                        <!-- <div class="input-group-modern">
                           <label><i class="fa-solid fa-tag"></i> Giá</label>
                           <input type="text" [ngModel]="v.unitPrice"
                             (ngModelChange)="updateVehiclePrice(gIdx, iIdx, vIdx, $event)"
                             class="modern-input price text-right"
                             [class.is-invalid]="!v.unitPrice || v.unitPrice === '0'" />
+                        </div> -->
+                        <!-- GIÁ ĐÃ VAT (HIỂN THỊ Ở TRÊN) -->
+                        <div class="vat-preview">
+                          <strong>
+                            {{ formatCurrency(calculatePriceWithVat(v.unitPrice)) }}
+                          </strong>
+                        </div>
+
+                        <div class="input-group-modern">
+                          <!-- <label><i class="fa-solid fa-tag"></i> Giá gốc (chưa VAT)</label> -->
+                          <input type="text" [ngModel]="v.unitPrice"
+                            (ngModelChange)="updateVehiclePrice(gIdx, iIdx, vIdx, $event)"
+                            class="modern-input price text-right" />
                         </div>
                       </div>
 

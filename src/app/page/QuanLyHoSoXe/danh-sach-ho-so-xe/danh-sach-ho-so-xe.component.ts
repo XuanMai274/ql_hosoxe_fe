@@ -39,11 +39,12 @@ export class DanhSachHoSoXeComponent {
 
   loadVehicles(): void {
     this.loading = true;
+    console.log("hãng xe: " + this.manufacturer)
     this.vehicleService.getVehicles({
       chassisNumber: this.chassisNumber || undefined,
       status: this.status || undefined,
       manufacturer: this.manufacturer || undefined,
-      ref:this.ref,
+      ref: this.ref,
       page: this.page,
       size: this.size
     }).subscribe({
