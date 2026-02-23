@@ -14,7 +14,7 @@
     <!-- Welcome Back Header -->
     <div *ngIf="isReturningUser" class="welcome-back">
       <h2>Chào mừng trở lại,</h2>
-      <p class="saved-username">{{ savedUsername }}</p>
+      <p class="saved-username">{{ displayFullName || savedUsername }}</p>
       <a href="javascript:void(0)" (click)="onSwitchAccount()" class="switch-account">Không phải bạn?</a>
     </div>
 

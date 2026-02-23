@@ -66,6 +66,7 @@ export class ThemHoSoXeHyundaiComponent {
   globalTotalInvoices: number = 0;
   globalTotalVehicles: number = 0;
   globalTotalAmount: number = 0;
+  vatPercent: number = 10;
 
   /* ================= GUARANTEE DATA ================= */
   availableGuarantees: any[] = [];
@@ -313,7 +314,7 @@ export class ThemHoSoXeHyundaiComponent {
       group.invoices.forEach(inv => {
         this.globalTotalVehicles += inv.vehicles.length;
         inv.vehicles.forEach(v => {
-          this.globalTotalAmount += this.parsePrice(v.unitPrice);
+          this.globalTotalAmount += this.calculatePriceWithVat(v.unitPrice);
         });
       });
     });
@@ -430,7 +431,17 @@ export class ThemHoSoXeHyundaiComponent {
   }
 
   getInvoiceTotal(invoice: InvoiceGroup): number {
-    return invoice.vehicles.reduce((sum, v) => sum + this.parsePrice(v.unitPrice), 0);
+    return invoice.vehicles.reduce((sum, v) => sum + this.calculatePriceWithVat(v.unitPrice), 0);
+  }
+
+  updateVatPercent(value: any): void {
+    this.vatPercent = Number(value) || 0;
+    this.calculateSummary();
+  }
+
+  calculatePriceWithVat(unitPrice: any): number {
+    const price = this.parsePrice(unitPrice);
+    return price + (price * (this.vatPercent || 0) / 100);
   }
 
   /* ================= RESET & SUBMIT ================= */
