@@ -21,15 +21,21 @@ export class LoginComponent {
   isLoading = false;
   isReturningUser = false;
   savedUsername = '';
+  displayFullName = '';
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthServiceComponent,
     private router: Router
   ) {
-    this.savedUsername = localStorage.getItem('fullName') || localStorage.getItem('savedIdentifier') || '';
-    if (this.savedUsername) {
+    // Ưu tiên lấy username thực thụ để đăng nhập
+    const lastUsername = localStorage.getItem('username') || localStorage.getItem('savedIdentifier') || '';
+    // Lấy fullName chỉ để hiển thị câu chào
+    this.displayFullName = localStorage.getItem('fullName') || '';
+
+    if (lastUsername) {
       this.isReturningUser = true;
+      this.savedUsername = lastUsername;
     }
 
     this.loginForm = this.fb.group({
@@ -41,6 +47,7 @@ export class LoginComponent {
   onSwitchAccount(): void {
     this.isReturningUser = false;
     this.savedUsername = '';
+    this.displayFullName = '';
     // Xóa sạch mọi dấu vết của tài khoản cũ
     localStorage.removeItem('savedIdentifier');
     localStorage.removeItem('fullName');
@@ -65,6 +72,7 @@ export class LoginComponent {
         localStorage.setItem('savedIdentifier', response.username);
         // Lưu fullName để hiển thị lời chào và trên Header
         localStorage.setItem('fullName', response.fullName);
+        this.displayFullName = response.fullName;
         // Lưu username riêng biệt nếu cần thiết cho các mục đích khác
         localStorage.setItem('username', response.username);
 

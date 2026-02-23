@@ -186,8 +186,9 @@ export class NhapKhoXeComponent {
       // filter manufacturer
       const matchManufacturer =
         !this.manufacturer ||
-        v.guaranteeLetterDTO?.manufacturerDTO?.code === this.manufacturer;
-
+        v.manufacturerDTO?.code === this.manufacturer;
+      console.log("selected:", this.manufacturer);
+      console.log("vehicle code:", v.guaranteeLetterDTO?.manufacturerDTO?.code);
       // filter deadline label
       const matchDeadline = this.matchDeadlineStatus(v);
 

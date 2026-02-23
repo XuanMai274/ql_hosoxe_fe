@@ -1,6 +1,7 @@
 import { DocumentVehicles } from "./document_vehicles";
 import { GuaranteeLetter } from "./guarantee_letter";
 import { Invoice } from "./invoice-data.model";
+import { Manufacturer } from "./manufacturer";
 
 export interface Vehicle {
   id?: number;
@@ -31,4 +32,5 @@ export interface Vehicle {
   documents?: DocumentVehicles[];
   invoiceId?: Invoice;
   guaranteeLetterDTO?: GuaranteeLetter;
+  manufacturerDTO?: Manufacturer;
 }
