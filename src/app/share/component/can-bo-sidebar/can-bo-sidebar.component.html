@@ -51,6 +51,14 @@
         </ul>
       </li>
 
+      <!-- Hợp đồng tín dụng -->
+      <li routerLinkActive="active">
+        <a [routerLink]="'/manager/credit-contract'">
+          <i class="fa-solid fa-file-contract"></i>
+          <span>Hợp đồng tín dụng</span>
+        </a>
+      </li>
+
       <!-- Quản lý hồ sơ xe -->
       <li class="has-submenu" [class.open]="activeSubmenu === 'hosoxe'">
         <a href="javascript:void(0)" (click)="toggleSubmenu('hosoxe')" class="submenu-toggle">

@@ -21,6 +21,8 @@ import { AuthGuard } from './core/guard/auth.guard';
 import { RoleGuard } from './core/guard/role.guard';
 import { DanhSachKhoanVayComponent } from './page/QuanLyKhoanVay/danh-sach-khoan-vay/danh-sach-khoan-vay.component';
 import { ChiTietKhoanVayComponent } from './page/QuanLyKhoanVay/chi-tiet-khoan-vay/chi-tiet-khoan-vay.component';
+import { DanhSachHopDongTDComponent } from './page/QuanLyHopDongTD/danh-sach-hop-dong-td/danh-sach-hop-dong-td.component';
+import { FormHopDongTDComponent } from './page/QuanLyHopDongTD/form-hop-dong-td/form-hop-dong-td.component';
 
 export const routes: Routes = [
     {
@@ -84,6 +86,18 @@ export const routes: Routes = [
             {
                 path: 'chinh-sua-khoan-vay/:id',
                 component: ChiTietKhoanVayComponent
+            },
+            {
+                path: 'credit-contract',
+                component: DanhSachHopDongTDComponent
+            },
+            {
+                path: 'credit-contract/add',
+                component: FormHopDongTDComponent
+            },
+            {
+                path: 'credit-contract/edit/:id',
+                component: FormHopDongTDComponent
             },
             // ADMIN ROUTES
             {

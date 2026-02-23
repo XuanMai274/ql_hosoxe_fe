@@ -9,7 +9,7 @@ import { RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 @Component({
   selector: 'app-login',
-  imports: [CommonModule,
+  imports: [CommonModule, 
     ReactiveFormsModule,
     RouterModule],
   templateUrl: './login.component.html',
