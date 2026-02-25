@@ -95,7 +95,7 @@ export class NhapKhoXeComponent {
   isBatchValid(): boolean {
     return this.loanForms.length > 0 &&
       this.loanForms.every(f =>
-        f.loanContractNumber &&
+        // f.loanContractNumber &&
         f.loanTerm &&
         f.loanTerm > 0
       );
@@ -108,7 +108,7 @@ export class NhapKhoXeComponent {
 
     const payload: LoanDTO[] = this.loanForms.map(f => ({
 
-      loanContractNumber: f.loanContractNumber!,
+      // loanContractNumber: f.loanContractNumber!,
       loanTerm: f.loanTerm!,
 
       // 👇 convert Date sang string yyyy-MM-dd

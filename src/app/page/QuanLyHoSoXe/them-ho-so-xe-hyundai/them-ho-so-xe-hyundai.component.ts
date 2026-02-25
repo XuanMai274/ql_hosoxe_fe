@@ -506,7 +506,7 @@ export class ThemHoSoXeHyundaiComponent {
             modelType: v.modelName, // Vẫn giữ modelType nếu backend cần
             color: v.color || '',
             seats: Number(v.numberOfSeats) || 0,
-            price: this.parsePrice(v.unitPrice),
+            price: this.calculatePriceWithVat(v.unitPrice),
             status: 'Giữ két',
             guaranteeLetterDTO: {
               id: guarantee.id

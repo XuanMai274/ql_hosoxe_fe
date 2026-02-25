@@ -139,7 +139,7 @@
           <th>Tên xe</th>
           <th>Số khung</th>
           <th>Số tiền vay</th>
-          <th>Số HĐ vay *</th>
+          <!-- <th>Số HĐ vay *</th> -->
           <th>Thời hạn *</th>
           <th>Ngày vay</th>
           <th>Ngày đến hạn</th>
@@ -152,9 +152,9 @@
           <td>{{ f.chassisNumber }}</td>
           <td>{{ f.guaranteeAmount | number }}</td>
 
-          <td>
+          <!-- <td>
             <input [(ngModel)]="f.loanContractNumber">
-          </td>
+          </td> -->
 
           <td>
             <input type="number" [(ngModel)]="f.loanTerm" (input)="calculateDueDate(f)">
