@@ -1,0 +1,151 @@
+<div class="clogin-wrapper">
+
+    <!-- ===== LEFT PANEL ===== -->
+    <div class="brand-panel">
+        <div class="brand-content">
+
+            <!-- Logo -->
+            <div class="brand-logo-wrap">
+                <img src="assets/public/img/logo.webp" alt="BIDV Logo" class="brand-logo" />
+            </div>
+
+            <!-- Title -->
+            <h1 class="brand-title">Cổng Khách Hàng<br />BIDV</h1>
+            <p class="brand-subtitle">Theo dõi đơn hàng bảo lãnh &amp; hồ sơ vay của bạn mọi lúc, mọi nơi.</p>
+
+            <!-- Feature cards -->
+            <div class="brand-features">
+                <div class="feature-item">
+                    <span class="feature-icon">🛡️</span>
+                    <span>Xem trạng thái bảo lãnh theo thời gian thực</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📄</span>
+                    <span>Theo dõi hợp đồng &amp; khoản vay</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🚗</span>
+                    <span>Quản lý hồ sơ xe toàn diện</span>
+                </div>
+            </div>
+
+            <!-- Decorative -->
+            <div class="deco-blob deco-blob-1"></div>
+            <div class="deco-blob deco-blob-2"></div>
+            <div class="deco-blob deco-blob-3"></div>
+        </div>
+    </div>
+
+    <!-- ===== RIGHT PANEL ===== -->
+    <div class="form-panel">
+        <div class="form-container">
+
+            <!-- Customer badge -->
+            <div class="customer-badge">
+                <i class="fa-solid fa-building-user"></i>
+                <span>Khu vực dành cho Khách Hàng</span>
+            </div>
+
+            <!-- Form header -->
+            <div class="form-header">
+                <div class="form-icon">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <h2 class="form-title">Đăng nhập</h2>
+                <p class="form-desc">Nhập thông tin tài khoản khách hàng của bạn</p>
+            </div>
+
+            <!-- Welcome banner (returning user) -->
+            <div *ngIf="isReturningUser" class="welcome-banner">
+                <div class="welcome-avatar">{{ (displayFullName || savedUsername).charAt(0).toUpperCase() }}</div>
+                <div class="welcome-info">
+                    <span class="welcome-label">Chào mừng trở lại</span>
+                    <span class="welcome-name">{{ displayFullName || savedUsername }}</span>
+                </div>
+                <a href="javascript:void(0)" (click)="onSwitchAccount()" class="welcome-switch" title="Đổi tài khoản">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                </a>
+            </div>
+
+            <!-- Back banner (switching) -->
+            <div *ngIf="isSwitching && savedUsername" class="back-banner">
+                <div class="back-avatar">{{ (displayFullName || savedUsername).charAt(0).toUpperCase() }}</div>
+                <div class="back-info">
+                    <span class="back-label">Tài khoản trước đó</span>
+                    <span class="back-name">{{ displayFullName || savedUsername }}</span>
+                </div>
+                <a href="javascript:void(0)" (click)="onCancelSwitch()" class="back-btn">
+                    <i class="fa-solid fa-chevron-left"></i> Quay lại
+                </a>
+            </div>
+
+            <!-- Login form -->
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" autocomplete="on">
+
+                <!-- Username -->
+                <div class="field-group" *ngIf="!isReturningUser">
+                    <label for="cu-username" class="field-label">
+                        <i class="fa-regular fa-user"></i>
+                        Tên đăng nhập
+                    </label>
+                    <div class="input-wrap" [class.input-error]="submitted && loginForm.get('username')?.invalid">
+                        <input id="cu-username" type="text" formControlName="username" placeholder="Nhập tên đăng nhập"
+                            autocomplete="username" />
+                    </div>
+                    <p class="field-error" *ngIf="submitted && loginForm.get('username')?.invalid">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        Tên đăng nhập không được để trống
+                    </p>
+                </div>
+
+                <!-- Password -->
+                <div class="field-group">
+                    <label for="cu-password" class="field-label">
+                        <i class="fa-solid fa-lock"></i>
+                        Mật khẩu
+                    </label>
+                    <div class="input-wrap" [class.input-error]="submitted && loginForm.get('password')?.invalid">
+                        <input id="cu-password" [type]="showPassword ? 'text' : 'password'" formControlName="password"
+                            placeholder="Nhập mật khẩu" autocomplete="current-password" autofocus />
+                        <button type="button" class="toggle-pw" (click)="togglePassword()" tabindex="-1">
+                            <i class="fa-regular" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
+                    <p class="field-error" *ngIf="submitted && loginForm.get('password')?.invalid">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        Mật khẩu không được để trống
+                    </p>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn-login" [disabled]="isLoading" id="btn-customer-login">
+                    <span *ngIf="!isLoading" class="btn-text">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        Đăng nhập
+                    </span>
+                    <span *ngIf="isLoading" class="btn-text">
+                        <span class="spinner"></span>
+                        Đang xử lý...
+                    </span>
+                </button>
+
+            </form>
+
+            <!-- Divider -->
+            <div class="divider">
+                <span>hoặc</span>
+            </div>
+
+            <!-- Link to staff login -->
+            <a [routerLink]="'/login'" class="staff-link">
+                <i class="fa-solid fa-id-badge"></i>
+                Đăng nhập dành cho Cán bộ / Ngân hàng
+            </a>
+
+            <!-- Footer -->
+            <p class="form-footer">© 2026 BIDV – Cổng Khách Hàng</p>
+
+        </div>
+    </div>
+
+</div>

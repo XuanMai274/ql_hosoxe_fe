@@ -32,13 +32,7 @@ export class FormHopDongTDComponent implements OnInit {
             contractNumber: ['', Validators.required],
             contractDate: ['', Validators.required],
             creditLimit: [0, [Validators.required, Validators.min(0)]],
-            status: ['ACTIVE', Validators.required],
-            customerId: [null, Validators.required],
-            usedLimit: [0],
-            remainingLimit: [0],
-            guaranteeBalance: [0],
-            vehicleLoanBalance: [0],
-            realEstateLoanBalance: [0]
+            customerId: [null, Validators.required]
         });
     }
 
@@ -92,7 +86,9 @@ export class FormHopDongTDComponent implements OnInit {
                 error: (err) => alert(err.error?.message || 'Có lỗi xảy ra khi cập nhật')
             });
         } else {
-            this.creditContractService.addCreditContract(data).subscribe({
+            // Khi thêm mới, mặc định trạng thái là ACTIVE
+            const newData = { ...data, status: 'ACTIVE' };
+            this.creditContractService.addCreditContract(newData).subscribe({
                 next: () => this.router.navigate(['/manager/credit-contract']),
                 error: (err) => alert(err.error?.message || 'Có lỗi xảy ra khi thêm mới')
             });

@@ -122,7 +122,10 @@ export class LoginComponent {
   }
 
   private navigateByRole(role: string): void {
-    // Luôn điều hướng về trang Home tổng hợp (HomeRouterComponent sẽ điều phối theo Role)
-    this.router.navigate(['/manager/home']);
+    if (role?.toLowerCase() === 'customer') {
+      this.router.navigate(['/customer']);
+    } else {
+      this.router.navigate(['/manager/home']);
+    }
   }
 }

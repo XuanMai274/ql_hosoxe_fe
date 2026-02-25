@@ -45,13 +45,11 @@ export class AuthInterceptor implements HttpInterceptor {
                 }
 
                 if (error.status === 403) {
-                    // Xử lý 403 Forbidden: Truy cập vùng cấm
+                    // Xử lý 403 Forbidden: Truy cập vùng cấm - chỉ thông báo, KHÔNG logout
                     this.toastr.error('Bạn không có quyền thực hiện hành động này!', 'Truy cập bị từ chối', {
                         progressBar: true,
                         closeButton: true
                     });
-
-                    this.authService.logout(); // Xóa session và về trang login
                 }
 
                 if (error.status === 404 && authReq.url.includes('/api/')) {
@@ -93,7 +91,14 @@ export class AuthInterceptor implements HttpInterceptor {
                     // Reset lại subject cho các lần login sau
                     this.refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
-                    this.authService.logout(); // Refresh fail thì đăng xuất
+                    // Xóa token và redirect về login, KHÔNG gọi authService.logout()
+                    // vì logout() sẽ gọi thêm API và có thể gây vòng lặp lỗi
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('fullName');
+                    this.router.navigate(['/login']);
                     return throwError(() => err);
                 })
             );
