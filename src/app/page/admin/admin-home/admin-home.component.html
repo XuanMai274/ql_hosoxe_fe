@@ -1,31 +1,149 @@
-<div class="home-container">
-    <div class="welcome-section glass-card">
-        <h1><i class="fa-solid fa-user-shield"></i> Cổng Quản trị Hệ thống</h1>
-        <p>Chào mừng Quản trị viên. Bạn có thể quản lý nhân viên, khách hàng và phân quyền tại đây.</p>
+<div class="dashboard-container">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="banner-content">
+            <h1 class="greeting">Chào mừng trở lại, <span class="admin-name">{{ adminName }}</span>!</h1>
+            <p class="summary-text">Hệ thống đang hoạt động ổn định. Bạn có {{ stats.totalEmployees }} nhân viên và {{
+                stats.totalCustomers }} khách hàng cần quản lý.</p>
+            <div class="quick-actions">
+                <button class="btn-banner" [routerLink]="'/manager/admin/employees'">
+                    <i class="fa-solid fa-user-plus"></i> Thêm nhân viên
+                </button>
+                <button class="btn-banner secondary" [routerLink]="'/manager/admin/customers'">
+                    <i class="fa-solid fa-building-user"></i> Xem khách hàng
+                </button>
+            </div>
+        </div>
+        <div class="banner-image">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
     </div>
 
+    <!-- Primary Stats Grid -->
     <div class="stats-grid">
-        <div class="stat-card glass-card" routerLink="/manager/admin/employees">
-            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+        <div class="stat-card employees" [routerLink]="'/manager/admin/employees'">
+            <div class="stat-icon">
+                <i class="fa-solid fa-users-gear"></i>
+            </div>
             <div class="stat-info">
-                <h3>Nhân viên</h3>
-                <p>Quản lý đội ngũ cán bộ</p>
+                <h3 class="stat-value">{{ stats.totalEmployees }}</h3>
+                <p class="stat-label">Tổng nhân viên</p>
+            </div>
+            <div class="stat-chart-mini">
+                <i class="fa-solid fa-chart-line"></i>
             </div>
         </div>
 
-        <div class="stat-card glass-card" routerLink="/manager/admin/customers">
-            <div class="stat-icon"><i class="fa-solid fa-address-book"></i></div>
+        <div class="stat-card customers" [routerLink]="'/manager/admin/customers'">
+            <div class="stat-icon">
+                <i class="fa-solid fa-id-card-clip"></i>
+            </div>
             <div class="stat-info">
-                <h3>Khách hàng</h3>
-                <p>Quản lý danh sách khách hàng</p>
+                <h3 class="stat-value">{{ stats.totalCustomers }}</h3>
+                <p class="stat-label">Tổng khách hàng</p>
+            </div>
+            <div class="stat-chart-mini">
+                <i class="fa-solid fa-users-viewfinder"></i>
             </div>
         </div>
 
-        <div class="stat-card glass-card" routerLink="/manager/admin/roles">
-            <div class="stat-icon"><i class="fa-solid fa-key"></i></div>
+        <div class="stat-card roles" [routerLink]="'/manager/admin/roles'">
+            <div class="stat-icon">
+                <i class="fa-solid fa-user-lock"></i>
+            </div>
             <div class="stat-info">
-                <h3>Vai trò</h3>
-                <p>Cấu hình quyền hạn hệ thống</p>
+                <h3 class="stat-value">{{ stats.totalRoles }}</h3>
+                <p class="stat-label">Vai trò & Quyền</p>
+            </div>
+            <div class="stat-chart-mini">
+                <i class="fa-solid fa-key"></i>
+            </div>
+        </div>
+
+        <div class="stat-card uptime">
+            <div class="stat-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="stat-info">
+                <h3 class="stat-value">{{ stats.activeAccounts }}</h3>
+                <p class="stat-label">Tài khoản hoạt động</p>
+            </div>
+            <div class="stat-chart-mini">
+                <div class="pulse-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <!-- Quick Access Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Lối tắt Quản trị</h2>
+                <p class="section-desc">Truy cập nhanh các chức năng cấu hình hệ thống</p>
+            </div>
+
+            <div class="quick-access-grid">
+                <div class="access-item" [routerLink]="'/manager/admin/employees'">
+                    <div class="item-icon employee-bg"><i class="fa-solid fa-user-tie"></i></div>
+                    <div class="item-text">
+                        <h4>Danh sách Cán bộ</h4>
+                        <p>Quản lý hồ sơ và tài khoản nhân viên ngân hàng</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+                </div>
+
+                <div class="access-item" [routerLink]="'/manager/admin/customers'">
+                    <div class="item-icon customer-bg"><i class="fa-solid fa-building"></i></div>
+                    <div class="item-text">
+                        <h4>Hồ sơ Khách hàng</h4>
+                        <p>Thông tin pháp lý của cá nhân và doanh nghiệp</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+                </div>
+
+                <div class="access-item" [routerLink]="'/manager/admin/roles'">
+                    <div class="item-icon role-bg"><i class="fa-solid fa-shield-check"></i></div>
+                    <div class="item-text">
+                        <h4>Cấu hình Phân quyền</h4>
+                        <p>Quản lý các nhóm quyền Admin, Manager, Officer</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+                </div>
+
+                <div class="access-item">
+                    <div class="item-icon logs-bg"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div class="item-text">
+                        <h4>Nhật ký hệ thống</h4>
+                        <p>Theo dõi lịch sử thao tác của các cán bộ</p>
+                    </div>
+                    <span class="badge-soon">Sắp có</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Placeholder -->
+        <div class="content-section side">
+            <div class="section-header">
+                <h2 class="section-title">Hệ thống</h2>
+            </div>
+            <div class="system-status-card">
+                <div class="status-item">
+                    <span class="label">Phiên bản FE</span>
+                    <span class="value">v2.0.4 - Premium</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Backend API</span>
+                    <span class="value success">Đang kết nối</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Database</span>
+                    <span class="value success">Ổn định</span>
+                </div>
+                <hr>
+                <div class="status-footer">
+                    <p><i class="fa-solid fa-circle-info"></i> Bạn đang truy cập với quyền <strong>Quản trị viên tối
+                            cao</strong>.</p>
+                </div>
             </div>
         </div>
     </div>
