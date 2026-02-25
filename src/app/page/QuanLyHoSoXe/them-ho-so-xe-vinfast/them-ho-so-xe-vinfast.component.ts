@@ -651,7 +651,11 @@ export class ThemHoSoXeVinfastComponent {
             status: 'Giữ két',
             guaranteeLetterDTO: {
               id: guarantee.id
+            },
+            manufacturerDTO:{
+              id:2
             }
+            
           }))
         };
         console.log('📤 Submitting VinFast Payload:', payload);

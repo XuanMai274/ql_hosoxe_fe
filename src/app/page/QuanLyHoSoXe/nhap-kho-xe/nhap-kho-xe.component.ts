@@ -326,22 +326,27 @@ export class NhapKhoXeComponent {
       .subscribe(b => this.download(b, 'BIEN_BAN_DINH_GIA.docx'));
   }
 
-  exportHyundai() {
-    this.vehicleService.exportHyundai(this.getSelectedIds())
-      .subscribe(b => this.download(b, 'PHU_LUC_HYUNDAI.docx'));
+  exporPhuLucHopDongThueChap() {
+    this.vehicleService.exporPhuLucHopDongThueChap(this.getSelectedIds())
+      .subscribe(b => this.download(b, 'PHU_LUC_HOP_DONG_THUE_CHAP.docx'));
+  }
+  exporDangKyGiaoDichDamBao() {
+    this.vehicleService.exporDangKyGiaoDichDamBao(this.getSelectedIds())
+      .subscribe(b => this.download(b, 'DANG_KY_GIAO_DICH_DAM_BAO.docx'));
   }
 
-  exportVinfast() {
-    this.vehicleService.exportVinfast(this.getSelectedIds())
-      .subscribe(b => this.download(b, 'PHU_LUC_VINFAST.docx'));
-  }
+  // exportVinfast() {
+  //   this.vehicleService.exportVinfast(this.getSelectedIds())
+  //     .subscribe(b => this.download(b, 'PHU_LUC_VINFAST.docx'));
+  // }
   exportAll() {
 
     this.exportPNK();
     this.exportBaoCao();
     this.exportBienBan();
-    this.exportHyundai();
-    this.exportVinfast();
+    this.exporPhuLucHopDongThueChap();
+    this.exporDangKyGiaoDichDamBao();
+    // this.exportVinfast();
   }
   finishNhapKho() {
     this.showNhapKho = false;

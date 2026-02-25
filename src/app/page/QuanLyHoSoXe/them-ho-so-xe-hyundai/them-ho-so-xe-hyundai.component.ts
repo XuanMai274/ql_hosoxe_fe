@@ -510,6 +510,9 @@ export class ThemHoSoXeHyundaiComponent {
             status: 'Giữ két',
             guaranteeLetterDTO: {
               id: guarantee.id
+            },
+            manufacturerDTO: {
+              id: 1
             }
           }))
         };

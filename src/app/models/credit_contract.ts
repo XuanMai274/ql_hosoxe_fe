@@ -7,14 +7,16 @@ export interface CreditContract {
 
   // ===== Hạn mức tín dụng =====
   creditLimit?: number;           // GHTD
-  usedLimit?: number;             // Đã sử dụng
-  remainingLimit?: number;        // Còn lại
+  usedLimit?: number;             // Đã sử dụng thực tế
+  remainingLimit?: number;        // Còn lại thực tế
 
   // ===== Dư nợ chi tiết =====
-  guaranteeBalance?: number;      // Dư bảo lãnh
-  vehicleLoanBalance?: number;    // Dư nợ xe
-  realEstateLoanBalance?: number; // Dư nợ BĐS
-
+  guaranteeBalance?: number;      // Dư bảo lãnh thực tế
+  vehicleLoanBalance?: number;    // Dư nợ xe thực tế
+  realEstateLoanBalance?: number; // Dư nợ BĐS thực tế
+  issuedGuaranteeBalance?: number; //dư bảo lãnh phát hành
+  issuedRemainingLimit?: number; // còn lại phát hành
+  issuedUsedLimit?: number; // đã sử dụng phát hành
   // ===== Quan hệ =====
   mortgageContractIds?: number[];
   guaranteeIds?: number[];

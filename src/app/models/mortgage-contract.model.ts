@@ -7,7 +7,8 @@ export interface MortgageContract {
 
   totalCollateralValue?: number;
   remainingCollateralValue?: number;
-
+  securityRegistrationNumber?: number;// số đơn đăng kí giao dịch đảm bảo
+  personalIdNumber?: number;// định danh cá nhân
   status?: string;
 
   customerId?: number;

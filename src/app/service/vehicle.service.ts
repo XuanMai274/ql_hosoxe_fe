@@ -28,7 +28,7 @@ export class VehicleService {
         guaranteeContractNumber?: string;
         page: number;
         size: number;
-        ref?:string
+        ref?: string
     }): Observable<PageResponse<VehicleList>> {
 
         let httpParams = new HttpParams()
@@ -92,7 +92,7 @@ export class VehicleService {
     }
     exportPNK(ids: number[]) {
         return this.http.post(
-            'http://localhost:8080/officer/vehicles/export/export-pnk',
+            'http://localhost:8080/officer/vehicles/nhapkho/export-pnk',
             { vehicleIds: ids },
             { responseType: 'blob' }
         );
@@ -100,7 +100,7 @@ export class VehicleService {
 
     exportBaoCao(ids: number[]) {
         return this.http.post(
-            'http://localhost:8080/officer/vehicles/export/export-bao-cao-dinh-gia',
+            'http://localhost:8080/officer/vehicles/nhapkho/export-bao-cao-dinh-gia',
             { vehicleIds: ids },
             { responseType: 'blob' }
         );
@@ -108,23 +108,30 @@ export class VehicleService {
 
     exportBienBan(ids: number[]) {
         return this.http.post(
-            'http://localhost:8080/officer/vehicles/export/export-bien-ban-dinh-gia',
+            'http://localhost:8080/officer/vehicles/nhapkho/export-bien-ban-dinh-gia',
             { vehicleIds: ids },
             { responseType: 'blob' }
         );
     }
 
-    exportHyundai(ids: number[]) {
+    exporPhuLucHopDongThueChap(ids: number[]) {
         return this.http.post(
-            'http://localhost:8080/officer/vehicles/export/export-phu-luc-hyundai',
-            { vehicleIds: ids },
+            'http://localhost:8080/officer/vehicles/nhapkho/phu-luc-hop-dong-the-chap',
+            ids,   // ✅ gửi trực tiếp array
+            { responseType: 'blob' }
+        );
+    }
+    exporDangKyGiaoDichDamBao(ids: number[]) {
+        return this.http.post(
+            'http://localhost:8080/officer/vehicles/nhapkho/dang-ky-giao-dich-dam-bao',
+            ids,   // ✅ gửi trực tiếp array
             { responseType: 'blob' }
         );
     }
 
     exportVinfast(ids: number[]) {
         return this.http.post(
-            'http://localhost:8080/officer/vehicles/export/export-phu-luc-vinfast',
+            'http://localhost:8080/officer/vehicles/nhapkho/export-phu-luc-vinfast',
             { vehicleIds: ids },
             { responseType: 'blob' }
         );
