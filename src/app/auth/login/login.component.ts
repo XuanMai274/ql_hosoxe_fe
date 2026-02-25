@@ -9,7 +9,7 @@ import { RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, 
+  imports: [CommonModule,
     ReactiveFormsModule,
     RouterModule],
   templateUrl: './login.component.html',
@@ -20,8 +20,10 @@ export class LoginComponent {
   loginForm: FormGroup;
   isLoading = false;
   isReturningUser = false;
+  isSwitching = false;       // đang trong chế độ đổi tài khoản
   savedUsername = '';
   displayFullName = '';
+  submitted = false;
 
   constructor(
     private fb: FormBuilder,
@@ -44,23 +46,25 @@ export class LoginComponent {
     });
   }
 
+  /** Chuyển sang chế độ nhập tài khoản mới – chưa xóa dữ liệu cũ */
   onSwitchAccount(): void {
     this.isReturningUser = false;
-    this.savedUsername = '';
-    this.displayFullName = '';
-    // Xóa sạch mọi dấu vết của tài khoản cũ
-    localStorage.removeItem('savedIdentifier');
-    localStorage.removeItem('fullName');
-    localStorage.removeItem('username');
-    this.loginForm.patchValue({
-      username: '',
-      password: ''
-    });
+    this.isSwitching = true;
+    this.submitted = false;
+    this.loginForm.patchValue({ username: '', password: '' });
+  }
+
+  /** Hủy đổi tài khoản – quay lại tài khoản đã lưu */
+  onCancelSwitch(): void {
+    this.isReturningUser = true;
+    this.isSwitching = false;
+    this.submitted = false;
+    this.loginForm.patchValue({ username: this.savedUsername, password: '' });
   }
 
   onSubmit(): void {
+    this.submitted = true;
     if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
       return;
     }
 
@@ -68,12 +72,18 @@ export class LoginComponent {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: (response: AuthenticationResponse) => {
-        // Lưu username vào localStorage để hiển thị cho màn hình chào mừng quay lại
+        // Nếu đang đổi tài khoản → xóa thông tin tài khoản cũ trước
+        if (this.isSwitching) {
+          localStorage.removeItem('savedIdentifier');
+          localStorage.removeItem('fullName');
+          localStorage.removeItem('username');
+          this.isSwitching = false;
+        }
+
+        // Lưu thông tin tài khoản mới
         localStorage.setItem('savedIdentifier', response.username);
-        // Lưu fullName để hiển thị lời chào và trên Header
         localStorage.setItem('fullName', response.fullName);
         this.displayFullName = response.fullName;
-        // Lưu username riêng biệt nếu cần thiết cho các mục đích khác
         localStorage.setItem('username', response.username);
 
         // Lưu token và role vào localStorage (để đồng bộ giữa các Tab)
