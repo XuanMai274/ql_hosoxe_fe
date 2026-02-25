@@ -1,61 +1,151 @@
 <div class="login-wrapper">
-  <div class="login-card">
 
-    <!-- Logo / Icon -->
-    <div class="login-header">
-      <div>
-        <img src="assets\public\img\logo.webp" alt="BIDV Logo" class="logo-img" width="200" height="67" />
+  <!-- LEFT PANEL: Brand -->
+  <div class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-logo-wrap">
+        <img src="assets/public/img/logo.webp" alt="BIDV Logo" class="brand-logo" />
       </div>
+      <h1 class="brand-title">Hệ Thống Quản Lý<br />Hồ Sơ Xe</h1>
+      <p class="brand-subtitle">Ngân hàng TMCP Đầu tư và Phát triển Việt Nam</p>
 
-      <h1>HỆ THỐNG QUẢN LÝ HỒ SƠ XE</h1>
-      <p>Ngân hàng TMCP Đầu tư và Phát triển Việt Nam</p>
-    </div>
-
-    <!-- Welcome Back Header -->
-    <div *ngIf="isReturningUser" class="welcome-back">
-      <h2>Chào mừng trở lại,</h2>
-      <p class="saved-username">{{ displayFullName || savedUsername }}</p>
-      <a href="javascript:void(0)" (click)="onSwitchAccount()" class="switch-account">Không phải bạn?</a>
-    </div>
-
-    <!-- Form -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-
-      <!-- Username (Only show if not returning user) -->
-      <div class="form-group" *ngIf="!isReturningUser">
-        <label>Tên đăng nhập</label>
-        <input type="text" formControlName="username" placeholder="Nhập tên đăng nhập" />
-        <small *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.invalid">
-          Tên đăng nhập không được để trống
-        </small>
-      </div>
-
-      <!-- Password -->
-      <div class="form-group">
-        <label>Mật khẩu</label>
-        <div class="password-input-wrapper">
-          <input type="password" formControlName="password" placeholder="Nhập mật khẩu" autofocus />
+      <div class="brand-features">
+        <div class="feature-item">
+          <span class="feature-icon">🚗</span>
+          <span>Quản lý hồ sơ xe toàn diện</span>
         </div>
-        <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
-          Mật khẩu không được để trống
-        </small>
+        <div class="feature-item">
+          <span class="feature-icon">📋</span>
+          <span>Theo dõi tiến trình xử lý</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔒</span>
+          <span>Bảo mật và an toàn dữ liệu</span>
+        </div>
       </div>
-
-      <!-- Button -->
-      <button type="submit" class="btn-login" [disabled]="isLoading">
-        <span *ngIf="!isLoading">Đăng nhập</span>
-        <span *ngIf="isLoading" class="loading">
-          <span class="spinner"></span>
-          Đang đăng nhập...
-        </span>
-      </button>
-
-    </form>
-
-    <!-- Footer -->
-    <div class="login-footer">
-      © 2026 BIDV – Vehicle Profile Management System
     </div>
 
+    <!-- Decorative circles -->
+    <div class="deco-circle deco-circle-1"></div>
+    <div class="deco-circle deco-circle-2"></div>
+    <div class="deco-circle deco-circle-3"></div>
   </div>
+
+  <!-- RIGHT PANEL: Form -->
+  <div class="form-panel">
+    <div class="form-container">
+
+      <!-- Header -->
+      <div class="form-header">
+        <div class="form-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </div>
+        <h2 class="form-title">Đăng nhập</h2>
+        <p class="form-desc">Vui lòng nhập thông tin tài khoản của bạn</p>
+      </div>
+
+      <!-- Welcome Back Banner (returning user) -->
+      <div *ngIf="isReturningUser" class="welcome-banner">
+        <div class="welcome-avatar">{{ (displayFullName || savedUsername).charAt(0).toUpperCase() }}</div>
+        <div class="welcome-info">
+          <span class="welcome-label">Chào mừng trở lại</span>
+          <span class="welcome-name">{{ displayFullName || savedUsername }}</span>
+        </div>
+        <a href="javascript:void(0)" (click)="onSwitchAccount()" class="welcome-switch" title="Đổi tài khoản">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+            <path d="M17 2l4 4-4 4" />
+            <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+            <path d="M7 22l-4-4 4-4" />
+            <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Banner quay lại tài khoản cũ (chỉ hiện khi đang đổi tài khoản) -->
+      <div *ngIf="isSwitching && savedUsername" class="back-banner">
+        <div class="back-avatar">{{ (displayFullName || savedUsername).charAt(0).toUpperCase() }}</div>
+        <div class="back-info">
+          <span class="back-label">Tài khoản trước đó</span>
+          <span class="back-name">{{ displayFullName || savedUsername }}</span>
+        </div>
+        <a href="javascript:void(0)" (click)="onCancelSwitch()" class="back-btn" title="Quay lại tài khoản này">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Quay lại
+        </a>
+      </div>
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" autocomplete="on">
+
+        <!-- Username -->
+        <div class="field-group" *ngIf="!isReturningUser">
+          <label for="username" class="field-label">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            Tên đăng nhập
+          </label>
+          <div class="input-wrap" [class.input-error]="submitted && loginForm.get('username')?.invalid">
+            <input id="username" type="text" formControlName="username" placeholder="Nhập tên đăng nhập"
+              autocomplete="username" />
+          </div>
+          <p class="field-error" *ngIf="submitted && loginForm.get('username')?.invalid">
+            Tên đăng nhập không được để trống
+          </p>
+        </div>
+
+        <!-- Password -->
+        <div class="field-group">
+          <label for="password" class="field-label">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            Mật khẩu
+          </label>
+          <div class="input-wrap" [class.input-error]="submitted && loginForm.get('password')?.invalid">
+            <input id="password" type="password" formControlName="password" placeholder="Nhập mật khẩu"
+              autocomplete="current-password" autofocus />
+          </div>
+          <p class="field-error" *ngIf="submitted && loginForm.get('password')?.invalid">
+            Mật khẩu không được để trống
+          </p>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-login" [class.btn-loading]="isLoading" [disabled]="isLoading"
+          id="btn-submit-login">
+          <span *ngIf="!isLoading" class="btn-text">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+              <polyline points="10 17 15 12 10 7" />
+              <line x1="15" y1="12" x2="3" y2="12" />
+            </svg>
+            Đăng nhập
+          </span>
+          <span *ngIf="isLoading" class="btn-text">
+            <span class="spinner"></span>
+            Đang xử lý...
+          </span>
+        </button>
+
+      </form>
+
+      <!-- Footer -->
+      <p class="form-footer">© 2026 BIDV – Vehicle Profile Management System</p>
+    </div>
+  </div>
+
 </div>

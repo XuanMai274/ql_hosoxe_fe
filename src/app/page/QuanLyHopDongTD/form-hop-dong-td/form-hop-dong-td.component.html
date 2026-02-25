@@ -1,0 +1,135 @@
+<div class="page-container animate-fade-in">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a [routerLink]="['/manager/home']">Trang chủ</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <a [routerLink]="['/manager/credit-contract']">Hợp đồng tín dụng</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span>{{ isEditMode ? 'Cập nhật hợp đồng' : 'Thêm mới hợp đồng' }}</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header-section">
+        <h1 class="page-title">
+            <i class="fa-solid" [ngClass]="isEditMode ? 'fa-file-pen' : 'fa-file-circle-plus'"></i>
+            {{ isEditMode ? 'Cập nhật Hợp đồng Tín dụng' : 'Thêm mới Hợp đồng Tín dụng' }}
+        </h1>
+        <p class="subtitle">Vui lòng điền đầy đủ các thông tin chi tiết của hợp đồng tín dụng vào các trường bên dưới.
+        </p>
+    </div>
+
+    <!-- Main Form -->
+    <div class="form-card glassmorphism">
+        <form [formGroup]="contractForm" (ngSubmit)="onSubmit()">
+
+            <div class="form-section-title">
+                <i class="fa-solid fa-circle-info"></i> Thông tin cơ bản
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Số hợp đồng <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-hashtag"></i>
+                        <input type="text" formControlName="contractNumber" placeholder="Ví dụ: CC-2024-001">
+                    </div>
+                    <div class="error-msg"
+                        *ngIf="contractForm.get('contractNumber')?.touched && contractForm.get('contractNumber')?.invalid">
+                        Vui lòng nhập số hợp đồng.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ngày ký hợp đồng <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-calendar-day"></i>
+                        <input type="date" formControlName="contractDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Khách hàng <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-building-user"></i>
+                        <select formControlName="customerId">
+                            <option [ngValue]="null">-- Chọn khách hàng --</option>
+                            <option *ngFor="let c of customers" [value]="c.id">{{ c.customerName }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Trạng thái <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-signal"></i>
+                        <select formControlName="status">
+                            <option value="ACTIVE">Hoạt động</option>
+                            <option value="EXPIRED">Hết hạn</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section-title">
+                <i class="fa-solid fa-sack-dollar"></i> Hạn mức & Phân bổ
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Hạn mức tín dụng tối đa <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                        <input type="number" formControlName="creditLimit" placeholder="0">
+                        <span class="currency">₫</span>
+                    </div>
+                </div>
+
+                <div class="form-group" *ngIf="isEditMode">
+                    <label>Tổng dư nợ đã sử dụng</label>
+                    <div class="input-wrapper disabled">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <input type="number" formControlName="usedLimit" readonly>
+                        <span class="currency">₫</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Số dư bảo lãnh</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <input type="number" formControlName="guaranteeBalance" placeholder="0">
+                        <span class="currency">₫</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Dư nợ cho vay xe</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-car"></i>
+                        <input type="number" formControlName="vehicleLoanBalance" placeholder="0">
+                        <span class="currency">₫</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Dư nợ Bất động sản</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-house-lock"></i>
+                        <input type="number" formControlName="realEstateLoanBalance" placeholder="0">
+                        <span class="currency">₫</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" [routerLink]="['/manager/credit-contract']">
+                    Hủy bỏ
+                </button>
+                <button type="submit" class="btn-submit" [disabled]="contractForm.invalid || isLoading">
+                    <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+                    {{ isEditMode ? 'Cập nhật hợp đồng' : 'Lưu hợp đồng mới' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

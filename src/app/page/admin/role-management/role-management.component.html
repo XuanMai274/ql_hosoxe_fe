@@ -1,1 +1,148 @@
-<p>role-management works!</p>
+<!-- ===== ROLE MANAGEMENT PAGE ===== -->
+<div class="admin-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-icon">
+                <i class="fa-solid fa-user-lock"></i>
+            </div>
+            <div>
+                <h1 class="page-title">Quản lý Vai trò</h1>
+                <p class="page-subtitle">Phân quyền và cấu hình vai trò người dùng trong hệ thống</p>
+            </div>
+        </div>
+        <button class="btn-primary" (click)="openCreateModal()">
+            <i class="fa-solid fa-plus"></i>
+            Thêm vai trò
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="cards-grid">
+        <div class="role-card skeleton-card" *ngFor="let i of [1,2,3,4]">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-line w-120 mt-12"></div>
+            <div class="skeleton-line w-80 mt-8"></div>
+            <div class="skeleton-line w-full mt-16"></div>
+        </div>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!isLoading && roles.length === 0" class="empty-state">
+        <i class="fa-solid fa-user-lock"></i>
+        <p>Chưa có vai trò nào được tạo</p>
+        <button class="btn-primary mt-16" (click)="openCreateModal()">
+            <i class="fa-solid fa-plus"></i> Tạo vai trò đầu tiên
+        </button>
+    </div>
+
+    <!-- Role Cards Grid -->
+    <div *ngIf="!isLoading && roles.length > 0" class="cards-grid">
+        <div class="role-card" *ngFor="let role of roles">
+            <!-- Card Top -->
+            <div class="card-top">
+                <div class="role-icon-wrapper" [style.background]="getRoleIcon(role.roleCode).bg">
+                    <i class="fa-solid" [ngClass]="getRoleIcon(role.roleCode).icon"
+                        [style.color]="getRoleIcon(role.roleCode).color"></i>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-icon btn-edit" title="Chỉnh sửa" (click)="openEditModal(role)">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button class="btn-icon btn-delete" title="Xóa" (click)="onDelete(role)">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+                <h3 class="role-name">{{ role.roleName }}</h3>
+                <code class="role-code">{{ role.roleCode }}</code>
+                <p class="role-desc" *ngIf="role.description">{{ role.description }}</p>
+                <p class="role-desc empty-desc" *ngIf="!role.description">Chưa có mô tả</p>
+            </div>
+
+            <!-- Card Footer -->
+            <div class="card-footer">
+                <span class="footer-label">
+                    <i class="fa-regular fa-calendar"></i>
+                    {{ role.createdAt ? (role.createdAt | date:'dd/MM/yyyy') : 'N/A' }}
+                </span>
+                <div class="active-dot"></div>
+            </div>
+        </div>
+
+        <!-- Add New Card -->
+        <div class="role-card add-card" (click)="openCreateModal()">
+            <div class="add-icon">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <p>Thêm vai trò mới</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== MODAL THÊM / SỬA VAI TRÒ ===== -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <div class="modal-title-group">
+                <div class="modal-icon">
+                    <i class="fa-solid fa-user-lock"></i>
+                </div>
+                <div>
+                    <h2>{{ isEditing ? 'Chỉnh sửa vai trò' : 'Tạo vai trò mới' }}</h2>
+                    <p>{{ isEditing ? 'Cập nhật thông tin vai trò' : 'Định nghĩa vai trò cho hệ thống' }}</p>
+                </div>
+            </div>
+            <button class="modal-close" (click)="closeModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="modal-body">
+
+            <div class="form-group">
+                <label>Tên vai trò <span class="required">*</span></label>
+                <input type="text" formControlName="roleName" placeholder="VD: Quản trị viên" class="form-control"
+                    [class.is-invalid]="roleForm.get('roleName')?.invalid && roleForm.get('roleName')?.touched" />
+                <div class="invalid-feedback"
+                    *ngIf="roleForm.get('roleName')?.errors?.['required'] && roleForm.get('roleName')?.touched">
+                    Vui lòng nhập tên vai trò
+                </div>
+            </div>
+
+            <div class="form-group mt-16">
+                <label>Mã vai trò <span class="required">*</span></label>
+                <input type="text" formControlName="roleCode" placeholder="VD: admin, officer, manager"
+                    class="form-control"
+                    [class.is-invalid]="roleForm.get('roleCode')?.invalid && roleForm.get('roleCode')?.touched" />
+                <div class="invalid-feedback"
+                    *ngIf="roleForm.get('roleCode')?.errors?.['required'] && roleForm.get('roleCode')?.touched">
+                    Vui lòng nhập mã vai trò
+                </div>
+                <small class="hint" *ngIf="isEditing">Không thể thay đổi mã vai trò</small>
+                <small class="hint" *ngIf="!isEditing">Dùng chữ thường, không dấu, không khoảng trắng (VD:
+                    officer)</small>
+            </div>
+
+            <div class="form-group mt-16">
+                <label>Mô tả</label>
+                <textarea formControlName="description" placeholder="Mô tả chức năng và quyền hạn của vai trò này..."
+                    class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" (click)="closeModal()">Hủy</button>
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-check"></i>
+                    {{ isEditing ? 'Lưu thay đổi' : 'Tạo vai trò' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

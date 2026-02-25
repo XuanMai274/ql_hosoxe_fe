@@ -1,0 +1,72 @@
+<div class="page-container animate-fade-in">
+    <div class="header-section">
+        <h1 class="page-title">Quản lý Hợp đồng Tín dụng</h1>
+        <button class="btn-add" (click)="goToAdd()">
+            <i class="fa-solid fa-plus"></i> Thêm mới Hợp đồng
+        </button>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <div class="card-grid" *ngIf="!isLoading">
+        <div class="contract-card" *ngFor="let contract of contracts" [class.expired]="contract.status === 'EXPIRED'">
+            <div class="card-header">
+                <div class="main-info">
+                    <span class="contract-number">{{ contract.contractNumber }}</span>
+                    <span [class]="'status-badge ' + getStatusBadgeClass(contract.status)">
+                        {{ getStatusLabel(contract.status) }}
+                    </span>
+                </div>
+                <div class="date-info">
+                    <i class="fa-regular fa-calendar"></i> {{ formatDate(contract.contractDate) }}
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="highlight-grid">
+                    <div class="highlight-item credit-limit">
+                        <span class="label">Hạn mức tín dụng</span>
+                        <span class="value">{{ contract.creditLimit | number }} ₫</span>
+                    </div>
+                    <div class="highlight-item used-limit">
+                        <span class="label">Đã sử dụng</span>
+                        <span class="value">{{ contract.usedLimit | number }} ₫</span>
+                    </div>
+                    <div class="highlight-item remaining-limit">
+                        <span class="label">Còn lại</span>
+                        <span class="value">{{ contract.remainingLimit | number }} ₫</span>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="label">Dư bảo lãnh:</span>
+                        <span class="value">{{ contract.guaranteeBalance | number }} ₫</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Dư nợ vay xe:</span>
+                        <span class="value">{{ contract.vehicleLoanBalance | number }} ₫</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Dư vay TSĐB:</span>
+                        <span class="value">{{ contract.realEstateLoanBalance | number }} ₫</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button class="btn-edit" (click)="goToEdit(contract.id!)">
+                    <i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa
+                </button>
+            </div>
+        </div>
+
+        <div class="no-data" *ngIf="contracts.length === 0">
+            <i class="fa-solid fa-folder-open"></i>
+            <p>Không có dữ liệu hợp đồng tín dụng.</p>
+        </div>
+    </div>
+</div>

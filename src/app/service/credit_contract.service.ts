@@ -24,4 +24,11 @@ export class CreditContractService {
             );
     }
 
+    addCreditContract(contract: CreditContract): Observable<any> {
+        return this.http.post<any>(`${this.API_URL}/add`, contract);
+    }
+
+    updateCreditContract(id: number, contract: CreditContract): Observable<any> {
+        return this.http.put<any>(`${this.API_URL}/update/${id}`, contract);
+    }
 }
