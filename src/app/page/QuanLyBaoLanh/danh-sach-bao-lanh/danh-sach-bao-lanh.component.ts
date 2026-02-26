@@ -73,11 +73,33 @@ export class DanhSachBaoLanhComponent implements OnInit {
       this.page,
       this.size
     ).subscribe((res: PageResponse<GuaranteeLetter>) => {
-
-      this.guaranteeLetters = res.content;
+      this.guaranteeLetters = res.content.map(item => {
+        if (item.expiryDate) {
+          item.deadlineLabel = this.calculateDeadline(item.expiryDate);
+        }
+        return item;
+      });
       this.totalPages = res.totalPages || 1;
       this.page = res.number;
     });
+  }
+
+  calculateDeadline(expiryDateStr: string): string {
+    const expiryDate = new Date(expiryDateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    expiryDate.setHours(0, 0, 0, 0);
+
+    const diffTime = expiryDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays > 0) {
+      return `Còn ${diffDays} ngày`;
+    } else if (diffDays === 0) {
+      return `Hết hạn hôm nay`;
+    } else {
+      return `Quá hạn ${Math.abs(diffDays)} ngày`;
+    }
   }
 
   searchByKeyword() {

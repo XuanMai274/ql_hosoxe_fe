@@ -49,4 +49,8 @@ export interface GuaranteeLetter {
     // ===== CHILD =====
     vehicleIds?: number[];
     fileId?: GuaranteeLetterFile;
+
+    // ===== EXPIRY =====
+    expiryDate?: string;     // LocalDate
+    deadlineLabel?: string;  // FE-only label
 }

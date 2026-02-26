@@ -49,6 +49,14 @@
           <label>Số xe đã nhập</label>
           <span>{{ item.importedVehicleCount}} Xe</span>
         </div>
+        <div class="info deadline" *ngIf="item.expiryDate">
+          <label>Thời hạn</label>
+          <span [ngClass]="{
+            'text-danger': item.deadlineLabel?.includes('Quá hạn'),
+            'text-warning': item.deadlineLabel?.includes('Hết hạn hôm nay'),
+            'text-success': item.deadlineLabel?.includes('Còn')
+          }">{{ item.deadlineLabel }} ({{ item.expiryDate | date:'dd/MM/yyyy' }})</span>
+        </div>
       </div>
 
       <div class="card-actions">

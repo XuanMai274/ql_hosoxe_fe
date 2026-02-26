@@ -34,11 +34,13 @@
   gap: 12px;
   align-items: center;
 }
+
 .quick-search {
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: 380px;              /* không chiếm full màn */
+  max-width: 380px;
+  /* không chiếm full màn */
   background: #ffffff;
   padding: 0px;
   border-radius: 14px;
@@ -96,6 +98,7 @@
   border-color: #029493;
   box-shadow: 0 0 0 3px rgba(2, 148, 147, 0.18);
 }
+
 .filter-row select,
 .filter-row input {
   height: 38px;
@@ -305,6 +308,7 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+
 /* =========================
    RESPONSIVE
 ========================= */
@@ -321,6 +325,7 @@
     align-items: flex-start;
   }
 }
+
 /* MODAL */
 .modal-backdrop {
   position: fixed;
@@ -384,16 +389,26 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
+
 .modal-backdrop {
   z-index: 999;
 }
+
 .modal {
   position: relative;
   z-index: 1000;
 }
+
 .card-actions {
   display: flex;
   gap: 8px;
@@ -433,11 +448,13 @@
 .btn-upload-file:active {
   transform: scale(0.95);
 }
+
 .btn-upload-file.disabled {
   pointer-events: none;
   opacity: 0.5;
   cursor: not-allowed;
 }
+
 /* =========================
    FILE BADGE (LIST VIEW)
 ========================= */
@@ -480,4 +497,29 @@
 
 .file-badge.no-file i {
   color: #94a3b8;
+}
+
+/* =========================
+   DEADLINE COLORS
+========================= */
+.text-danger {
+  color: #dc2626 !important;
+  font-weight: 700;
+}
+
+.text-warning {
+  color: #d97706 !important;
+  font-weight: 700;
+}
+
+.text-success {
+  color: #16a34a !important;
+  font-weight: 700;
+}
+
+.deadline {
+  grid-column: span 2;
+  border-top: 1px dashed #e5e7eb;
+  padding-top: 10px;
+  margin-top: 4px;
 }
