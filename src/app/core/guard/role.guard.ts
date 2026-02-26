@@ -24,8 +24,13 @@ export class RoleGuard implements CanActivate {
       confirmButtonColor: '#006b68'
     });
 
-    // Quay về trang chủ của cán bộ hoặc login tùy ngữ cảnh
-    this.router.navigate(['/manager/danh-sach-ho-so-xe']);
+    // Redirect về đúng trang chủ theo role
+    const role = this.authService.getUserRole()?.toLowerCase();
+    if (role === 'customer') {
+      this.router.navigate(['/customer']);
+    } else {
+      this.router.navigate(['/manager/home']);
+    }
     return false;
   }
 }

@@ -1,0 +1,15 @@
+<div class="customer-layout">
+    <!-- Sidebar -->
+    <app-customer-sidebar class="sidebar"></app-customer-sidebar>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <!-- Header -->
+        <app-customer-header></app-customer-header>
+
+        <!-- Nội dung sẽ thay đổi dựa trên URL -->
+        <div class="content-area">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

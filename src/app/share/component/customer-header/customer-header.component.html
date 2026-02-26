@@ -1,0 +1,55 @@
+<header class="customer-header">
+    <!-- Left -->
+    <div class="header-left">
+        <div class="welcome-msg">
+            <span class="greeting">Xin chào,</span>
+            <h2 class="user-display-name">{{ username }}</h2>
+        </div>
+    </div>
+
+    <!-- Right -->
+    <div class="header-right">
+        <div class="utility-actions">
+            <button class="action-btn" title="Thông báo">
+                <i class="fa-regular fa-bell"></i>
+                <span class="btn-badge">1</span>
+            </button>
+            <button class="action-btn" title="Trợ giúp">
+                <i class="fa-regular fa-circle-question"></i>
+            </button>
+        </div>
+
+        <div class="v-divider"></div>
+
+        <!-- User Dropdown -->
+        <div class="user-profile-dropdown" [class.active]="showUserDropdown">
+            <div class="profile-trigger" (click)="toggleUserDropdown()">
+                <div class="avatar-circle">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="user-info-text">
+                    <span class="role-badge">{{ userRole }}</span>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </div>
+            </div>
+
+            <!-- Dropdown Content -->
+            <div class="dropdown-content" *ngIf="showUserDropdown">
+                <div class="dropdown-header">
+                    <p class="full-name">{{ username }}</p>
+                    <p class="role-text">{{ userRole }}</p>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item">
+                    <i class="fa-regular fa-id-card"></i>
+                    Hồ sơ cá nhân
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item logout" (click)="onLogout()">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Đăng xuất
+                </a>
+            </div>
+        </div>
+    </div>
+</header>

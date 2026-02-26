@@ -4,6 +4,7 @@ import { ThemHoSoXeComponent } from './page/QuanLyHoSoXe/them-ho-so-xe/them-ho-s
 import { ThemHoSoXeHyundaiComponent } from './page/QuanLyHoSoXe/them-ho-so-xe-hyundai/them-ho-so-xe-hyundai.component';
 import { ThemHoSoXeVinfastComponent } from './page/QuanLyHoSoXe/them-ho-so-xe-vinfast/them-ho-so-xe-vinfast.component';
 import { CanBoComponent } from './layout/can-bo/can-bo.component';
+import { CustomerComponent } from './layout/customer/customer.component';
 import { NgModule } from '@angular/core';
 import { ThemBaoLanhComponent } from './page/QuanLyBaoLanh/them-bao-lanh/them-bao-lanh.component';
 import { DanhSachBaoLanhComponent } from './page/QuanLyBaoLanh/danh-sach-bao-lanh/danh-sach-bao-lanh.component';
@@ -16,6 +17,7 @@ import { EmployeeManagementComponent } from './page/admin/employee-management/em
 import { CustomerManagementComponent } from './page/admin/customer-management/customer-management.component';
 import { RoleManagementComponent } from './page/admin/role-management/role-management.component';
 import { HomeRouterComponent } from './page/home-router.component';
+import { DonHangBaoLanhComponent } from './page/customer/don-hang-bao-lanh/don-hang-bao-lanh.component';
 
 import { AuthGuard } from './core/guard/auth.guard';
 import { RoleGuard } from './core/guard/role.guard';
@@ -117,6 +119,25 @@ export const routes: Routes = [
                 component: RoleManagementComponent,
                 canActivate: [RoleGuard],
                 data: { roles: ['admin'] }
+            }
+        ]
+    },
+    // ===== CUSTOMER ROUTES =====
+    {
+        path: 'customer',
+        component: CustomerComponent,
+        canActivate: [AuthGuard],
+        children: [
+            {
+                path: '',
+                redirectTo: 'don-hang-bao-lanh',
+                pathMatch: 'full'
+            },
+            {
+                path: 'don-hang-bao-lanh',
+                component: DonHangBaoLanhComponent,
+                canActivate: [RoleGuard],
+                data: { roles: ['customer'] }
             }
         ]
     },
