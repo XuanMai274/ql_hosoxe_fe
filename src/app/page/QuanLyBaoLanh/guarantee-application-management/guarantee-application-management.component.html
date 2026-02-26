@@ -1,0 +1,76 @@
+<div class="management-container">
+    <div class="header-section">
+        <div class="title-wrap">
+            <h1><i class="fa-solid fa-file-invoice-dollar"></i> Quản lý Đơn hàng Bảo lãnh</h1>
+            <p>Danh sách các yêu cầu bảo lãnh từ khách hàng cần xử lý</p>
+        </div>
+        <div class="action-wrap">
+            <button class="btn-refresh" (click)="loadApplications()" [disabled]="isLoading">
+                <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="isLoading"></i> Làm mới
+            </button>
+        </div>
+    </div>
+
+    <div class="table-card glass-card">
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Khách hàng</th>
+                        <th>Hãng sản xuất</th>
+                        <th>Số lượng xe dự kiến</th>
+                        <th>Số tiền dự kiến</th>
+                        <th>Ngày gửi</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let app of applications; let i = index">
+                        <td>{{ currentPage * pageSize + i + 1 }}</td>
+                        <td>
+                            <div class="user-info">
+                                <span class="user-name">{{ app.customerDTO?.customerName }}</span>
+                                <span class="user-sub">{{ app.customerDTO?.email }}</span>
+                            </div>
+                        </td>
+                        <td>{{ app.manufacturerDTO?.name }}</td>
+                        <td>{{ app.expectedVehicleCount || 0 }} xe</td>
+                        <td>{{ app.expectedGuaranteeAmount | number:'1.0-0' }} VNĐ</td>
+                        <td>{{ app.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td>
+                            <span class="status-badge" [ngClass]="getStatusClass(app.status)">
+                                {{ getStatusText(app.status) }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons" *ngIf="app.status?.toLowerCase() === 'pending'">
+                                <button class="btn-action btn-approve" (click)="onApprove(app)" title="Duyệt">
+                                    <i class="fa-solid fa-check"></i> Duyệt
+                                </button>
+                                <button class="btn-action btn-reject" (click)="onReject(app)" title="Từ chối">
+                                    <i class="fa-solid fa-xmark"></i> Từ chối
+                                </button>
+                            </div>
+                            <div class="action-buttons" *ngIf="app.status?.toLowerCase() !== 'pending'">
+                                <span class="processed-info">Đã xử lý</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="applications.length === 0 && !isLoading">
+                        <td colspan="8" class="empty-state">
+                            <i class="fa-solid fa-folder-open"></i>
+                            <p>Chưa có đơn hàng bảo lãnh nào cần xử lý</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination placeholder -->
+        <div class="pagination-section" *ngIf="totalElements > pageSize">
+            <!-- Thêm logic phân trang nếu cần -->
+        </div>
+    </div>
+</div>

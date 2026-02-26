@@ -9,6 +9,7 @@ import { NgModule } from '@angular/core';
 import { ThemBaoLanhComponent } from './page/QuanLyBaoLanh/them-bao-lanh/them-bao-lanh.component';
 import { DanhSachBaoLanhComponent } from './page/QuanLyBaoLanh/danh-sach-bao-lanh/danh-sach-bao-lanh.component';
 import { ChinhSuaBaoLanhComponent } from './page/QuanLyBaoLanh/chinh-sua-bao-lanh/chinh-sua-bao-lanh.component';
+import { GuaranteeApplicationManagementComponent } from './page/QuanLyBaoLanh/guarantee-application-management/guarantee-application-management.component';
 import { DanhSachHoSoXeComponent } from './page/QuanLyHoSoXe/danh-sach-ho-so-xe/danh-sach-ho-so-xe.component';
 import { ChiTietXeComponent } from './page/QuanLyHoSoXe/chi-tiet-xe/chi-tiet-xe.component';
 import { NhapKhoXeComponent } from './page/QuanLyHoSoXe/nhap-kho-xe/nhap-kho-xe.component';
@@ -80,6 +81,10 @@ export const routes: Routes = [
             {
                 path: 'chinh-sua-bao-lanh/:id',
                 component: ChinhSuaBaoLanhComponent
+            },
+            {
+                path: 'quan-ly-don-bao-lanh',
+                component: GuaranteeApplicationManagementComponent
             },
             {
                 path: 'danh-sach-khoan-vay',
