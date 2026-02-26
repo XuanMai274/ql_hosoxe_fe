@@ -370,7 +370,7 @@ export class ThemBaoLanhComponent implements OnInit {
         id: v.customer.id
       },
       creditContractDTO: {
-        id: v.creditContractId
+        id: this.selectedCreditContract?.id
       },
 
       manufacturerDTO: {
@@ -388,7 +388,12 @@ export class ThemBaoLanhComponent implements OnInit {
         id: v.authorizedRepresentativeId
       },
 
-      expectedGuaranteeAmount: v.expectedGuaranteeAmount
+      expectedGuaranteeAmount: v.expectedGuaranteeAmount,
+
+      // Thêm dòng này để sửa lỗi 400:
+      guaranteeApplicationDTO: {
+        id: Number(this.route.snapshot.queryParams['applicationId']) || null
+      }
     };
 
     console.log("Payload gửi BE:", payload);

@@ -17,6 +17,7 @@ export interface GuaranteeLetter {
     manufacturerDTO?: Manufacturer;
     branchAuthorizedRepresentativeDTO?: BranchAuthorizedRepresentative;
     customerDTO?: Customer;
+    guaranteeApplicationDTO?: any;
 
     // ===== GUARANTEE CONTRACT =====
     guaranteeContractNumber?: string;

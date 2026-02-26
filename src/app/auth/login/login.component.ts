@@ -87,9 +87,14 @@ export class LoginComponent {
         localStorage.setItem('username', response.username);
 
         // Lưu token và role vào localStorage (để đồng bộ giữa các Tab)
+        // Lưu ý: refreshToken được Backend lưu trong HttpOnly Cookie, KHÔNG có trong response body
         localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('refreshToken', response.refreshToken);
         localStorage.setItem('userRole', response.role);
+
+        // ===== DEBUG: Kiểm tra token đã lưu =====
+        console.log('✅ [LOGIN] accessToken lưu vào localStorage:', localStorage.getItem('accessToken') ? 'CÓ (length=' + localStorage.getItem('accessToken')!.length + ')' : '❌ KHÔNG CÓ');
+        console.log('✅ [LOGIN] userRole:', response.role);
+        // ========================================
 
         // Điều hướng sau login
         const returnUrl = sessionStorage.getItem('returnUrl');

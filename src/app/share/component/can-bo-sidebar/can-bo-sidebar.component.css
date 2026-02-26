@@ -24,8 +24,17 @@
   background: linear-gradient(165deg, #006b68 0%, #028B89 50%, #004d40 100%);
   box-shadow: 10px 0 40px rgba(0, 77, 64, 0.2);
   z-index: 1000;
-  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
   font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 /* Decorative background circle for more "Premium" feel */

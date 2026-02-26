@@ -24,7 +24,16 @@
     z-index: 1000;
     overflow-y: auto;
     overflow-x: hidden;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
     font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
 }
 
 .sidebar::before {

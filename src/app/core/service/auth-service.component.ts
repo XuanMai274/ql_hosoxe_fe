@@ -31,18 +31,20 @@ export class AuthServiceComponent {
     }
 
     login(credentials: { username: string; password: string }): Observable<any> {
-        return this.http.post<AuthenticationResponse>(this.apiUrl, credentials)
+        return this.http.post<AuthenticationResponse>(this.apiUrl, credentials, {
+            withCredentials: true  // Bắt buộc để trình duyệt nhận được HttpOnly Cookie (refreshToken) từ Backend
+        })
             .pipe(
                 catchError((error: HttpErrorResponse) => {
                     return throwError(() => error);
                 })
             );
     }
-    // refresh token sử dụng HttpOnly Cookie hoặc gửi trực tiếp từ body
+    // refreshToken được gửi tự động qua HttpOnly Cookie (withCredentials: true)
+    // KHÔNG cần gửi trong body hay header vì Backend tự đọc từ Cookie
     refreshToken(): Observable<AuthenticationResponse> {
-        const refreshToken = localStorage.getItem('refreshToken');
-        return this.http.post<AuthenticationResponse>(`http://localhost:8080/api/auth/refresh`, { refreshToken }, {
-            withCredentials: true // Gửi kèm Cookie nếu có
+        return this.http.post<AuthenticationResponse>(`http://localhost:8080/api/auth/refresh`, {}, {
+            withCredentials: true  // Trình duyệt tự gửi HttpOnly Cookie kèm request
         });
     }
 
