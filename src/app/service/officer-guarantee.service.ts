@@ -60,9 +60,7 @@ export class OfficerGuaranteeService {
             size: size,
             number: page,
             first: true,
-            last: true,
-            numberOfElements: this.mockData.length,
-            empty: false
+            last: true
         };
         return of(response).pipe(delay(500));
     }
