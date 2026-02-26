@@ -9,6 +9,7 @@ import { Vehicle } from '../../../models/vehicle';
 import { VehicleLoanForm } from '../../../models/vehicle_loan_form.model';
 import { LoanService } from '../../../service/loan.service';
 import { LoanDTO } from '../../../models/loan.model';
+import { WarehouseService } from '../../../service/warehouse.service';
 
 @Component({
   selector: 'app-nhap-kho-xe',
@@ -42,6 +43,7 @@ export class NhapKhoXeComponent {
   constructor(
     private vehicleService: VehicleService,
     private loanService: LoanService,
+     private warehouseService: WarehouseService,
     private router: Router
   ) { }
 
@@ -349,9 +351,36 @@ export class NhapKhoXeComponent {
     // this.exportVinfast();
   }
   finishNhapKho() {
-    this.showNhapKho = false;
-    this.selectedVehicles = [];
-    this.currentStep = 1;
 
+  const ids = this.getSelectedIds();
+
+  if (ids.length === 0) {
+    alert("Chưa chọn xe");
+    return;
   }
+
+  this.loading = true;
+
+  this.warehouseService.importWarehouse(ids)
+    .subscribe({
+      next: (res) => {
+
+        console.log("Import result:", res);
+
+        this.loading = false;
+        alert("Nhập kho thành công");
+
+        // reset
+        this.showNhapKho = false;
+        this.selectedVehicles = [];
+        this.currentStep = 1;
+
+        this.loadVehicles(); // reload lại danh sách
+      },
+      error: (err) => {
+        this.loading = false;
+        alert(err.error?.message || "Có lỗi xảy ra khi nhập kho");
+      }
+    });
+}
 }

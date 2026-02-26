@@ -17,7 +17,7 @@ import { EmployeeManagementComponent } from './page/admin/employee-management/em
 import { CustomerManagementComponent } from './page/admin/customer-management/customer-management.component';
 import { RoleManagementComponent } from './page/admin/role-management/role-management.component';
 import { HomeRouterComponent } from './page/home-router.component';
-import { DonHangBaoLanhComponent } from './page/customer/don-hang-bao-lanh/don-hang-bao-lanh.component';
+import { DeNghiCapBaoLanhComponent } from './page/customer/de-nghi-cap-bao-lanh/de-nghi-cap-bao-lanh.component';
 
 import { AuthGuard } from './core/guard/auth.guard';
 import { RoleGuard } from './core/guard/role.guard';
@@ -134,8 +134,8 @@ export const routes: Routes = [
                 pathMatch: 'full'
             },
             {
-                path: 'don-hang-bao-lanh',
-                component: DonHangBaoLanhComponent,
+                path: 'de-nghi-cap-bao-lanh',
+                component: DeNghiCapBaoLanhComponent,
                 canActivate: [RoleGuard],
                 data: { roles: ['customer'] }
             }

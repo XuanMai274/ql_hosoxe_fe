@@ -24,4 +24,16 @@ export class ManufacturerService {
                 })
             );
     }
+    getManufactureCustomer(): Observable<Manufacturer[]> {
+        return this.http
+            .get<any>(`http://localhost:8080/customer/manufacturer/findAll`)
+            .pipe(
+                map(res => {
+                    if (res?.success && Array.isArray(res.manufacturerDTO)) {
+                        return res.manufacturerDTO as Manufacturer[];
+                    }
+                    return [];
+                })
+            );
+    }
 }

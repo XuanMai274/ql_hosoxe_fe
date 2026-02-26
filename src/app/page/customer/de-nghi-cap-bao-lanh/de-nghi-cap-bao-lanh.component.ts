@@ -3,15 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { GuaranteeLetter } from '../../../models/guarantee_letter';
 import { CustomerGuaranteeService } from '../../../service/customer-guarantee.service';
+import { GuaranteeApplicationService } from '../../../service/guarantee_application_service';
+import { Manufacturer } from '../../../models/manufacturer';
+import { ManufacturerService } from '../../../service/manufacturer.service';
 
 @Component({
-    selector: 'app-don-hang-bao-lanh',
+    selector: 'app-de-nghi-cap-bao-lanh',
     standalone: true,
     imports: [CommonModule, FormsModule, ReactiveFormsModule],
-    templateUrl: './don-hang-bao-lanh.component.html',
-    styleUrl: './don-hang-bao-lanh.component.css'
+    templateUrl: './de-nghi-cap-bao-lanh.component.html',
+    styleUrl: './de-nghi-cap-bao-lanh.component.css'
 })
-export class DonHangBaoLanhComponent implements OnInit {
+export class DeNghiCapBaoLanhComponent implements OnInit {
 
     donHangList: GuaranteeLetter[] = [];
     loading = true;
@@ -22,11 +25,17 @@ export class DonHangBaoLanhComponent implements OnInit {
     fromDate = '';
     toDate = '';
 
-    manufacturers = [
-        { code: 'VINFAST', name: 'VinFast' },
-        { code: 'HYUNDAI', name: 'Hyundai' }
-    ];
-
+    manufacturers: Manufacturer[] = [];
+    loadManufacturers(): void {
+        this.manufacturerService.getManufactureCustomer().subscribe({
+            next: (data) => {
+                this.manufacturers = data;
+            },
+            error: (err) => {
+                console.error('Lỗi load manufacturer', err);
+            }
+        });
+    }
     // Pagination
     page = 0;
     size = 20;
@@ -37,10 +46,15 @@ export class DonHangBaoLanhComponent implements OnInit {
     selectedItem: GuaranteeLetter | null = null;
 
     // Config tỉ lệ bảo lãnh theo hãng xe
-    tileMap: Record<string, number> = {
-        'VINFAST': 75,
-        'HYUNDAI': 85
-    };
+    getTileByCode(code: string): number {
+
+        const manufacturer = this.manufacturers
+            .find(m => m.code?.toUpperCase() === code?.toUpperCase());
+
+        if (!manufacturer?.guaranteeRate) return 75;
+
+        return Math.round(manufacturer.guaranteeRate * 100);
+    }
 
     // Modal form tạo mới
     showForm = false;
@@ -49,6 +63,8 @@ export class DonHangBaoLanhComponent implements OnInit {
 
     constructor(
         private service: CustomerGuaranteeService,
+        private guaranteeAppService: GuaranteeApplicationService,
+        private manufacturerService: ManufacturerService,
         private fb: FormBuilder
     ) {
         this.newForm = this.fb.group({
@@ -59,6 +75,7 @@ export class DonHangBaoLanhComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadData();
+        this.loadManufacturers()
     }
 
     loadData(page = 0) {
@@ -151,10 +168,10 @@ export class DonHangBaoLanhComponent implements OnInit {
         }
     }
 
-    // Tỉ lệ bảo lãnh theo hãng
-    getTileByCode(code: string): number {
-        return this.tileMap[code?.toUpperCase()] || 75;
-    }
+    // // Tỉ lệ bảo lãnh theo hãng
+    // getTileByCode(code: string): number {
+    //     return this.tileMap[code?.toUpperCase()] || 75;
+    // }
 
     // Tính giá trị BL cho từng dòng
     getGiaTriBL(row: AbstractControl): number {
@@ -184,19 +201,63 @@ export class DonHangBaoLanhComponent implements OnInit {
     }
 
     submitForm(): void {
+
         if (this.newForm.invalid) {
             this.newForm.markAllAsTouched();
             return;
         }
-        this.submitting = true;
-        // TODO: Gọi API tạo đơn hàng
-        setTimeout(() => {
-            this.submitting = false;
-            this.closeForm();
-            this.loadData(0);
-        }, 1000);
-    }
+        const customer = { id: 2 };
 
+        if (!customer?.id) {
+            alert('Không tìm thấy thông tin khách hàng đăng nhập');
+            return;
+        }
+        this.submitting = true;
+
+        const manufacturerCode = this.newForm.get('manufacturerCode')?.value;
+
+        // Map vehicles
+        const vehicles = this.vehicles.controls.map(row => ({
+            vehicleName: row.get('loaiXe')?.value,
+            vehicleType: row.get('loaiXe')?.value,
+            color: row.get('mauXe')?.value,
+            chassisNumber: row.get('soKhung')?.value,
+            invoiceNumber: row.get('soDonHang')?.value,
+            paymentMethod: 'BANK_TRANSFER',
+            bankName: 'BIDV',
+            vehiclePrice: row.get('giaXe')?.value
+        }));
+
+        const payload: any = {
+            customerDTO: {
+                id: customer.id
+            },
+            manufacturerDTO: {
+                id: this.getManufacturerIdByCode(manufacturerCode)
+            },
+            vehicles: vehicles
+        };
+
+        this.guaranteeAppService.create(payload).subscribe({
+            next: () => {
+                this.submitting = false;
+                this.closeForm();
+                this.loadData(0);
+            },
+            error: (err) => {
+                console.error(err);
+                this.submitting = false;
+                alert('Có lỗi khi tạo đơn bảo lãnh');
+            }
+        });
+    }
+    getManufacturerIdByCode(code: string): number {
+
+        const manufacturer = this.manufacturers
+            .find(m => m.code?.toUpperCase() === code?.toUpperCase());
+
+        return manufacturer?.id || 0;
+    }
     /** Tổng giá trị bảo lãnh */
     get tongGiaTriBaoLanh(): number {
         return this.donHangList.reduce((sum, item) => sum + (item.totalGuaranteeAmount || 0), 0);

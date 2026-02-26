@@ -1,55 +1,55 @@
 <nav class="sidebar">
-    <!-- Logo Section -->
-    <div class="bank-logo" routerLink="/customer/home">
-        <img src="assets/public/img/logo.webp" alt="BIDV Logo" />
-        <p class="bank-name">
-            Hệ thống Quản lý <br /> Hồ sơ xe &amp; Bảo lãnh
-        </p>
-    </div>
+  <!-- Logo Section -->
+  <div class="bank-logo" routerLink="/customer/home">
+    <img src="assets/public/img/logo.webp" alt="BIDV Logo" />
+    <p class="bank-name">
+      Hệ thống Quản lý <br /> Hồ sơ xe &amp; Bảo lãnh
+    </p>
+  </div>
 
-    <!-- Navigation Menu -->
-    <ul class="nav-links">
-        <!-- Dashboard -->
-        <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-            <a [routerLink]="'/customer/home'">
-                <i class="fa-solid fa-house-chimney"></i>
-                <span>Trang chủ</span>
-            </a>
-        </li>
+  <!-- Navigation Menu -->
+  <ul class="nav-links">
+    <!-- Dashboard -->
+    <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a [routerLink]="'/customer/home'">
+        <i class="fa-solid fa-house-chimney"></i>
+        <span>Trang chủ</span>
+      </a>
+    </li>
 
-        <!-- NHÓM CHỨC NĂNG KHÁCH HÀNG -->
-        <li class="separator"><span>NGHIỆP VỤ</span></li>
+    <!-- NHÓM CHỨC NĂNG KHÁCH HÀNG -->
+    <li class="separator"><span>NGHIỆP VỤ</span></li>
 
-        <!-- Đơn hàng bảo lãnh -->
-        <li routerLinkActive="active">
-            <a [routerLink]="'/customer/don-hang-bao-lanh'">
-                <i class="fa-solid fa-shield-halved"></i>
-                <span>Đơn hàng bảo lãnh</span>
-            </a>
-        </li>
+    <!-- Đơn hàng bảo lãnh -->
+    <li routerLinkActive="active">
+      <a [routerLink]="'/customer/de-nghi-cap-bao-lanh'">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Đề nghị cấp bảo lãnh</span>
+      </a>
+    </li>
 
-        <!-- Khoản vay -->
-        <li routerLinkActive="active">
-            <a [routerLink]="'/customer/khoan-vay'">
-                <i class="fa-solid fa-file-invoice-dollar"></i>
-                <span>Khoản vay</span>
-            </a>
-        </li>
+    <!-- Khoản vay -->
+    <li routerLinkActive="active">
+      <a [routerLink]="'/customer/khoan-vay'">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+        <span>Khoản vay</span>
+      </a>
+    </li>
 
-        <!-- Hồ sơ xe -->
-        <li routerLinkActive="active">
-            <a [routerLink]="'/customer/ho-so-xe'">
-                <i class="fa-solid fa-car-side"></i>
-                <span>Hồ sơ xe</span>
-            </a>
-        </li>
+    <!-- Hồ sơ xe -->
+    <li routerLinkActive="active">
+      <a [routerLink]="'/customer/ho-so-xe'">
+        <i class="fa-solid fa-car-side"></i>
+        <span>Hồ sơ xe</span>
+      </a>
+    </li>
 
-        <!-- Hợp đồng tín dụng -->
-        <li routerLinkActive="active">
-            <a [routerLink]="'/customer/hop-dong-tin-dung'">
-                <i class="fa-solid fa-file-contract"></i>
-                <span>Hợp đồng tín dụng</span>
-            </a>
-        </li>
-    </ul>
+    <!-- Hợp đồng tín dụng -->
+    <li routerLinkActive="active">
+      <a [routerLink]="'/customer/hop-dong-tin-dung'">
+        <i class="fa-solid fa-file-contract"></i>
+        <span>Hợp đồng tín dụng</span>
+      </a>
+    </li>
+  </ul>
 </nav>
