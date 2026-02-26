@@ -7,8 +7,8 @@
         <i class="fa-solid fa-shield-halved"></i>
       </div>
       <div>
-        <h1 class="page-title">Danh sách đơn hàng bảo lãnh</h1>
-        <p class="page-subtitle">Theo dõi tất cả các đơn hàng bảo lãnh xe của bạn</p>
+        <h1 class="page-title">Danh sách đề nghị cấp bảo lãnh</h1>
+        <p class="page-subtitle">Theo dõi tất cả đơn đề nghị cấp bảo lãnh xe</p>
       </div>
     </div>
 
@@ -89,7 +89,7 @@
             <td colspan="8" class="empty-row">
               <div class="empty-state">
                 <i class="fa-solid fa-inbox"></i>
-                <p>Không có đơn hàng bảo lãnh nào</p>
+                <p>Không có đơn đề nghị bảo lãnh nào</p>
               </div>
             </td>
           </tr>
@@ -143,7 +143,7 @@
 
 </div>
 
-<!-- ===== MODAL CHI TIẾT ĐƠN HÀNG BẢO LÃNH ===== -->
+<!-- ===== MODAL CHI TIẾT đơn đề nghị BẢO LÃNH ===== -->
 <div class="modal-overlay" *ngIf="showDetail" (click)="closeDetail()">
   <div class="modal-panel" (click)="$event.stopPropagation()">
 
@@ -154,7 +154,7 @@
           <i class="fa-solid fa-shield-halved"></i>
         </div>
         <div>
-          <h2 class="modal-title">Chi tiết đơn hàng bảo lãnh</h2>
+          <h2 class="modal-title">Chi tiết đơn đề nghị bảo lãnh</h2>
           <p class="modal-subtitle">{{ selectedItem?.guaranteeContractNumber || '—' }}</p>
         </div>
       </div>
@@ -314,7 +314,7 @@
   </div>
 </div>
 
-<!-- ===== MODAL TẠO ĐƠN HÀNG MỚI ===== -->
+<!-- ===== MODAL TẠO đơn đề nghị MỚI ===== -->
 <div class="modal-overlay" *ngIf="showForm" (click)="closeForm()">
   <div class="modal-panel modal-wide" (click)="$event.stopPropagation()">
 
@@ -324,7 +324,7 @@
           <i class="fa-solid fa-plus"></i>
         </div>
         <div>
-          <h2 class="modal-title">Tạo đơn hàng bảo lãnh mới</h2>
+          <h2 class="modal-title">Tạo đơn đề nghị bảo lãnh mới</h2>
           <p class="modal-subtitle">Nhập danh sách xe cần bảo lãnh</p>
         </div>
       </div>
@@ -365,7 +365,7 @@
                 <th class="col-loai">Loại xe <span class="required">*</span></th>
                 <th class="col-mau">Màu xe <span class="required">*</span></th>
                 <th class="col-khung">Số khung</th>
-                <th class="col-don">Số đơn hàng</th>
+                <th class="col-don">Số đơn đề nghị</th>
                 <th class="col-npp">NPP xác nhận</th>
                 <th class="col-httt">HT thanh toán</th>
                 <th class="col-nh">Ngân hàng BL</th>
@@ -391,7 +391,7 @@
                   <input type="text" class="td-input" formControlName="soKhung" placeholder="Số khung" />
                 </td>
                 <td class="col-don">
-                  <input type="text" class="td-input" formControlName="soDonHang" placeholder="Số đơn hàng" />
+                  <input type="text" class="td-input" formControlName="soDonHang" placeholder="Số đơn đề nghị" />
                 </td>
                 <td class="col-npp td-center">
                   <span class="td-fixed-tag tag-lay">LẤY</span>
@@ -451,7 +451,7 @@
             <i class="fa-solid fa-xmark"></i> Hủy
           </button>
           <button type="submit" class="btn-submit" [disabled]="submitting">
-            <span *ngIf="!submitting"><i class="fa-solid fa-floppy-disk"></i> Lưu đơn hàng</span>
+            <span *ngIf="!submitting"><i class="fa-solid fa-floppy-disk"></i> Lưu đơn đề nghị</span>
             <span *ngIf="submitting"><i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...</span>
           </button>
         </div>

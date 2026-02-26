@@ -8,11 +8,11 @@ import { GuaranteeApplication } from '../models/guarantee_application.model';
 })
 export class GuaranteeApplicationService {
 
-  private baseUrl = '/customer/guarantee-applications';
+  private baseUrl = 'http://localhost:8080/customer/guarantee-applications';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   create(data: GuaranteeApplication): Observable<GuaranteeApplication> {
-    return this.http.post<GuaranteeApplication>(this.baseUrl, data);
+    return this.http.post<GuaranteeApplication>(`http://localhost:8080/customer/guarantee-applications`, data);
   }
 }

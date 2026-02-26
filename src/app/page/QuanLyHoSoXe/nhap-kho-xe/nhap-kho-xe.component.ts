@@ -10,6 +10,8 @@ import { VehicleLoanForm } from '../../../models/vehicle_loan_form.model';
 import { LoanService } from '../../../service/loan.service';
 import { LoanDTO } from '../../../models/loan.model';
 import { WarehouseService } from '../../../service/warehouse.service';
+import { WarehouseImportDTO } from '../../../models/warehouseImport.model';
+import { ExportPNKRequest } from '../../../models/exportPNK-request';
 
 @Component({
   selector: 'app-nhap-kho-xe',
@@ -25,7 +27,14 @@ export class NhapKhoXeComponent {
   loading = false;
   selectedVehicles: Vehicle[] = [];
   loanForms: VehicleLoanForm[] = [];
+  //Lưu dữ liệu nhập kho trả về
+  warehouseImportResult?: WarehouseImportDTO;
 
+  //Lưu vehicleIds sau khi backend trả về
+  importedVehicleIds: number[] = [];
+
+  //Lưu số phiếu nhập
+  importNumber: string = '';
   showNhapKho = false;
   currentStep = 1;
   // ===== FILTER =====
@@ -43,7 +52,7 @@ export class NhapKhoXeComponent {
   constructor(
     private vehicleService: VehicleService,
     private loanService: LoanService,
-     private warehouseService: WarehouseService,
+    private warehouseService: WarehouseService,
     private router: Router
   ) { }
 
@@ -108,35 +117,53 @@ export class NhapKhoXeComponent {
 
     this.loading = true;
 
+    const ids = this.getSelectedIds();
+
     const payload: LoanDTO[] = this.loanForms.map(f => ({
 
-      // loanContractNumber: f.loanContractNumber!,
       loanTerm: f.loanTerm!,
-
-      // 👇 convert Date sang string yyyy-MM-dd
       loanDate: this.formatDate(this.today),
       dueDate: f.dueDate ? this.formatDate(f.dueDate) : undefined,
-
       loanAmount: f.guaranteeAmount,
       withdrawnChassisNumber: f.chassisNumber,
-
       loanStatus: 'ACTIVE',
       loanType: 'VEHICLE',
-
       customerDTO: { id: 2 },
       vehicleId: f.vehicleId
 
     }));
 
+    // ===== 1️⃣ TẠO KHOẢN VAY =====
     this.loanService.createBatchLoans(payload)
       .subscribe({
         next: () => {
-          this.loading = false;
-          this.currentStep = 3;
+
+          // ===== 2️⃣ SAU KHI TẠO LOAN → GỌI NHẬP KHO =====
+          this.warehouseService.importWarehouse(ids)
+            .subscribe({
+              next: (res) => {
+
+                console.log("Warehouse result:", res);
+
+                // LƯU DATA TRẢ VỀ
+                this.warehouseImportResult = res;
+                this.importedVehicleIds = res.vehicleIds;
+                this.importNumber = res.importNumber;
+
+                this.loading = false;
+                this.currentStep = 3;
+
+                alert("Tạo khoản vay & nhập kho thành công");
+              },
+              error: (err) => {
+                this.loading = false;
+                alert(err.error?.message || "Lỗi nhập kho");
+              }
+            });
         },
         error: () => {
           this.loading = false;
-          alert('Có lỗi xảy ra');
+          alert('Có lỗi tạo khoản vay');
         }
       });
   }
@@ -313,28 +340,67 @@ export class NhapKhoXeComponent {
     a.click();
 
     window.URL.revokeObjectURL(url);
-  } exportPNK() {
-    this.vehicleService.exportPNK(this.getSelectedIds())
-      .subscribe(b => this.download(b, 'PNK.docx'));
+  }
+  exportPNK() {
+
+    const request: ExportPNKRequest = {
+      importNumber: this.importNumber,
+      vehicleIds: this.importedVehicleIds
+    };
+
+    this.vehicleService.exportPNK(request)
+      .subscribe(b =>
+        this.download(b, `PNK_${this.importNumber}.docx`)
+      );
   }
 
   exportBaoCao() {
-    this.vehicleService.exportBaoCao(this.getSelectedIds())
-      .subscribe(b => this.download(b, 'BAO_CAO_DINH_GIA.docx'));
+
+    const request: ExportPNKRequest = {
+      importNumber: this.importNumber,
+      vehicleIds: this.importedVehicleIds
+    };
+
+    this.vehicleService.exportBaoCao(request)
+      .subscribe(b =>
+        this.download(b, `BAO_CAO_${this.importNumber}.docx`)
+      );
   }
 
   exportBienBan() {
-    this.vehicleService.exportBienBan(this.getSelectedIds())
-      .subscribe(b => this.download(b, 'BIEN_BAN_DINH_GIA.docx'));
+
+    const request: ExportPNKRequest = {
+      importNumber: this.importNumber,
+      vehicleIds: this.importedVehicleIds
+    };
+
+    this.vehicleService.exportBienBan(request)
+      .subscribe(b =>
+        this.download(b, `BIEN_BAN_${this.importNumber}.docx`)
+      );
   }
 
   exporPhuLucHopDongThueChap() {
-    this.vehicleService.exporPhuLucHopDongThueChap(this.getSelectedIds())
-      .subscribe(b => this.download(b, 'PHU_LUC_HOP_DONG_THUE_CHAP.docx'));
+
+    const request: ExportPNKRequest = {
+      importNumber: this.importNumber,
+      vehicleIds: this.importedVehicleIds
+    };
+
+    this.vehicleService.exporPhuLucHopDongThueChap(request)
+      .subscribe(b =>
+        this.download(b, `PHU_LUC_${this.importNumber}.docx`)
+      );
   }
   exporDangKyGiaoDichDamBao() {
-    this.vehicleService.exporDangKyGiaoDichDamBao(this.getSelectedIds())
-      .subscribe(b => this.download(b, 'DANG_KY_GIAO_DICH_DAM_BAO.docx'));
+    const request: ExportPNKRequest = {
+      importNumber: this.importNumber,
+      vehicleIds: this.importedVehicleIds
+    };
+    this.vehicleService.exporDangKyGiaoDichDamBao(request)
+      .subscribe(b =>
+        this.download(b, `GIAO_DICH_DAM_BAO_${this.importNumber}.docx`)
+      );
   }
 
   // exportVinfast() {
@@ -352,35 +418,15 @@ export class NhapKhoXeComponent {
   }
   finishNhapKho() {
 
-  const ids = this.getSelectedIds();
+    const ids = this.getSelectedIds();
 
-  if (ids.length === 0) {
-    alert("Chưa chọn xe");
-    return;
+    if (ids.length === 0) {
+      alert("Chưa chọn xe");
+      return;
+    }
+
+    this.loading = true;
+
+
   }
-
-  this.loading = true;
-
-  this.warehouseService.importWarehouse(ids)
-    .subscribe({
-      next: (res) => {
-
-        console.log("Import result:", res);
-
-        this.loading = false;
-        alert("Nhập kho thành công");
-
-        // reset
-        this.showNhapKho = false;
-        this.selectedVehicles = [];
-        this.currentStep = 1;
-
-        this.loadVehicles(); // reload lại danh sách
-      },
-      error: (err) => {
-        this.loading = false;
-        alert(err.error?.message || "Có lỗi xảy ra khi nhập kho");
-      }
-    });
-}
 }

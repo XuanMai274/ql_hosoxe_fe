@@ -8,6 +8,7 @@ import { VehicleList } from '../models/vehiclelist.model';
 import { Invoice } from '../models/invoice-data.model';
 import { Guarantee } from '../models/guarantee.model';
 import { GuaranteeLetter } from '../models/guarantee_letter';
+import { ExportPNKRequest } from '../models/exportPNK-request';
 
 @Injectable({
     providedIn: 'root'
@@ -15,7 +16,7 @@ import { GuaranteeLetter } from '../models/guarantee_letter';
 export class VehicleService {
 
     private apiUrl = 'http://localhost:8080/officer/vehicles';
-
+    private exportBaseUrl = 'http://localhost:8080/officer/vehicles/nhapkho';
     constructor(private http: HttpClient) { }
     // createVehicle(vehicle: Vehicle): Observable<Vehicle> {
     //     return this.http.post<Vehicle>(`http://localhost:8080/add/vehicle`, vehicle);
@@ -90,41 +91,41 @@ export class VehicleService {
             }
         );
     }
-    exportPNK(ids: number[]) {
+    exportPNK(request: ExportPNKRequest) {
         return this.http.post(
-            'http://localhost:8080/officer/vehicles/nhapkho/export-pnk',
-            { vehicleIds: ids },
+            `${this.exportBaseUrl}/export-pnk`,
+            request,
             { responseType: 'blob' }
         );
     }
 
-    exportBaoCao(ids: number[]) {
+    exportBaoCao(request: ExportPNKRequest) {
         return this.http.post(
-            'http://localhost:8080/officer/vehicles/nhapkho/export-bao-cao-dinh-gia',
-            { vehicleIds: ids },
+            `${this.exportBaseUrl}/export-bao-cao-dinh-gia`,
+            request,
             { responseType: 'blob' }
         );
     }
 
-    exportBienBan(ids: number[]) {
+    exportBienBan(request: ExportPNKRequest) {
         return this.http.post(
-            'http://localhost:8080/officer/vehicles/nhapkho/export-bien-ban-dinh-gia',
-            { vehicleIds: ids },
+            `${this.exportBaseUrl}/export-bien-ban-dinh-gia`,
+            request,
             { responseType: 'blob' }
         );
     }
 
-    exporPhuLucHopDongThueChap(ids: number[]) {
+    exporPhuLucHopDongThueChap(request: ExportPNKRequest) {
         return this.http.post(
-            'http://localhost:8080/officer/vehicles/nhapkho/phu-luc-hop-dong-the-chap',
-            ids,   // ✅ gửi trực tiếp array
+            `${this.exportBaseUrl}/phu-luc-hop-dong-the-chap`,
+            request,
             { responseType: 'blob' }
         );
     }
-    exporDangKyGiaoDichDamBao(ids: number[]) {
+    exporDangKyGiaoDichDamBao(request: ExportPNKRequest) {
         return this.http.post(
-            'http://localhost:8080/officer/vehicles/nhapkho/dang-ky-giao-dich-dam-bao',
-            ids,   // ✅ gửi trực tiếp array
+            `${this.exportBaseUrl}/dang-ky-giao-dich-dam-bao`,
+            request,
             { responseType: 'blob' }
         );
     }
