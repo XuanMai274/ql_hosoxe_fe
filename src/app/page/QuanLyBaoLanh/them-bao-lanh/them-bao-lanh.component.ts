@@ -19,6 +19,8 @@ import { GuaranteeLetterService } from '../../../service/guarantee-letter.servic
 import JSZip from 'jszip';
 import { forkJoin } from 'rxjs';
 import { saveAs } from 'file-saver';
+import { ActivatedRoute } from '@angular/router';
+import { OfficerGuaranteeService } from '../../../service/officer-guarantee.service';
 @Component({
   selector: 'app-them-bao-lanh',
   standalone: true,
@@ -57,6 +59,8 @@ export class ThemBaoLanhComponent implements OnInit {
     private guaranteeService: GuaranteeService,
     private guaranteeLetterService: GuaranteeLetterService,
     private customerService: CustomerService,
+    private officerGuaranteeService: OfficerGuaranteeService,
+    private route: ActivatedRoute,
     private sanitizer: DomSanitizer
   ) { }
 
@@ -73,6 +77,7 @@ export class ThemBaoLanhComponent implements OnInit {
     this.bindExportCalculation();
     this.initRepresentativeForm();
     this.loadCustomers();
+    this.checkApplicationId();
     this.guaranteeForm.get('authorizedRepresentativeId')
       ?.valueChanges.subscribe(value => {
 
@@ -189,6 +194,48 @@ export class ThemBaoLanhComponent implements OnInit {
         }
 
       });
+  }
+
+  /* ================= CHECK APPLICATION ID ================= */
+  private checkApplicationId(): void {
+    this.route.queryParams.subscribe(params => {
+      const appId = params['applicationId'];
+      if (appId) {
+        this.officerGuaranteeService.getApplicationById(Number(appId)).subscribe({
+          next: (app: GuaranteeLetter) => {
+            if (app.manufacturerDTO) {
+              const brand = this.brands.find(b => b.id === app.manufacturerDTO?.id);
+              if (brand) {
+                this.selectBrand(brand);
+              } else {
+                // Nếu chưa load kịp brands, gán tạm hoặc chờ
+                this.selectedBrand = app.manufacturerDTO;
+                this.applyBrandLogic(app.manufacturerDTO);
+              }
+            }
+
+            if (app.customerDTO) {
+              this.guaranteeForm.patchValue({
+                customer: app.customerDTO
+              });
+            }
+
+            this.guaranteeForm.patchValue({
+              expectedVehicleCount: app.expectedVehicleCount,
+              expectedGuaranteeAmount: app.expectedGuaranteeAmount,
+              saleContract: app.saleContract,
+              saleContractAmount: app.saleContractAmount
+            });
+
+            // Sau khi điền xong, tự động nhảy sang Step 2 luôn
+            this.currentStep = 2;
+          },
+          error: (err) => {
+            console.error('Error loading application details:', err);
+          }
+        });
+      }
+    });
   }
 
   /* ================= LOGIC ================= */

@@ -30,11 +30,14 @@ export class AuthInterceptor implements HttpInterceptor {
         });
 
         if (token && !isAuthEndpoint) {
+            console.log("--- [Frontend] Adding Token to request: " + req.url);
             authReq = authReq.clone({
                 setHeaders: {
                     Authorization: `Bearer ${token}`
                 }
             });
+        } else if (!isAuthEndpoint) {
+            console.warn("--- [Frontend] No Token found for request: " + req.url);
         }
 
         return next.handle(authReq).pipe(
