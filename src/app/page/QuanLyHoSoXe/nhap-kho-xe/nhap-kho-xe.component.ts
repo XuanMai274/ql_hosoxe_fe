@@ -12,6 +12,10 @@ import { LoanDTO } from '../../../models/loan.model';
 import { WarehouseService } from '../../../service/warehouse.service';
 import { WarehouseImportDTO } from '../../../models/warehouseImport.model';
 import { ExportPNKRequest } from '../../../models/exportPNK-request';
+import { DisbursementService } from '../../../service/disbursement.service';
+import { DisbursementDTO } from '../../../models/disbursement.model';
+import { DisbursementExportRequest } from '../../../models/disbursement-export-request';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-nhap-kho-xe',
@@ -27,9 +31,12 @@ export class NhapKhoXeComponent {
   loading = false;
   selectedVehicles: Vehicle[] = [];
   loanForms: VehicleLoanForm[] = [];
+  vehicleFactor = 0.85;
+  realEstateFactor = 0.8;
   //Lưu dữ liệu nhập kho trả về
   warehouseImportResult?: WarehouseImportDTO;
-
+  createdDisbursement?: DisbursementDTO;
+  createdLoans: LoanDTO[] = [];
   //Lưu vehicleIds sau khi backend trả về
   importedVehicleIds: number[] = [];
 
@@ -37,6 +44,8 @@ export class NhapKhoXeComponent {
   importNumber: string = '';
   showNhapKho = false;
   currentStep = 1;
+  showPreviewModal = false;
+  previewData?: DisbursementDTO;
   // ===== FILTER =====
   chassisNumber = '';
   status = '';
@@ -53,6 +62,7 @@ export class NhapKhoXeComponent {
     private vehicleService: VehicleService,
     private loanService: LoanService,
     private warehouseService: WarehouseService,
+    private disbursementService: DisbursementService,
     private router: Router
   ) { }
 
@@ -104,68 +114,176 @@ export class NhapKhoXeComponent {
     );
   }
   isBatchValid(): boolean {
-    return this.loanForms.length > 0 &&
-      this.loanForms.every(f =>
-        // f.loanContractNumber &&
-        f.loanTerm &&
-        f.loanTerm > 0
-      );
+    return this.loanForms.length > 0;
   }
+  previewBatchLoans() {
+    if (!this.isBatchValid()) return;
+    this.loading = true;
+
+    this.disbursementService
+      .previewDisbursement(2)
+      .subscribe({
+        next: (res) => {
+          this.previewData = res;
+          this.previewData.startDate = new Date();
+          this.previewData.loanTerm = 30; // Mặc định 30 ngày
+          this.calculatePreviewDueDate();
+          this.syncDisbursementAmount();
+          this.showPreviewModal = true;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+          Swal.fire('Lỗi', err.error?.message || "Lỗi tải preview", 'error');
+        }
+      });
+  }
+
+  calculatePreviewDueDate() {
+    if (!this.previewData || !this.previewData.startDate || !this.previewData.loanTerm) return;
+    const start = new Date(this.previewData.startDate);
+    const due = new Date(start);
+    due.setDate(start.getDate() + Number(this.previewData.loanTerm));
+    this.previewData.dueDate = due;
+  }
+
+  isNonWorkingDay(date: any): boolean {
+    if (!date) return false;
+    const d = new Date(date);
+    const day = d.getDay();
+    const isWeekend = (day === 0 || day === 6); // 0: CN, 6: T7
+
+    // Kiểm tra một số ngày lễ cố định (có thể mở rộng)
+    const dateNum = d.getDate();
+    const month = d.getMonth() + 1;
+    const isHoliday = (dateNum === 1 && month === 1) || // Tết dương
+      (dateNum === 30 && month === 4) || // Giải phóng
+      (dateNum === 1 && month === 5) ||  // Lao động
+      (dateNum === 2 && month === 9);   // Quốc khánh
+
+    return isWeekend || isHoliday;
+  }
+
+  getDayOfWeek(date: any): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+    return days[d.getDay()];
+  }
+
+  confirmDisbursement() {
+    if (!this.previewData) return;
+    this.loading = true;
+
+    const ids = this.getSelectedIds();
+
+    // 1. Gọi API Nhập kho
+    this.warehouseService.importWarehouse(ids).subscribe({
+      next: (res) => {
+        console.log("Warehouse result:", res);
+        this.warehouseImportResult = res;
+        this.importedVehicleIds = res.vehicleIds;
+        this.importNumber = res.importNumber;
+        if (this.previewData) {
+          this.previewData.mortgageContractId =
+            this.warehouseImportResult.mortgageContractDTO.id;
+        }
+        // 2. Gọi API Tạo giải ngân
+        this.disbursementService.createDisbursement(this.previewData!).subscribe({
+          next: (resDis) => {
+            // Lưu giải ngân đã tạo
+            this.createdDisbursement = resDis;
+
+            // update lại để dùng cho tạo khoản vay
+            this.previewData = resDis;
+
+            // 3. Gọi API Tạo khoản vay
+            this.submitBatchLoans();
+          },
+          error: (err) => {
+            this.loading = false;
+            Swal.fire('Lỗi', err.error?.message || "Lỗi tạo giải ngân", 'error');
+          }
+        });
+      },
+      error: (err) => {
+        this.loading = false;
+        Swal.fire('Lỗi', err.error?.message || "Lỗi nhập kho", 'error');
+      }
+    });
+  }
+
   submitBatchLoans() {
+
+    this.buildLoanForms();
 
     if (!this.isBatchValid()) return;
 
     this.loading = true;
 
-    const ids = this.getSelectedIds();
-
     const payload: LoanDTO[] = this.loanForms.map(f => ({
 
-      loanTerm: f.loanTerm!,
-      loanDate: this.formatDate(this.today),
-      dueDate: f.dueDate ? this.formatDate(f.dueDate) : undefined,
+      loanContractNumber: this.createdDisbursement?.loanContractNumber,
+
+      loanTerm: this.createdDisbursement?.loanTerm || 0,
+
+      loanDate: this.createdDisbursement?.startDate
+        ? this.formatDate(new Date(this.createdDisbursement.startDate))
+        : this.formatDate(new Date()),
+
+      dueDate: this.createdDisbursement?.dueDate
+        ? this.formatDate(new Date(this.createdDisbursement.dueDate))
+        : undefined,
+
+      disbursementDTO: this.createdDisbursement?.id
+        ? { id: this.createdDisbursement.id }
+        : undefined,
+
       loanAmount: f.guaranteeAmount,
       withdrawnChassisNumber: f.chassisNumber,
+
       loanStatus: 'ACTIVE',
       loanType: 'VEHICLE',
+
       customerDTO: { id: 2 },
-      vehicleId: f.vehicleId
+      vehicleDTO: { id: f.vehicleId }
 
-    }));
+    } as any));
 
-    // ===== 1️⃣ TẠO KHOẢN VAY =====
+    console.log("Payload tạo khoản vay:", payload);
+
     this.loanService.createBatchLoans(payload)
       .subscribe({
-        next: () => {
-
-          // ===== 2️⃣ SAU KHI TẠO LOAN → GỌI NHẬP KHO =====
-          this.warehouseService.importWarehouse(ids)
-            .subscribe({
-              next: (res) => {
-
-                console.log("Warehouse result:", res);
-
-                // LƯU DATA TRẢ VỀ
-                this.warehouseImportResult = res;
-                this.importedVehicleIds = res.vehicleIds;
-                this.importNumber = res.importNumber;
-
-                this.loading = false;
-                this.currentStep = 3;
-
-                alert("Tạo khoản vay & nhập kho thành công");
-              },
-              error: (err) => {
-                this.loading = false;
-                alert(err.error?.message || "Lỗi nhập kho");
-              }
-            });
-        },
-        error: () => {
+        next: (resLoans) => {
+          this.createdLoans = resLoans;
           this.loading = false;
-          alert('Có lỗi tạo khoản vay');
+          this.currentStep = 3;
+          this.closePreviewModal();
+
+          Swal.fire({
+            title: 'Thành công!',
+            text: 'Đã tạo giải ngân, nhập kho và khoản vay thành công.',
+            icon: 'success',
+            confirmButtonText: 'Đóng',
+            confirmButtonColor: '#028B89'
+          });
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error("Loan error:", err);
+          Swal.fire({
+            title: 'Lỗi!',
+            text: err.error?.message || 'Có lỗi khi tạo khoản vay',
+            icon: 'error',
+            confirmButtonText: 'Đóng'
+          });
         }
       });
+  }
+
+  closePreviewModal() {
+    this.previewData = undefined;
+    this.showPreviewModal = false;
   }
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
@@ -292,6 +410,8 @@ export class NhapKhoXeComponent {
       this.selectedVehicles =
         this.selectedVehicles.filter(v => v.id !== vehicle.id);
     }
+    // nếu preview đang mở → auto sync lại
+    this.syncDisbursementAmount();
   }
   // ===== DETAIL =====
   viewDetail(id: number): void {
@@ -416,12 +536,24 @@ export class NhapKhoXeComponent {
     this.exporDangKyGiaoDichDamBao();
     // this.exportVinfast();
   }
+  exportHoSoGiaiNgan() {
+
+    const request: DisbursementExportRequest = {
+      disbursementDTO: this.createdDisbursement,
+      vehicleIds: this.importedVehicleIds
+    };
+
+    this.vehicleService.exportDisbursementPackage(request)
+      .subscribe(b =>
+        this.download(b, `HO_SO_GIAI_NGAN_${this.importNumber}.zip`)
+      );
+  }
   finishNhapKho() {
 
     const ids = this.getSelectedIds();
 
     if (ids.length === 0) {
-      alert("Chưa chọn xe");
+      Swal.fire('Chú ý', "Chưa chọn xe", 'warning');
       return;
     }
 
@@ -429,4 +561,33 @@ export class NhapKhoXeComponent {
 
 
   }
+  isOverLimit(): boolean {
+
+    if (!this.previewData) return false;
+
+    return (this.previewData.disbursementAmount || 0)
+      > (this.previewData.remainingLimit || 0);
+  }
+  recalculateValues() {
+
+    if (!this.previewData) return;
+
+    const vehicleValue = Number(this.previewData.totalCollateralValue) || 0;
+    const realEstateValue = Number(this.previewData.realEstateValue) || 0;
+
+    const vehicleFactor = Number(this.vehicleFactor) || 0;
+    const realEstateFactor = Number(this.realEstateFactor) || 0;
+
+    this.previewData.collateralValueAfterFactor =
+      vehicleValue * vehicleFactor;
+
+    this.previewData.realEstateValueAfterFactor =
+      realEstateValue * realEstateFactor;
+  }
+  private syncDisbursementAmount() {
+    if (!this.previewData) return;
+
+    this.previewData.disbursementAmount = this.getTotalLoanAmount();
+  }
+
 }

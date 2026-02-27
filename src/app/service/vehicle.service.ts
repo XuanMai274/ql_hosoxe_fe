@@ -9,6 +9,7 @@ import { Invoice } from '../models/invoice-data.model';
 import { Guarantee } from '../models/guarantee.model';
 import { GuaranteeLetter } from '../models/guarantee_letter';
 import { ExportPNKRequest } from '../models/exportPNK-request';
+import { DisbursementExportRequest } from '../models/disbursement-export-request';
 
 @Injectable({
     providedIn: 'root'
@@ -160,6 +161,13 @@ export class VehicleService {
         return this.http.put(
             `http://localhost:8080/officer/vehicles/${id}`,
             payload
+        );
+    }
+    exportDisbursementPackage(request: DisbursementExportRequest) {
+        return this.http.post(
+            'http://localhost:8080/officer/disbursements/export-all',
+            request,
+            { responseType: 'blob' }
         );
     }
 }
