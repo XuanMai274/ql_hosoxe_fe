@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
     templateUrl: './customer-login.component.html',
     styleUrl: './customer-login.component.css'
 })
-export class CustomerLoginComponent {
+export class CustomerLoginComponent implements OnInit {
 
     loginForm: FormGroup;
     isLoading = false;
@@ -43,6 +43,12 @@ export class CustomerLoginComponent {
             username: [this.savedUsername, Validators.required],
             password: ['', Validators.required]
         });
+    }
+
+    ngOnInit(): void {
+        if (this.authService.isAuthenticate()) {
+            this.router.navigate(['/customer/don-hang-bao-lanh']);
+        }
     }
 
     onSwitchAccount(): void {
@@ -75,6 +81,7 @@ export class CustomerLoginComponent {
                     localStorage.removeItem('savedIdentifier');
                     localStorage.removeItem('fullName');
                     localStorage.removeItem('username');
+                    localStorage.removeItem('userId');
                     this.isSwitching = false;
                 }
 
@@ -84,6 +91,7 @@ export class CustomerLoginComponent {
                 localStorage.setItem('accessToken', response.accessToken);
                 localStorage.setItem('refreshToken', response.refreshToken);
                 localStorage.setItem('userRole', response.role);
+                localStorage.setItem('userId', response.id.toString());
 
                 this.isLoading = false;
 
