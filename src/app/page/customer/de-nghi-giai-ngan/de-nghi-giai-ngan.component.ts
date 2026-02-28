@@ -1,17 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomerWarehouseService } from '../../../service/customer-warehouse.service';
-import { LoanDTO } from '../../../models/loan.model';
-
-/** Nhóm giải ngân - tương đương một "disbursement" cha, gồm nhiều loan con */
-export interface DisbursementGroup {
-  contractNumber: string;       // Số hợp đồng tín dụng cha
-  creditContractId?: number;
-  loans: LoanDTO[];
-  totalAmount: number;
-  loanContractNumber: string;  // Số HĐTD chi tiết (đơn con đầu tiên)
-  latestDate?: string;         // Ngày giải ngân mới nhất
-}
 
 @Component({
   selector: 'app-de-nghi-giai-ngan',
@@ -22,14 +11,13 @@ export interface DisbursementGroup {
 })
 export class DeNghiGiaiNganComponent implements OnInit {
 
-  allLoans: LoanDTO[] = [];
-  groups: DisbursementGroup[] = [];
+  groups: any[] = [];
   loading = true;
   error = '';
 
   // Modal chi tiết
   showDetail = false;
-  selectedGroup: DisbursementGroup | null = null;
+  selectedGroup: any | null = null;
 
   constructor(private service: CustomerWarehouseService) { }
 
@@ -40,10 +28,15 @@ export class DeNghiGiaiNganComponent implements OnInit {
   loadData(): void {
     this.loading = true;
     this.error = '';
-    this.service.getMyLoans().subscribe({
+    this.service.getMyDisbursements().subscribe({
       next: (data) => {
-        this.allLoans = data;
-        this.buildGroups(data);
+        // Map DisbursementDTO sang cấu trúc HTML mong đợi nếu cần
+        this.groups = data.map(d => ({
+          ...d,
+          contractNumber: d.mortgageContractDTO?.contractNumber || '—',
+          totalAmount: d.disbursementAmount || 0,
+          latestDate: d.disbursementDate
+        }));
         this.loading = false;
       },
       error: (err) => {
@@ -54,42 +47,7 @@ export class DeNghiGiaiNganComponent implements OnInit {
     });
   }
 
-  /** Group loans theo loanContractNumber (mỗi đợt giải ngân = 1 số HĐTDCT) */
-  buildGroups(loans: LoanDTO[]): void {
-    const map = new Map<string, LoanDTO[]>();
-
-    for (const loan of loans) {
-      const key = loan.loanContractNumber || 'unknown';
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(loan);
-    }
-
-    this.groups = Array.from(map.entries()).map(([loanContractNumber, groupLoans]) => {
-      const totalAmount = groupLoans.reduce((s, l) => s + (l.loanAmount || 0), 0);
-      const dates = groupLoans
-        .map(l => l.createdAt)
-        .filter(d => !!d)
-        .sort();
-
-      return {
-        contractNumber: groupLoans[0]?.creditContractDTO?.contractNumber || '—',
-        creditContractId: groupLoans[0]?.creditContractDTO?.id,
-        loanContractNumber,
-        loans: groupLoans,
-        totalAmount,
-        latestDate: dates.length > 0 ? dates[dates.length - 1] : undefined
-      };
-    });
-
-    // Sort by date desc
-    this.groups.sort((a, b) => {
-      if (!a.latestDate) return 1;
-      if (!b.latestDate) return -1;
-      return new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime();
-    });
-  }
-
-  openDetail(group: DisbursementGroup): void {
+  openDetail(group: any): void {
     this.selectedGroup = group;
     this.showDetail = true;
     document.body.style.overflow = 'hidden';
@@ -130,6 +88,6 @@ export class DeNghiGiaiNganComponent implements OnInit {
   }
 
   get totalDisbursed(): number {
-    return this.allLoans.reduce((s, l) => s + (l.loanAmount || 0), 0);
+    return this.groups.reduce((s, g) => s + (g.totalAmount || 0), 0);
   }
 }
