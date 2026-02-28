@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthServiceComponent } from '../../core/service/auth-service.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,13 +9,14 @@ import { RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 @Component({
   selector: 'app-login',
+  standalone: true, // Thêm standalone nếu chưa có (Angular 17+)
   imports: [CommonModule,
     ReactiveFormsModule,
     RouterModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
   isLoading = false;
@@ -44,6 +45,14 @@ export class LoginComponent {
       username: [this.savedUsername, Validators.required],
       password: ['', Validators.required]
     });
+  }
+
+  ngOnInit(): void {
+    // Nếu đã đăng nhập, tự động chuyển hướng về trang chủ tương ứng
+    if (this.authService.isAuthenticate()) {
+      const role = this.authService.getUserRole();
+      this.navigateByRole(role);
+    }
   }
 
   /** Chuyển sang chế độ nhập tài khoản mới – chưa xóa dữ liệu cũ */
@@ -77,6 +86,7 @@ export class LoginComponent {
           localStorage.removeItem('savedIdentifier');
           localStorage.removeItem('fullName');
           localStorage.removeItem('username');
+          localStorage.removeItem('userId');
           this.isSwitching = false;
         }
 
@@ -90,6 +100,7 @@ export class LoginComponent {
         // Lưu ý: refreshToken được Backend lưu trong HttpOnly Cookie, KHÔNG có trong response body
         localStorage.setItem('accessToken', response.accessToken);
         localStorage.setItem('userRole', response.role);
+        localStorage.setItem('userId', response.id.toString());
 
         // ===== DEBUG: Kiểm tra token đã lưu =====
         console.log('✅ [LOGIN] accessToken lưu vào localStorage:', localStorage.getItem('accessToken') ? 'CÓ (length=' + localStorage.getItem('accessToken')!.length + ')' : '❌ KHÔNG CÓ');

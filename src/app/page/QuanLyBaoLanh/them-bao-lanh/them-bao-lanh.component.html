@@ -42,15 +42,31 @@
         <div class="form-grid two-col">
           <div>
             <label>Khách hàng<span class="req">*</span></label>
-
             <select formControlName="customer">
               <option *ngFor="let c of customers" [ngValue]="c">
                 {{ c.customerName }} - {{ c.cif }} </option>
             </select>
-
-            <small class="text-error" *ngIf="guaranteeForm.get('customer')?.touched
-        && guaranteeForm.get('customer')?.invalid">
+            <small class="text-error"
+              *ngIf="guaranteeForm.get('customer')?.touched && guaranteeForm.get('customer')?.invalid">
               Vui lòng chọn khách hàng
+            </small>
+          </div>
+
+          <div>
+            <label>Hợp đồng tín dụng/Hạn mức <span class="req">*</span></label>
+            <select formControlName="creditContractId">
+              <option [ngValue]="null">-- Chọn hợp đồng tín dụng --</option>
+              <option *ngFor="let cc of filteredCreditContracts" [value]="cc.id">
+                {{ cc.contractNumber }} (Hạn mức: {{ cc.creditLimit | number }})
+              </option>
+            </select>
+            <small class="text-error"
+              *ngIf="guaranteeForm.get('creditContractId')?.touched && guaranteeForm.get('creditContractId')?.invalid">
+              Vui lòng chọn hợp đồng tín dụng
+            </small>
+            <small class="text-info"
+              *ngIf="filteredCreditContracts.length === 0 && guaranteeForm.get('customer')?.value">
+              Khách hàng này chưa có hợp đồng tín dụng nào.
             </small>
           </div>
           <div>
@@ -89,7 +105,8 @@
             <label>Giá trị hợp đồng mua bán <span class="req">*</span></label>
 
             <input type="text" [value]="formatMoney(guaranteeForm.get('saleContractAmount')?.value)"
-              (input)="onMoneyInput($event,'saleContractAmount', undefined, guaranteeForm)" />
+              (input)="onMoneyInput($event,'saleContractAmount', undefined, guaranteeForm)"
+              placeholder="Nhập giá trị hợp đồng" />
 
             <small class="text-error" *ngIf="guaranteeForm.get('saleContractAmount')?.touched
     && guaranteeForm.get('saleContractAmount')?.invalid">
@@ -108,11 +125,11 @@
           <div>
             <label>Tổng tiền bảo lãnh dự kiến</label>
 
-            <input type="text" [value]="formatMoney(guaranteeForm.get('expectedGuaranteeAmount')?.value)" />
+            <input type="text" [value]="formatMoney(guaranteeForm.get('expectedGuaranteeAmount')?.value)" disabled />
           </div>
           <div>
             <label>Số lượng xe dự kiến <span class="req">*</span></label>
-            <input type="number" formControlName="expectedVehicleCount" />
+            <input type="number" formControlName="expectedVehicleCount" placeholder="Nhập số lượng xe" />
             <small class="text-error" *ngIf="guaranteeForm.get('expectedVehicleCount')?.touched
         && guaranteeForm.get('expectedVehicleCount')?.invalid">
               <span *ngIf="guaranteeForm.get('expectedVehicleCount')?.errors?.['required']">
@@ -212,6 +229,13 @@
           <span class="label">Hãng xe</span>
           <span class="value">
             {{ currentGuarantee?.manufacturerDTO?.name }}
+          </span>
+        </div>
+
+        <div class="summary-item">
+          <span class="label">Số lượng xe dự kiến</span>
+          <span class="value">
+            {{ currentGuarantee?.expectedVehicleCount }} xe
           </span>
         </div>
 

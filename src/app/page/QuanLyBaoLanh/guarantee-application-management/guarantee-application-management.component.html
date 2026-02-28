@@ -45,15 +45,18 @@
                             </span>
                         </td>
                         <td>
-                            <div class="action-buttons" *ngIf="app.status?.toLowerCase() === 'pending'">
-                                <button class="btn-action btn-approve" (click)="onApprove(app)" title="Duyệt">
-                                    <i class="fa-solid fa-check"></i> Duyệt
+                            <div class="action-buttons"
+                                *ngIf="app.status?.toLowerCase() === 'pending' || app.status?.toLowerCase() === 'pending_approval'">
+                                <button class="btn-action btn-approve" (click)="onApprove(app)"
+                                    title="Lập hồ sơ bảo lãnh">
+                                    <i class="fa-solid fa-file-signature"></i> Lập hồ sơ
                                 </button>
                                 <button class="btn-action btn-reject" (click)="onReject(app)" title="Từ chối">
                                     <i class="fa-solid fa-xmark"></i> Từ chối
                                 </button>
                             </div>
-                            <div class="action-buttons" *ngIf="app.status?.toLowerCase() !== 'pending'">
+                            <div class="action-buttons"
+                                *ngIf="app.status?.toLowerCase() !== 'pending' && app.status?.toLowerCase() !== 'pending_approval'">
                                 <span class="processed-info">Đã xử lý</span>
                             </div>
                         </td>

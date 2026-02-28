@@ -46,29 +46,8 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
     }
 
     onApprove(app: GuaranteeLetter): void {
-        Swal.fire({
-            title: 'Xác nhận duyệt',
-            text: `Bạn có chắc chắn muốn duyệt hồ sơ của khách hàng ${app.customerDTO?.customerName}?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Duyệt',
-            cancelButtonText: 'Hủy',
-            confirmButtonColor: '#028B89'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                this.officerGuaranteeService.approveApplication(app.id!).subscribe({
-                    next: () => {
-                        Swal.fire('Thành công', 'Đã duyệt hồ sơ bảo lãnh', 'success');
-                        // Sau khi duyệt thành công, chuyển sang bước tạo đề nghị bảo lãnh
-                        // Truyền ID để FE có thể load dữ liệu từ đơn này
-                        this.router.navigate(['/manager/them-bao-lanh'], { queryParams: { applicationId: app.id } });
-                    },
-                    error: (err) => {
-                        Swal.fire('Lỗi', err.error?.message || 'Không thể duyệt hồ sơ', 'error');
-                    }
-                });
-            }
-        });
+        // Chỉ chuyển sang bước lập hồ sơ bảo lãnh, không đổi trạng thái ngay
+        this.router.navigate(['/manager/them-bao-lanh'], { queryParams: { applicationId: app.id } });
     }
 
     onReject(app: GuaranteeLetter): void {
@@ -102,8 +81,9 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
 
     getStatusClass(status: string | undefined): string {
         if (!status) return 'status-default';
-        switch (status.toLowerCase()) {
-            case 'pending': return 'status-pending';
+        const s = status.toLowerCase();
+        if (s === 'pending' || s === 'pending_approval') return 'status-pending';
+        switch (s) {
             case 'approved': return 'status-approved';
             case 'rejected': return 'status-rejected';
             default: return 'status-default';
@@ -112,8 +92,9 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
 
     getStatusText(status: string | undefined): string {
         if (!status) return 'Không xác định';
-        switch (status.toLowerCase()) {
-            case 'pending': return 'Chờ duyệt';
+        const s = status.toLowerCase();
+        if (s === 'pending' || s === 'pending_approval') return 'Chờ duyệt';
+        switch (s) {
             case 'approved': return 'Đã duyệt';
             case 'rejected': return 'Đã từ chối';
             default: return status;

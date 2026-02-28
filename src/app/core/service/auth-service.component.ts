@@ -64,6 +64,7 @@ export class AuthServiceComponent {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("userRole");
+        localStorage.removeItem("userId");
         console.log("đã đăng xuất");
         this.router.navigate(["/login"]);
     }
@@ -92,6 +93,11 @@ export class AuthServiceComponent {
         } catch {
             return "";
         }
+    }
+
+    // lấy ID của người dùng
+    getUserId(): string | null {
+        return localStorage.getItem("userId");
     }
 
     // kiểm tra phân quyền
