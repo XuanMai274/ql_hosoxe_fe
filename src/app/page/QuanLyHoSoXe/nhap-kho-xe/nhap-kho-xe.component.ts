@@ -186,7 +186,7 @@ export class NhapKhoXeComponent {
         this.importNumber = res.importNumber;
         if (this.previewData) {
           this.previewData.mortgageContractId =
-            this.warehouseImportResult.mortgageContractDTO.id;
+            this.warehouseImportResult?.mortgageContractDTO?.id ;
         }
         // 2. Gọi API Tạo giải ngân
         this.disbursementService.createDisbursement(this.previewData!).subscribe({
