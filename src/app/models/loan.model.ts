@@ -1,5 +1,6 @@
 import { CreditContract } from "./credit_contract";
 import { Customer } from "./customer.model";
+import { DisbursementDTO } from "./disbursement.model";
 import { GuaranteeLetter } from "./guarantee_letter";
 import { Vehicle } from "./vehicle";
 
@@ -34,6 +35,7 @@ export interface LoanDTO {
   guaranteeLetterId?: number;
   guaranteeLetterDTO?: GuaranteeLetter;
   creditContractDTO?: CreditContract;
+  disbursementDTO?: DisbursementDTO;
   vehicleDTO?: Vehicle;
   createdAt?: string;
   updatedAt?: string;

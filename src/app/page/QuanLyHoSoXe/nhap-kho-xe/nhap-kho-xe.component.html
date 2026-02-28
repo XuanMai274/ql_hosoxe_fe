@@ -126,7 +126,7 @@
   </div>
   <div *ngIf="currentStep === 2">
 
-    <h2 class="section-title">Tạo khoản vay</h2>
+    <h2 class="section-title">Nhập kho và tạo khoản vay</h2>
 
     <div class="total-box">
       <div class="label">Tổng tiền vay</div>
@@ -139,8 +139,6 @@
           <th>Tên xe</th>
           <th>Số khung</th>
           <th>Số tiền vay</th>
-          <!-- <th>Số HĐ vay *</th> -->
-          <th>Thời hạn *</th>
           <th>Ngày vay</th>
           <th>Ngày đến hạn</th>
         </tr>
@@ -151,25 +149,16 @@
           <td>{{ f.vihicleName }}</td>
           <td>{{ f.chassisNumber }}</td>
           <td>{{ f.guaranteeAmount | number }}</td>
-
-          <!-- <td>
-            <input [(ngModel)]="f.loanContractNumber">
-          </td> -->
-
-          <td>
-            <input type="number" [(ngModel)]="f.loanTerm" (input)="calculateDueDate(f)">
-          </td>
-
           <td>{{ today | date:'dd/MM/yyyy' }}</td>
-          <td>{{ f.dueDate | date:'dd/MM/yyyy' }}</td>
+          <td>{{ (previewData?.dueDate || f.dueDate) | date:'dd/MM/yyyy' }}</td>
         </tr>
       </tbody>
     </table>
 
     <div class="actions">
       <button (click)="prevStep()" class="btn btn-back">Quay lại</button>
-      <button class="btn btn-create" [disabled]="!isBatchValid() || loading" (click)="submitBatchLoans()">
-        {{ loading ? 'Đang xử lý...' : 'Tạo khoản vay' }}
+      <button class="btn btn-create" [disabled]="!isBatchValid() || loading" (click)="previewBatchLoans()">
+        {{ loading ? 'Đang xử lý...' : 'Nhập kho và tạo khoản vay' }}
       </button>
     </div>
 
@@ -206,6 +195,9 @@
       <button class="btn-primary" (click)="goToStep(1)">
         <i class="fa-solid fa-angles-left"></i>
       </button>
+      <button class="btn-primary" (click)="exportHoSoGiaiNgan()">
+        Xuất bộ hồ sơ giải ngân
+      </button>
       <button class="btn-primary" (click)="exportAll()">
         Xuất bộ hồ sơ
       </button>
@@ -229,9 +221,9 @@
       </button>
 
       <button class="btn-link" (click)="exporPhuLucHopDongThueChap()">
-        Phụ lục 
+        Phụ lục
       </button>
-          <button class="btn-link" (click)="exporPhuLucHopDongThueChap()">
+      <button class="btn-link" (click)="exporPhuLucHopDongThueChap()">
         Đăng kí giao dịch đảm bảo
       </button>
 
@@ -261,3 +253,128 @@
     </div> -->
 
   </div>
+
+  <!-- PREVIEW MODAL -->
+  <!-- PREVIEW MODAL -->
+  <div *ngIf="previewData as data" class="modal-overlay">
+
+    <div class="modal-container">
+
+      <div class="modal-header">
+        <h3>Xác nhận giải ngân</h3>
+        <button class="close-btn" (click)="closePreviewModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="info-grid">
+
+          <div class="info-item">
+            <span class="info-label">Số HĐ hạn mức</span>
+            <span class="info-value">{{ data.loanContractNumber }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Dư bảo lãnh</span>
+            <span class="info-value">{{ data.issuedGuaranteeBalance | number }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Dư nợ vay xe</span>
+            <span class="info-value">{{ data.vehicleLoanBalance| number }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Dư nợ vay BDS</span>
+            <span class="info-value">{{ data.realEstateLoanBalance| number }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Hạn mức đã sử dụng</span>
+            <span class="info-value">{{ data.usedLimit| number }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Hạn mức còn lại</span>
+            <span class="info-value highlight-amount">{{ data.remainingLimit | number }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Ngày vay</span>
+            <span class="info-value">{{ data.startDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+
+          <div class="form-group highlight">
+            <label>Thời hạn (ngày) *</label>
+            <input type="number" class="form-control" [(ngModel)]="data.loanTerm" (input)="calculatePreviewDueDate()">
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Ngày đến hạn</span>
+            <span class="info-value" [class.text-danger]="isNonWorkingDay(data.dueDate)">
+              {{ getDayOfWeek(data.dueDate) }}, {{ data.dueDate | date:'dd/MM/yyyy' }}
+              <i *ngIf="isNonWorkingDay(data.dueDate)" class="fa-solid fa-triangle-exclamation" title="Ngày nghỉ/Lễ"></i>
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label>Hệ số TS xe</label>
+            <input type="number" class="form-control" [(ngModel)]="vehicleFactor" (input)="recalculateValues()">
+          </div>
+
+          <div class="form-group">
+            <label>Hệ số BĐS</label>
+            <input type="number" class="form-control" [(ngModel)]="realEstateFactor" (input)="recalculateValues()">
+          </div>
+
+          <div class="form-group">
+            <label>Giá trị TS xe (VNĐ)</label>
+            <input type="number" class="form-control" [(ngModel)]="data.totalCollateralValue" (input)="recalculateValues()" />
+          </div>
+
+          <div class="form-group">
+            <label>Giá trị BĐS (VNĐ)</label>
+            <input type="number" class="form-control" [(ngModel)]="data.realEstateValue" (input)="recalculateValues()" />
+          </div>
+
+          <div class="form-group highlight">
+            <label>TS xe sau hệ số</label>
+            <input type="number" class="form-control readonly" [value]="data.collateralValueAfterFactor" readonly>
+          </div>
+
+          <div class="form-group highlight">
+            <label>BĐS sau hệ số</label>
+            <input type="number" class="form-control readonly" [value]="data.realEstateValueAfterFactor" readonly>
+          </div>
+
+          <div class="form-group highlight">
+            <label>Số tiền giải ngân (VNĐ) *</label>
+            <input type="number" class="form-control large" [(ngModel)]="data.disbursementAmount" />
+          </div>
+
+        </div>
+
+        <div *ngIf="isOverLimit()" class="warning-box">
+          <i class="fa-solid fa-circle-exclamation"></i> Số tiền giải ngân vượt hạn mức còn lại!
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-cancel" (click)="closePreviewModal()">
+          Hủy bỏ
+        </button>
+
+        <button class="btn btn-confirm" (click)="confirmDisbursement()" [disabled]="loading || isOverLimit()">
+          {{ loading ? 'Đang xử lý...' : 'Xác nhận và Tạo' }}
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+  <div *ngIf="isOverLimit()" style="color:red;margin-top:10px">
+    Số tiền giải ngân vượt hạn mức còn lại!
+  </div>
+
+</div>
