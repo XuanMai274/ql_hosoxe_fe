@@ -1,169 +1,180 @@
 <div class="page-container">
 
-  <!-- ===== PAGE HEADER ===== -->
-  <div class="page-header">
-    <div class="page-title-wrap">
-      <div class="page-icon">
-        <i class="fa-solid fa-shield-halved"></i>
+  <!-- ===== PAGE BANNER ===== -->
+  <div class="page-banner">
+    <div class="banner-left">
+      <div class="banner-badge">
+        <i class="fa-solid fa-shield-halved"></i> Nghiệp vụ bảo lãnh
       </div>
-      <div>
-        <h1 class="page-title">Danh sách đề nghị cấp bảo lãnh</h1>
-        <p class="page-subtitle">Theo dõi tất cả đơn đề nghị cấp bảo lãnh xe</p>
-      </div>
+      <h1 class="page-title">Đề nghị cấp bảo lãnh</h1>
+      <p class="page-subtitle">Quản lý và theo dõi toàn bộ đơn đề nghị cấp bảo lãnh xe</p>
     </div>
-
-    <!-- Summary Badge -->
-    <div class="header-right">
-      <div class="summary-badge">
-        <span class="summary-label">Tổng số đơn</span>
-        <span class="summary-count">{{ donHangList.length }}</span>
-      </div>
-      <button class="btn-new" (click)="openForm()">
+    <div class="banner-right">
+      <button class="btn-create" (click)="openForm()">
         <i class="fa-solid fa-plus"></i> Tạo đơn mới
       </button>
     </div>
   </div>
 
   <!-- ===== FILTER BAR ===== -->
-  <div class="filter-bar">
-    <div class="filter-group">
-      <label class="filter-label">
-        <i class="fa-solid fa-industry"></i> Hãng xe
-      </label>
-      <select formControlName="manufacturerCode">
-        <option value="">-- Chọn hãng xe --</option>
-        <option *ngFor="let m of manufacturers" [value]="m.code">
-          {{ m.name }}
-        </option>
-      </select>
+  <div class="filter-card">
+    <div class="filter-inner">
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-industry"></i> Hãng xe</label>
+        <select [(ngModel)]="selectedManufacturerId" class="filter-select">
+          <option [value]="null">-- Tất cả hãng --</option>
+          <option *ngFor="let m of manufacturers" [value]="m.id">{{ m.name }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-regular fa-calendar"></i> Từ ngày</label>
+        <input type="date" [(ngModel)]="fromDate" class="filter-input" />
+      </div>
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-regular fa-calendar"></i> Đến ngày</label>
+        <input type="date" [(ngModel)]="toDate" class="filter-input" />
+      </div>
+      <div class="filter-actions">
+        <button class="btn-search" (click)="applyFilter()">
+          <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
+        </button>
+        <button class="btn-reset" (click)="resetFilter()">
+          <i class="fa-solid fa-rotate-left"></i> Đặt lại
+        </button>
+      </div>
     </div>
+  </div>
 
-    <div class="filter-group">
-      <label class="filter-label">
-        <i class="fa-regular fa-calendar"></i> Từ ngày
-      </label>
-      <input type="date" [(ngModel)]="fromDate" class="filter-input" />
+  <!-- ===== STATS PILLS ===== -->
+  <div class="stats-row" *ngIf="!loading">
+    <div class="stat-pill purple">
+      <i class="fa-solid fa-file-shield"></i>
+      <span class="pill-value">{{ donHangList.length }}</span>
+      <span class="pill-label">Đơn đang hiển thị</span>
     </div>
-
-    <div class="filter-group">
-      <label class="filter-label">
-        <i class="fa-regular fa-calendar"></i> Đến ngày
-      </label>
-      <input type="date" [(ngModel)]="toDate" class="filter-input" />
+    <div class="stat-pill green">
+      <i class="fa-solid fa-circle-check"></i>
+      <span class="pill-value">{{ countStatus('ACTIVE') }}</span>
+      <span class="pill-label">Đã duyệt</span>
     </div>
-
-    <div class="filter-actions">
-      <button class="btn-filter" (click)="applyFilter()">
-        <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
-      </button>
-      <button class="btn-reset" (click)="resetFilter()">
-        <i class="fa-solid fa-rotate-left"></i> Đặt lại
-      </button>
+    <div class="stat-pill orange">
+      <i class="fa-solid fa-clock"></i>
+      <span class="pill-value">{{ countStatus('PENDING') }}</span>
+      <span class="pill-label">Chờ duyệt</span>
+    </div>
+    <div class="stat-pill teal">
+      <i class="fa-solid fa-calculator"></i>
+      <span class="pill-value">{{ tongGiaTriBaoLanh | number:'1.0-0' }}</span>
+      <span class="pill-label">Tổng GT bảo lãnh (VNĐ)</span>
     </div>
   </div>
 
   <!-- ===== LOADING ===== -->
-  <div *ngIf="loading" class="loading-wrap">
+  <div class="state-box" *ngIf="loading">
     <div class="spinner"></div>
-    <span>Đang tải dữ liệu...</span>
+    <p>Đang tải dữ liệu...</p>
   </div>
 
   <!-- ===== TABLE ===== -->
-  <div *ngIf="!loading" class="table-card">
+  <div class="table-card" *ngIf="!loading">
+    <div class="table-header">
+      <div class="table-title">
+        <i class="fa-solid fa-list-ul"></i> Danh sách đơn đề nghị bảo lãnh
+      </div>
+      <span class="record-count">{{ donHangList.length }} đơn</span>
+    </div>
     <div class="table-responsive">
-      <table class="guarantee-table">
+      <table class="modern-table">
         <thead>
           <tr>
-            <th class="col-stt">STT</th>
+            <th class="text-center" style="width:56px">STT</th>
             <th>Số HĐ bảo lãnh</th>
             <th>Hãng xe</th>
-            <th class="col-center">Số xe</th>
-            <th class="col-right">Giá trị HĐ (VNĐ)</th>
-            <th class="col-right">Giá trị bảo lãnh (VNĐ)</th>
-            <th class="col-center">Trạng thái</th>
-            <th class="col-center">Ngày ký</th>
+            <th class="text-center">Số xe</th>
+            <th class="text-right">Giá trị HĐ (VNĐ)</th>
+            <th class="text-right">Giá trị BL (VNĐ)</th>
+            <th class="text-center">Trạng thái</th>
+            <th class="text-center">Ngày ký</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngIf="donHangList.length === 0">
-            <td colspan="8" class="empty-row">
-              <div class="empty-state">
+            <td colspan="8">
+              <div class="no-data-row">
                 <i class="fa-solid fa-inbox"></i>
                 <p>Không có đơn đề nghị bảo lãnh nào</p>
               </div>
             </td>
           </tr>
-          <tr *ngFor="let item of donHangList; let i = index" class="table-row">
-            <td class="col-stt">{{ page * size + i + 1 }}</td>
-            <td class="contract-no">{{ item.guaranteeContractNumber || '—' }}</td>
+          <tr *ngFor="let item of donHangList; let i = index" class="clickable-row" (click)="openDetail(item)">
+            <td class="text-center stt-cell">{{ page * size + i + 1 }}</td>
+            <td class="code-cell font-bold">{{ item.applicationNumber || '—' }}</td>
             <td>
-              <span class="manufacturer-tag" [ngClass]="getManufacturerClass(item)">
+              <span class="tag-pill" [ngClass]="getManufacturerClass(item)">
                 {{ item.manufacturerDTO?.name || '—' }}
               </span>
             </td>
-            <td class="col-center">
-              <span class="vehicle-count">{{ item.expectedVehicleCount || 0 }}</span>
+            <td class="text-center">
+              <span class="count-chip">{{ item.totalVehicleCount || 0 }} xe</span>
             </td>
-            <td class="col-right price-col">{{ (item.saleContractAmount || 0) | number:'1.0-0' }}</td>
-            <td class="col-right guarantee-col">{{ (item.totalGuaranteeAmount || 0) | number:'1.0-0' }}</td>
-            <td class="col-center">
+            <td class="text-right code-cell">{{ (item.totalVehicleAmount || 0) | number:'1.0-0' }}</td>
+            <td class="text-right amount-cell">{{ (item.totalGuaranteeAmount || 0) | number:'1.0-0' }}</td>
+            <td class="text-center">
               <span class="status-badge" [ngClass]="getStatusClass(item.status)">
                 {{ getStatusLabel(item.status) }}
               </span>
             </td>
-            <td class="col-center date-col">{{ item.guaranteeContractDate || '—' }}</td>
+            <td class="text-center">{{ (item.approvedAt | date:'dd/MM/yyyy') || '—' }}</td>
           </tr>
         </tbody>
-        <tfoot>
+        <tfoot *ngIf="donHangList.length > 0">
           <tr class="total-row">
             <td colspan="5" class="total-label">
-              <i class="fa-solid fa-calculator"></i>
-              Tổng giá trị bảo lãnh
+              <i class="fa-solid fa-calculator"></i> Tổng giá trị bảo lãnh
             </td>
-            <td class="col-right total-value">
-              {{ tongGiaTriBaoLanh | number:'1.0-0' }}
-            </td>
+            <td class="text-right total-amount">{{ tongGiaTriBaoLanh | number:'1.0-0' }}</td>
             <td colspan="2" class="total-unit">VNĐ</td>
           </tr>
         </tfoot>
       </table>
     </div>
-  </div>
 
-  <!-- ===== PAGINATION ===== -->
-  <div *ngIf="!loading && totalPages > 1" class="pagination-wrap">
-    <button class="page-btn" [disabled]="page === 0" (click)="prev()">
-      <i class="fa-solid fa-chevron-left"></i> Trước
-    </button>
-    <span class="page-info">Trang {{ page + 1 }} / {{ totalPages }}</span>
-    <button class="page-btn primary" [disabled]="page + 1 === totalPages" (click)="next()">
-      Sau <i class="fa-solid fa-chevron-right"></i>
-    </button>
+    <!-- PAGINATION -->
+    <div class="pagination-bar" *ngIf="totalPages > 1">
+      <span class="page-info">Trang {{ page + 1 }} / {{ totalPages }}</span>
+      <div class="page-actions">
+        <button class="page-btn" [disabled]="page === 0" (click)="prev()">
+          <i class="fa-solid fa-chevron-left"></i> Trước
+        </button>
+        <span class="page-tag">{{ page + 1 }} / {{ totalPages }}</span>
+        <button class="page-btn" [disabled]="page + 1 === totalPages" (click)="next()">
+          Sau <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
   </div>
 
 </div>
 
-<!-- ===== MODAL CHI TIẾT đơn đề nghị BẢO LÃNH ===== -->
+<!-- ===== MODAL CHI TIẾT ===== -->
 <div class="modal-overlay" *ngIf="showDetail" (click)="closeDetail()">
   <div class="modal-panel" (click)="$event.stopPropagation()">
 
-    <!-- Header modal -->
     <div class="modal-header">
       <div class="modal-title-wrap">
         <div class="modal-icon">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
         <div>
-          <h2 class="modal-title">Chi tiết đơn đề nghị bảo lãnh</h2>
-          <p class="modal-subtitle">{{ selectedItem?.guaranteeContractNumber || '—' }}</p>
+          <h2>Chi tiết đơn đề nghị bảo lãnh</h2>
+          <p class="modal-subtitle">{{ selectedItem?.applicationNumber || '—' }}</p>
         </div>
       </div>
-      <button class="modal-close" (click)="closeDetail()">
+      <button class="btn-close-modal" (click)="closeDetail()">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
 
-    <!-- Body modal -->
     <div class="modal-body" *ngIf="selectedItem">
 
       <!-- Trạng thái nổi bật -->
@@ -172,36 +183,28 @@
         {{ getStatusLabel(selectedItem.status) }}
       </div>
 
-      <!-- THÔNG TIN HỢP ĐỒNG BẢO LÃNH -->
-      <div class="section">
-        <div class="section-title">
+      <!-- Hợp đồng bảo lãnh -->
+      <div class="info-section">
+        <h3 class="section-title">
           <i class="fa-solid fa-file-contract"></i> Thông tin hợp đồng bảo lãnh
-        </div>
+        </h3>
         <div class="info-grid">
-          <div class="info-item">
+          <div class="info-box">
+            <span class="info-label">Mã đơn đề nghị</span>
+            <span class="info-val code-val primary">{{ selectedItem.applicationNumber || '—' }}</span>
+          </div>
+          <div class="info-box" *ngIf="selectedItem.subGuaranteeContractNumber">
             <span class="info-label">Số hợp đồng BL</span>
-            <span class="info-value highlight">{{ selectedItem.guaranteeContractNumber || '—' }}</span>
+            <span class="info-val code-val">{{ selectedItem.subGuaranteeContractNumber }}</span>
           </div>
-          <div class="info-item">
-            <span class="info-label">Ngày ký hợp đồng</span>
-            <span class="info-value">{{ selectedItem.guaranteeContractDate || '—' }}</span>
+          <div class="info-box" *ngIf="selectedItem.approvedAt">
+            <span class="info-label">Ngày duyệt</span>
+            <span class="info-val">{{ selectedItem.approvedAt | date:'dd/MM/yyyy HH:mm' }}</span>
           </div>
-          <div class="info-item">
-            <span class="info-label">Số thông báo bảo lãnh</span>
-            <span class="info-value">{{ selectedItem.guaranteeNoticeNumber || '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Ngày thông báo</span>
-            <span class="info-value">{{ selectedItem.guaranteeNoticeDate || '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Mã tham chiếu</span>
-            <span class="info-value">{{ selectedItem.referenceCode || '—' }}</span>
-          </div>
-          <div class="info-item">
+          <div class="info-box">
             <span class="info-label">Hãng xe</span>
-            <span class="info-value">
-              <span class="manufacturer-tag" [ngClass]="getManufacturerClass(selectedItem)">
+            <span class="info-val">
+              <span class="tag-pill" [ngClass]="getManufacturerClass(selectedItem)">
                 {{ selectedItem.manufacturerDTO?.name || '—' }}
               </span>
             </span>
@@ -209,112 +212,76 @@
         </div>
       </div>
 
-      <!-- THÔNG TIN SỐ TIỀN -->
-      <div class="section">
-        <div class="section-title">
+      <!-- Tài chính -->
+      <div class="info-section">
+        <h3 class="section-title">
           <i class="fa-solid fa-coins"></i> Thông tin tài chính
-        </div>
+        </h3>
         <div class="info-grid">
-          <div class="info-item">
-            <span class="info-label">Giá trị hợp đồng mua bán</span>
-            <span class="info-value money">{{ (selectedItem.saleContractAmount || 0) | number:'1.0-0' }}
-              VNĐ</span>
+          <div class="info-box">
+            <span class="info-label">Tổng giá trị xe</span>
+            <span class="info-val amount-text">{{ (selectedItem.totalVehicleAmount || 0) | number:'1.0-0' }} VNĐ</span>
           </div>
-          <div class="info-item">
+          <div class="info-box">
             <span class="info-label">Tỉ lệ bảo lãnh</span>
-            <span class="info-value">
-              <span class="rate-pill">{{ getTiLeBaoLanh(selectedItem) }}%</span>
+            <span class="info-val">
+              <span class="rate-badge">{{ getTiLeBaoLanh(selectedItem) }}%</span>
             </span>
           </div>
-          <div class="info-item">
-            <span class="info-label">Dự kiến số tiền BL</span>
-            <span class="info-value money">{{ (selectedItem.expectedGuaranteeAmount || 0) | number:'1.0-0'
-                            }} VNĐ</span>
-          </div>
-          <div class="info-item">
+          <div class="info-box">
             <span class="info-label">Tổng giá trị bảo lãnh</span>
-            <span class="info-value money primary">{{ (selectedItem.totalGuaranteeAmount || 0) |
-                            number:'1.0-0' }} VNĐ</span>
+            <span class="info-val primary amount-text">{{ (selectedItem.totalGuaranteeAmount || 0) | number:'1.0-0' }}
+              VNĐ</span>
           </div>
-          <div class="info-item">
-            <span class="info-label">Đã sử dụng</span>
-            <span class="info-value money">{{ (selectedItem.usedAmount || 0) | number:'1.0-0' }} VNĐ</span>
+          <div class="info-box" *ngIf="selectedItem.guaranteeTermDays">
+            <span class="info-label">Thời hạn bảo lãnh</span>
+            <span class="info-val">{{ selectedItem.guaranteeTermDays }} ngày</span>
           </div>
-          <div class="info-item">
-            <span class="info-label">Còn lại</span>
-            <span class="info-value money success">{{ (selectedItem.remainingAmount || 0) | number:'1.0-0'
-                            }} VNĐ</span>
+          <div class="info-box" *ngIf="selectedItem.expiryDate">
+            <span class="info-label">Ngày hết hạn</span>
+            <span class="info-val success-text">{{ selectedItem.expiryDate | date:'dd/MM/yyyy' }}</span>
           </div>
         </div>
       </div>
 
-      <!-- THÔNG TIN SỐ LƯỢNG XE -->
-      <div class="section">
-        <div class="section-title">
+      <!-- Số lượng xe -->
+      <div class="info-section">
+        <h3 class="section-title">
           <i class="fa-solid fa-car-side"></i> Số lượng xe
-        </div>
-        <div class="vehicle-stats">
-          <div class="vehicle-stat-card">
-            <span class="vs-label">Dự kiến nhập</span>
-            <span class="vs-value">{{ selectedItem.expectedVehicleCount || 0 }}</span>
-            <span class="vs-unit">xe</span>
-          </div>
-          <div class="vehicle-stat-card imported">
-            <span class="vs-label">Đã nhập kho</span>
-            <span class="vs-value">{{ selectedItem.importedVehicleCount || 0 }}</span>
-            <span class="vs-unit">xe</span>
-          </div>
-          <div class="vehicle-stat-card exported">
-            <span class="vs-label">Đã xuất kho</span>
-            <span class="vs-value">{{ selectedItem.exportedVehicleCount || 0 }}</span>
-            <span class="vs-unit">xe</span>
+        </h3>
+        <div class="vehicle-stats-grid">
+          <div class="vs-card">
+            <i class="fa-solid fa-car-side"></i>
+            <span class="vs-value">{{ selectedItem.totalVehicleCount || 0 }}</span>
+            <span class="vs-label">Tổng số xe</span>
           </div>
         </div>
       </div>
 
-      <!-- THÔNG TIN HỢP ĐỒNG MUA BÁN -->
-      <div class="section" *ngIf="selectedItem.saleContract">
-        <div class="section-title">
-          <i class="fa-solid fa-handshake"></i> Hợp đồng mua bán
-        </div>
-        <div class="info-grid">
-          <div class="info-item full-width">
-            <span class="info-label">Số hợp đồng mua bán</span>
-            <span class="info-value">{{ selectedItem.saleContract || '—' }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- NGÀY TẠO / CẬP NHẬT -->
-      <div class="section">
-        <div class="section-title">
+      <!-- Thời gian -->
+      <div class="info-section">
+        <h3 class="section-title">
           <i class="fa-regular fa-clock"></i> Thời gian
-        </div>
+        </h3>
         <div class="info-grid">
-          <div class="info-item">
+          <div class="info-box">
             <span class="info-label">Ngày tạo</span>
-            <span class="info-value">{{ selectedItem.createdAt ? (selectedItem.createdAt | date:'dd/MM/yyyy
-                            HH:mm') : '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Cập nhật lần cuối</span>
-            <span class="info-value">{{ selectedItem.updatedAt ? (selectedItem.updatedAt | date:'dd/MM/yyyy
-                            HH:mm') : '—' }}</span>
+            <span class="info-val">{{ selectedItem.createdAt ? (selectedItem.createdAt | date:'dd/MM/yyyy HH:mm') : '—'
+              }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Footer modal -->
     <div class="modal-footer">
-      <button class="btn-close-modal" (click)="closeDetail()">
+      <button class="btn-close-footer" (click)="closeDetail()">
         <i class="fa-solid fa-xmark"></i> Đóng
       </button>
     </div>
   </div>
 </div>
 
-<!-- ===== MODAL TẠO đơn đề nghị MỚI ===== -->
+<!-- ===== MODAL TẠO ĐƠN MỚI ===== -->
 <div class="modal-overlay" *ngIf="showForm" (click)="closeForm()">
   <div class="modal-panel modal-wide" (click)="$event.stopPropagation()">
 
@@ -324,11 +291,11 @@
           <i class="fa-solid fa-plus"></i>
         </div>
         <div>
-          <h2 class="modal-title">Tạo đơn đề nghị bảo lãnh mới</h2>
+          <h2>Tạo đơn đề nghị bảo lãnh mới</h2>
           <p class="modal-subtitle">Nhập danh sách xe cần bảo lãnh</p>
         </div>
       </div>
-      <button class="modal-close" (click)="closeForm()">
+      <button class="btn-close-modal" (click)="closeForm()">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
@@ -336,118 +303,87 @@
     <div class="modal-body">
       <form [formGroup]="newForm" (ngSubmit)="submitForm()">
 
-        <!-- Thông tin chung -->
-        <div class="form-header-row">
+        <!-- Chọn hãng xe -->
+        <div class="form-top-row">
           <div class="form-group">
             <label class="form-label">Hãng xe <span class="required">*</span></label>
-            <select class="form-control" formControlName="manufacturerCode"
+            <select class="form-select" formControlName="manufacturerCode"
               [class.invalid]="isInvalid('manufacturerCode')">
               <option value="">-- Chọn hãng xe --</option>
               <option *ngFor="let m of manufacturers" [value]="m.code">{{ m.name }}</option>
             </select>
-            <span class="error-msg" *ngIf="isInvalid('manufacturerCode')">Vui lòng chọn hãng xe</span>
+            <span class="err-msg" *ngIf="isInvalid('manufacturerCode')">Vui lòng chọn hãng xe</span>
           </div>
-          <!-- Tỉ lệ hiển thị -->
-          <div class="form-group tile-display">
-            <label class="form-label">Tỉ lệ bảo lãnh</label>
-            <div class="tile-badge">
-              {{ getTileByCode(newForm.get('manufacturerCode')?.value) }}%
-            </div>
+          <div class="rate-display">
+            <span class="rate-label">Tỉ lệ bảo lãnh</span>
+            <span class="rate-value">{{ getTileByCode(newForm.get('manufacturerCode')?.value) }}%</span>
           </div>
         </div>
 
         <!-- Bảng xe -->
         <div class="vehicle-table-wrap">
-          <table class="vehicle-table" formArrayName="vehicles">
+          <table class="vehicle-form-table" formArrayName="vehicles">
             <thead>
               <tr>
-                <th class="col-stt">STT</th>
-                <th class="col-loai">Loại xe <span class="required">*</span></th>
-                <th class="col-mau">Màu xe <span class="required">*</span></th>
-                <th class="col-khung">Số khung</th>
-                <th class="col-don">Số đơn đề nghị</th>
-                <th class="col-npp">NPP xác nhận</th>
-                <th class="col-httt">HT thanh toán</th>
-                <th class="col-nh">Ngân hàng BL</th>
-                <th class="col-tc">HT thế chấp</th>
-                <th class="col-gia">Giá xe (VNĐ) <span class="required">*</span></th>
-                <th class="col-tile">Tỉ lệ BL</th>
-                <th class="col-gtbl">Giá trị BL (VNĐ)</th>
-                <th class="col-action"></th>
+                <th style="width:44px">STT</th>
+                <th>Loại xe <span class="required">*</span></th>
+                <th>Màu xe <span class="required">*</span></th>
+                <th>Số khung</th>
+                <th>Số đơn đề nghị</th>
+                <th>NPP xác nhận</th>
+                <th>HT thanh toán</th>
+                <th>Ngân hàng BL</th>
+                <th>HT thế chấp</th>
+                <th>Giá xe (VNĐ) <span class="required">*</span></th>
+                <th>Tỉ lệ BL</th>
+                <th>Giá trị BL</th>
+                <th style="width:44px"></th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let row of vehicles.controls; let i = index" [formGroupName]="i">
-                <td class="col-stt td-center">{{ i + 1 }}</td>
-                <td class="col-loai">
-                  <input type="text" class="td-input" [class.invalid]="isRowInvalid(i, 'loaiXe')"
-                    formControlName="loaiXe" placeholder="VD: VF 3 PLUS" />
-                </td>
-                <td class="col-mau">
-                  <input type="text" class="td-input" [class.invalid]="isRowInvalid(i, 'mauXe')" formControlName="mauXe"
-                    placeholder="VD: TRẮNG" />
-                </td>
-                <td class="col-khung">
-                  <input type="text" class="td-input" formControlName="soKhung" placeholder="Số khung" />
-                </td>
-                <td class="col-don">
-                  <input type="text" class="td-input" formControlName="soDonHang" placeholder="Số đơn đề nghị" />
-                </td>
-                <td class="col-npp td-center">
-                  <span class="td-fixed-tag tag-lay">LẤY</span>
-                </td>
-                <td class="col-httt td-center">
-                  <span class="td-fixed-tag tag-bltt">BLTT</span>
-                </td>
-                <td class="col-nh td-center">
-                  <span class="td-fixed-tag tag-bidv">BIDV</span>
-                </td>
-                <td class="col-tc td-center">
-                  <span class="td-fixed-tag tag-coc">COC</span>
-                </td>
-                <td class="col-gia">
-                  <input type="number" class="td-input td-right" [class.invalid]="isRowInvalid(i, 'giaXe')"
-                    formControlName="giaXe" placeholder="0" min="0" />
-                </td>
-                <td class="col-tile td-center">
-                  <span class="tile-pct">{{ getTileByCode(newForm.get('manufacturerCode')?.value)
-                                        }}%</span>
-                </td>
-                <td class="col-gtbl td-right td-calc">
-                  {{ getGiaTriBL(row) | number:'1.0-0' }}
-                </td>
-                <td class="col-action td-center">
-                  <button type="button" class="btn-remove-row" (click)="removeVehicleRow(i)"
-                    [disabled]="vehicles.length === 1" title="Xóa dòng">
+                <td class="text-center">{{ i + 1 }}</td>
+                <td><input type="text" class="td-input" [class.invalid]="isRowInvalid(i, 'loaiXe')"
+                    formControlName="loaiXe" placeholder="VF 3 PLUS" /></td>
+                <td><input type="text" class="td-input" [class.invalid]="isRowInvalid(i, 'mauXe')"
+                    formControlName="mauXe" placeholder="TRẮNG" /></td>
+                <td><input type="text" class="td-input" formControlName="soKhung" placeholder="Số khung" /></td>
+                <td><input type="text" class="td-input" formControlName="soDonHang" placeholder="Số đơn" /></td>
+                <td class="text-center"><span class="fixed-tag tag-lay">LẤY</span></td>
+                <td class="text-center"><span class="fixed-tag tag-bltt">BLTT</span></td>
+                <td class="text-center"><span class="fixed-tag tag-bidv">BIDV</span></td>
+                <td class="text-center"><span class="fixed-tag tag-coc">COC</span></td>
+                <td><input type="number" class="td-input text-right" [class.invalid]="isRowInvalid(i, 'giaXe')"
+                    formControlName="giaXe" placeholder="0" min="0" /></td>
+                <td class="text-center"><span class="rate-small">{{
+                    getTileByCode(newForm.get('manufacturerCode')?.value) }}%</span></td>
+                <td class="text-right calc-cell">{{ getGiaTriBL(row) | number:'1.0-0' }}</td>
+                <td class="text-center">
+                  <button type="button" class="btn-del-row" (click)="removeVehicleRow(i)"
+                    [disabled]="vehicles.length === 1">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </td>
               </tr>
             </tbody>
             <tfoot>
-              <tr class="tfoot-total">
-                <td [attr.colspan]="9" class="tfoot-label">Tổng cộng</td>
-                <td class="tfoot-val td-right">
-                  {{ tongGiaXe | number:'1.0-0' }}
-                </td>
+              <tr class="total-row">
+                <td colspan="9" class="total-label">Tổng cộng</td>
+                <td class="text-right total-amount">{{ tongGiaXe | number:'1.0-0' }}</td>
                 <td></td>
-                <td class="tfoot-val td-right tfoot-bl">
-                  {{ tongGiaTriBLForm | number:'1.0-0' }}
-                </td>
+                <td class="text-right total-amount">{{ tongGiaTriBLForm | number:'1.0-0' }}</td>
                 <td></td>
               </tr>
             </tfoot>
           </table>
         </div>
 
-        <!-- Nút thêm dòng -->
         <button type="button" class="btn-add-row" (click)="addVehicleRow()">
           <i class="fa-solid fa-plus"></i> Thêm xe
         </button>
 
-        <!-- Footer -->
         <div class="modal-footer form-footer">
-          <button type="button" class="btn-close-modal" (click)="closeForm()">
+          <button type="button" class="btn-cancel" (click)="closeForm()">
             <i class="fa-solid fa-xmark"></i> Hủy
           </button>
           <button type="submit" class="btn-submit" [disabled]="submitting">

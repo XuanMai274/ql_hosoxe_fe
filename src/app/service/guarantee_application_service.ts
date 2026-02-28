@@ -2,17 +2,46 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GuaranteeApplication } from '../models/guarantee_application.model';
+import { PageResponse } from '../models/page-response';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GuaranteeApplicationService {
 
-  private baseUrl = 'http://localhost:8080/customer/guarantee-applications';
+  private readonly baseUrl = 'http://localhost:8080/customer/guarantee-applications';
 
   constructor(private http: HttpClient) { }
 
-  create(data: GuaranteeApplication): Observable<GuaranteeApplication> {
-    return this.http.post<GuaranteeApplication>(`http://localhost:8080/customer/guarantee-applications`, data);
+  /**
+   * Lấy danh sách đề nghị cấp bảo lãnh (phân trang + lọc)
+   */
+  getList(
+    manufacturerId?: number,
+    fromDate?: string,
+    toDate?: string,
+    page = 0,
+    size = 20
+  ): Observable<PageResponse<GuaranteeApplication>> {
+    const params: any = { page, size };
+    if (manufacturerId) params.manufacturerId = manufacturerId;
+    if (fromDate) params.fromDate = fromDate;
+    if (toDate) params.toDate = toDate;
+
+    return this.http.get<PageResponse<GuaranteeApplication>>(this.baseUrl, { params });
+  }
+
+  /**
+   * Xem chi tiết một đề nghị bảo lãnh
+   */
+  getById(id: number): Observable<GuaranteeApplication> {
+    return this.http.get<GuaranteeApplication>(`${this.baseUrl}/${id}`);
+  }
+
+  /**
+   * Tạo mới đề nghị bảo lãnh
+   */
+  create(data: any): Observable<GuaranteeApplication> {
+    return this.http.post<GuaranteeApplication>(this.baseUrl, data);
   }
 }

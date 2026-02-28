@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomerWarehouseService } from '../../../service/customer-warehouse.service';
+import { DisbursementDTO } from '../../../models/disbursement.model';
 
 @Component({
   selector: 'app-de-nghi-giai-ngan',
@@ -11,13 +12,19 @@ import { CustomerWarehouseService } from '../../../service/customer-warehouse.se
 })
 export class DeNghiGiaiNganComponent implements OnInit {
 
-  groups: any[] = [];
+  list: DisbursementDTO[] = [];
   loading = true;
   error = '';
 
+  // Phân trang
+  page = 0;
+  size = 10;
+  totalPages = 0;
+  totalElements = 0;
+
   // Modal chi tiết
   showDetail = false;
-  selectedGroup: any | null = null;
+  selectedItem: DisbursementDTO | null = null;
 
   constructor(private service: CustomerWarehouseService) { }
 
@@ -25,18 +32,15 @@ export class DeNghiGiaiNganComponent implements OnInit {
     this.loadData();
   }
 
-  loadData(): void {
+  loadData(page: number = 0): void {
+    this.page = page;
     this.loading = true;
     this.error = '';
-    this.service.getMyDisbursements().subscribe({
-      next: (data) => {
-        // Map DisbursementDTO sang cấu trúc HTML mong đợi nếu cần
-        this.groups = data.map(d => ({
-          ...d,
-          contractNumber: d.mortgageContractDTO?.contractNumber || '—',
-          totalAmount: d.disbursementAmount || 0,
-          latestDate: d.disbursementDate
-        }));
+    this.service.getMyDisbursements(this.page, this.size).subscribe({
+      next: (res) => {
+        this.list = res.content;
+        this.totalPages = res.totalPages;
+        this.totalElements = res.totalElements;
         this.loading = false;
       },
       error: (err) => {
@@ -47,15 +51,27 @@ export class DeNghiGiaiNganComponent implements OnInit {
     });
   }
 
-  openDetail(group: any): void {
-    this.selectedGroup = group;
+  next() {
+    if (this.page + 1 < this.totalPages) {
+      this.loadData(this.page + 1);
+    }
+  }
+
+  prev() {
+    if (this.page > 0) {
+      this.loadData(this.page - 1);
+    }
+  }
+
+  openDetail(item: DisbursementDTO): void {
+    this.selectedItem = item;
     this.showDetail = true;
     document.body.style.overflow = 'hidden';
   }
 
   closeDetail(): void {
     this.showDetail = false;
-    this.selectedGroup = null;
+    this.selectedItem = null;
     document.body.style.overflow = '';
   }
 
@@ -88,6 +104,6 @@ export class DeNghiGiaiNganComponent implements OnInit {
   }
 
   get totalDisbursed(): number {
-    return this.groups.reduce((s, g) => s + (g.totalAmount || 0), 0);
+    return this.list.reduce((s, g) => s + (g.disbursementAmount || 0), 0);
   }
 }

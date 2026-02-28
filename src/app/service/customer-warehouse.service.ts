@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { WarehouseImportDTO } from '../models/warehouseImport.model';
+import { PageResponse } from '../models/page-response';
 import { LoanDTO } from '../models/loan.model';
 import { Vehicle } from '../models/vehicle';
 import { WarehouseExportDTO } from '../models/warehouseExport.model';
@@ -18,10 +19,10 @@ export class CustomerWarehouseService {
     // ===== ĐỀ NGHỊ NHẬP KHO =====
 
     /**
-     * Lấy danh sách phiếu nhập kho của khách hàng đang đăng nhập
+     * Lấy danh sách phiếu nhập kho của khách hàng đang đăng nhập (phân trang)
      */
-    getMyWarehouseImports(): Observable<WarehouseImportDTO[]> {
-        return this.http.get<WarehouseImportDTO[]>(`${this.BASE_URL}/warehouse-imports`);
+    getMyWarehouseImports(page: number = 0, size: number = 10): Observable<PageResponse<WarehouseImportDTO>> {
+        return this.http.get<PageResponse<WarehouseImportDTO>>(`${this.BASE_URL}/warehouse-imports?page=${page}&size=${size}`);
     }
 
     /**
@@ -34,10 +35,10 @@ export class CustomerWarehouseService {
     // ===== ĐỀ NGHỊ GIẢI NGÂN =====
 
     /**
-     * Lấy danh sách đợt giải ngân của khách hàng đang đăng nhập
+     * Lấy danh sách đợt giải ngân của khách hàng đang đăng nhập (phân trang)
      */
-    getMyDisbursements(): Observable<any[]> {
-        return this.http.get<any[]>(`${this.BASE_URL}/disbursements`);
+    getMyDisbursements(page: number = 0, size: number = 10): Observable<PageResponse<any>> {
+        return this.http.get<PageResponse<any>>(`${this.BASE_URL}/disbursements?page=${page}&size=${size}`);
     }
 
     /**

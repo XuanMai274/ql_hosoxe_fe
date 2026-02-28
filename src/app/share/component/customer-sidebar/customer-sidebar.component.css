@@ -3,7 +3,7 @@
    ============================================================ */
 
 :host {
-    --sidebar-width: 260px;
+    --sidebar-width: 230px;
     --transition-speed: 0.4s;
     --primary-teal: #028B89;
     --dark-teal: #004d40;

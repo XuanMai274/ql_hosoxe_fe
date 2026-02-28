@@ -17,6 +17,14 @@ export class DeNghiNhapKhoComponent implements OnInit {
   loading = true;
   error = '';
 
+  // Phân trang
+  page = 0;
+  size = 10;
+  totalPages = 0;
+  totalElements = 0;
+  totalVehicles = 0;
+
+
   // Modal chi tiết
   showDetail = false;
   selectedItem: WarehouseImportDTO | null = null;
@@ -28,12 +36,16 @@ export class DeNghiNhapKhoComponent implements OnInit {
     this.loadData();
   }
 
-  loadData(): void {
+  loadData(page: number = 0): void {
+    this.page = page;
     this.loading = true;
     this.error = '';
-    this.service.getMyWarehouseImports().subscribe({
-      next: (data) => {
-        this.list = data;
+    this.service.getMyWarehouseImports(this.page, this.size).subscribe({
+      next: (res) => {
+        this.list = res.content;
+        this.totalPages = res.totalPages;
+        this.totalElements = res.totalElements;
+        this.totalVehicles = this.list.reduce((sum, item) => sum + (item.vehicleCount || item.vehicleIds?.length || 0), 0);
         this.loading = false;
       },
       error: (err) => {
@@ -42,6 +54,18 @@ export class DeNghiNhapKhoComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  next() {
+    if (this.page + 1 < this.totalPages) {
+      this.loadData(this.page + 1);
+    }
+  }
+
+  prev() {
+    if (this.page > 0) {
+      this.loadData(this.page - 1);
+    }
   }
 
   openDetail(item: WarehouseImportDTO): void {
@@ -83,7 +107,4 @@ export class DeNghiNhapKhoComponent implements OnInit {
     }
   }
 
-  get totalVehicles(): number {
-    return this.list.reduce((sum, item) => sum + (item.vehicleIds?.length || 0), 0);
-  }
 }

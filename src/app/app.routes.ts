@@ -22,6 +22,7 @@ import { DeNghiCapBaoLanhComponent } from './page/customer/de-nghi-cap-bao-lanh/
 import { DeNghiNhapKhoComponent } from './page/customer/de-nghi-nhap-kho/de-nghi-nhap-kho.component';
 import { DeNghiGiaiNganComponent } from './page/customer/de-nghi-giai-ngan/de-nghi-giai-ngan.component';
 import { DeNghiRutHoSoComponent } from './page/customer/de-nghi-rut-ho-so/de-nghi-rut-ho-so.component';
+import { CustomerHomeComponent } from './page/customer/customer-home/customer-home.component';
 
 import { AuthGuard } from './core/guard/auth.guard';
 import { RoleGuard } from './core/guard/role.guard';
@@ -145,8 +146,12 @@ export const routes: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: 'don-hang-bao-lanh',
+                redirectTo: 'home',
                 pathMatch: 'full'
+            },
+            {
+                path: 'home',
+                component: CustomerHomeComponent
             },
             {
                 path: 'de-nghi-cap-bao-lanh',
