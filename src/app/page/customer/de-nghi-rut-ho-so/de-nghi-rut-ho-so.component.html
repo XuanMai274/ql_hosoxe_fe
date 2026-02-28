@@ -1,0 +1,215 @@
+<div class="page-container">
+  <!-- STEPPER -->
+  <div class="stepper">
+    <div class="step" [class.active]="currentStep >= 1">
+      <span class="circle">1</span>
+      <span class="label">Chọn xe cần rút</span>
+    </div>
+    <div class="line" [class.active]="currentStep >= 2"></div>
+    <div class="step" [class.active]="currentStep >= 2">
+      <span class="circle">2</span>
+      <span class="label">Xác nhận yêu cầu</span>
+    </div>
+  </div>
+
+  <div class="page-content">
+    
+    <!-- STEP 1: CHỌN XE -->
+    <div *ngIf="currentStep === 1">
+      <div class="header-section">
+        <h2 class="title">Đề nghị rút hồ sơ xe</h2>
+        <p class="subtitle">Chọn các xe đang lưu kho để gửi yêu cầu rút hồ sơ</p>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <select [(ngModel)]="manufacturer">
+          <option value="">Tất cả hãng</option>
+          <option value="VINFAST">VinFast</option>
+          <option value="HYUNDAI">Hyundai</option>
+        </select>
+
+        <select [(ngModel)]="status">
+          <option value="">Tất cả hạn</option>
+          <option value="Giữ két">Chưa đến hạn</option>
+          <option value="Giữ trong kho">Hôm nay</option>
+          <option value="Đã trả khách hàng">Quá hạn</option>
+        </select>
+
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input 
+            type="text" 
+            placeholder="Tìm theo số khung..." 
+            [(ngModel)]="chassisNumber" 
+          />
+        </div>
+
+        <div class="search-box">
+          <i class="fa-solid fa-hashtag"></i>
+          <input 
+            type="text" 
+            placeholder="Tìm theo số REF..." 
+            [(ngModel)]="ref" 
+          />
+        </div>
+
+        <button class="btn-search" (click)="search()">
+          Tìm kiếm
+        </button>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th width="50">Chọn</th>
+              <th>Hãng & Tên xe</th>
+              <th>Số khung / Máy</th>
+              <th>Ngày nhập kho</th>
+              <th>REF</th>
+              <th>Giá trị</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of vehicles">
+              <td>
+                <div class="checkbox-wrapper">
+                  <input 
+                    type="checkbox" 
+                    [checked]="isSelected(v)" 
+                    (change)="onSelectVehicle(v, $event)"
+                    [id]="'check-' + v.id"
+                  />
+                  <label [for]="'check-' + v.id"></label>
+                </div>
+              </td>
+              <td>
+                <div class="vehicle-info-cell">
+                  <span class="manufacturer-badge" *ngIf="v.manufacturerDTO?.name">
+                    {{ v.manufacturerDTO?.name }}
+                  </span>
+                  <div class="vehicle-name">
+                    {{ v.vehicleName }}
+                    <span *ngIf="v.deadlineLabel" class="deadline-badge" [ngClass]="getDeadlineClass(v.deadlineLabel)">
+                      {{ v.deadlineLabel }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="codes-cell">
+                  <span class="code-text" title="Số khung">{{ v.chassisNumber }}</span>
+                  <span class="code-text engine-code" title="Số máy">{{ v.engineNumber }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="date-text">{{ v.importDate | date:'dd/MM/yyyy' }}</span>
+              </td>
+              <td>
+                <span class="ref-text">
+                  {{ v.guaranteeLetterDTO?.referenceCode || '—' }}
+                </span>
+              </td>
+              <td><span class="price-text">{{ formatCurrency(v.price) }}</span></td>
+            </tr>
+            <tr *ngIf="vehicles.length === 0 && !loading">
+              <td colspan="6" class="empty-state">
+                <i class="fa-solid fa-car-side"></i>
+                <p>Không tìm thấy xe nào đang ở trong kho.</p>
+              </td>
+            </tr>
+            <tr *ngIf="loading">
+              <td colspan="6" class="loading-state">
+                <div class="spinner"></div>
+                <p>Đang tải dữ liệu...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGINATION -->
+      <div class="pagination" *ngIf="vehicles.length > 0">
+        <button (click)="changePage(page - 1)" [disabled]="page === 0" class="page-btn">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <div class="page-info">
+          Trang <strong>{{ page + 1 }}</strong> / {{ totalPages || 1 }}
+        </div>
+        <button (click)="changePage(page + 1)" [disabled]="page + 1 >= totalPages" class="page-btn">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="footer-actions">
+        <div class="selected-count">
+          Đã chọn: <strong>{{ selectedVehicles.length }}</strong> xe
+        </div>
+        <button class="btn-next" (click)="nextStep()" [disabled]="selectedVehicles.length === 0">
+          Tiếp tục <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: XÁC NHẬN -->
+    <div *ngIf="currentStep === 2">
+      <div class="header-section">
+        <h2 class="title">Xác nhận danh sách rút hồ sơ</h2>
+        <p class="subtitle">Vui lòng kiểm tra lại danh sách xe trước khi gửi yêu cầu</p>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-header">
+          <h3>Sơ lược yêu cầu</h3>
+        </div>
+        <div class="card-body">
+          <div class="summary-item">
+            <span class="label">Tổng số xe:</span>
+            <span class="value">{{ selectedVehicles.length }} xe</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Ngày lập yêu cầu:</span>
+            <span class="value">{{ today | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="modern-table dimmed">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Tên xe</th>
+              <th>Số khung</th>
+              <th>Số máy</th>
+              <th class="text-right">Giá trị</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of selectedVehicles; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ v.vehicleName }}</td>
+              <td><span class="code-text">{{ v.chassisNumber }}</span></td>
+              <td><span class="code-text">{{ v.engineNumber }}</span></td>
+              <td class="text-right"><span class="price-text">{{ formatCurrency(v.price) }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn-back" (click)="prevStep()">
+          <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </button>
+        <button class="btn-confirm" (click)="confirmRequest()" [disabled]="loading">
+          <span *ngIf="!loading">Gửi yêu cầu rút hồ sơ</span>
+          <span *ngIf="loading" class="spinner-small"></span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
