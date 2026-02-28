@@ -191,159 +191,154 @@
 
   </div>
   <!-- ================= STEP 3 ================= -->
-  <!-- STEP 3 -->
-  <div *ngIf="currentStep === 3" class="finish-container">
+  <div *ngIf="currentStep === 3" class="step3-container">
 
-    <!-- ===== SUMMARY CARD ===== -->
-    <div class="guarantee-summary-card">
-
-      <div class="summary-header">
-        <i class="fa-solid fa-file-contract"></i>
-        <h3>Thông tin hợp đồng tín dụng</h3>
-      </div>
-
-      <div class="summary-grid">
-
-        <div class="summary-item">
-          <span class="label">HĐTC</span>
-          <span class="value">
-            {{ selectedCreditContract?.contractNumber }}
-          </span>
-        </div>
-
-        <div class="summary-item">
-          <span class="label">Số hợp đồng bảo lãnh</span>
-          <span class="value highlight">
-            {{ currentGuarantee?.guaranteeContractNumber }}
-          </span>
-        </div>
-
-        <div class="summary-item">
-          <span class="label">Giá trị bảo lãnh</span>
-          <span class="value amount">
-            {{ currentGuarantee?.expectedGuaranteeAmount | number }}
-          </span>
-        </div>
-
-        <div class="summary-item">
-          <span class="label">Hãng xe</span>
-          <span class="value">
-            {{ currentGuarantee?.manufacturerDTO?.name }}
-          </span>
-        </div>
-
-        <div class="summary-item">
-          <span class="label">Số lượng xe dự kiến</span>
-          <span class="value">
-            {{ currentGuarantee?.expectedVehicleCount }} xe
-          </span>
-        </div>
-
+    <!-- Success Banner -->
+    <div class="step3-success-banner">
+      <i class="fa-solid fa-circle-check step3-success-icon"></i>
+      <div>
+        <h2 class="step3-success-title">Lưu thư bảo lãnh thành công!</h2>
+        <p class="step3-success-sub">Hệ thống đã ghi nhận. Bạn có thể xuất chứng từ dưới đây.</p>
       </div>
     </div>
 
-    <!-- ===== FORM ===== -->
-    <div class="form-wrapper">
-      <form *ngIf="exportForm" [formGroup]="exportForm">
+    <!-- Two column layout -->
+    <div class="step3-layout">
 
-        <div class="form-grid two-col">
+      <!-- LEFT: Info + Limits -->
+      <div class="step3-left">
 
-          <!-- GHTD -->
-          <div>
-            <label>GHTD được sử dụng</label>
-            <input type="text" formControlName="creditLimit" readonly />
+        <!-- Chi tiết thư bảo lãnh -->
+        <div class="step3-card">
+          <div class="step3-card-header">
+            <i class="fa-solid fa-file-invoice"></i>
+            <span>Chi tiết thư bảo lãnh</span>
           </div>
-
-          <!-- Đã sử dụng -->
-          <div>
-            <label>GHTD đã sử dụng</label>
-            <input type="text" formControlName="usedLimit" readonly />
-          </div>
-
-          <div class="input-flow-group">
-
-            <!-- Dư vay xe -->
-            <div class="flow-item">
-              <label>Dư nợ vay xe <span class="req">*</span></label>
-
-              <input type="text" formControlName="vehicleLoanBalance"
-                (input)="onMoneyInput($event, 'vehicleLoanBalance')" />
-
-              <span class="text-error" *ngIf="exportForm.get('vehicleLoanBalance')?.touched &&
-                     exportForm.get('vehicleLoanBalance')?.invalid">
-                Vui lòng nhập dư nợ vay xe
-              </span>
+          <div class="step3-info-list">
+            <div class="step3-info-row">
+              <span class="step3-label">Số HĐ bảo lãnh</span>
+              <span class="step3-value step3-highlight">{{ currentGuarantee?.guaranteeContractNumber }}</span>
             </div>
-
-            <!-- Dư bảo lãnh -->
-            <div class="flow-item">
-              <label>Số dư cấp bảo lãnh <span class="req">*</span></label>
-
-              <input type="text" formControlName="guaranteeBalance"
-                (input)="onMoneyInput($event, 'guaranteeBalance')" />
-
-              <span class="text-error" *ngIf="exportForm.get('guaranteeBalance')?.touched &&
-                     exportForm.get('guaranteeBalance')?.invalid">
-                Vui lòng nhập số dư bảo lãnh
-              </span>
+            <div class="step3-info-row">
+              <span class="step3-label">Khách hàng</span>
+              <span class="step3-value">{{ currentGuarantee?.customerDTO?.customerName }}</span>
             </div>
-
-            <!-- Dư BĐS -->
-            <div class="flow-item">
-              <label>Số dư vay BĐS <span class="req">*</span></label>
-
-              <input type="text" formControlName="realEstateLoanBalance"
-                (input)="onMoneyInput($event, 'realEstateLoanBalance', 9000000000)" />
-
-              <span class="text-error" *ngIf="exportForm.get('realEstateLoanBalance')?.touched &&
-                     exportForm.get('realEstateLoanBalance')?.invalid">
-                Vui lòng nhập số dư vay BĐS
-              </span>
+            <div class="step3-info-row">
+              <span class="step3-label">Hợp đồng tín dụng</span>
+              <span class="step3-value step3-teal">{{ selectedCreditContract?.contractNumber }}</span>
             </div>
-
+            <div class="step3-info-row">
+              <span class="step3-label">Giá trị bảo lãnh</span>
+              <span class="step3-value step3-amount">{{ currentGuarantee?.expectedGuaranteeAmount | number }} VNĐ</span>
+            </div>
+            <div class="step3-info-row">
+              <span class="step3-label">Hãng xe & Số lượng</span>
+              <span class="step3-value">{{ currentGuarantee?.manufacturerDTO?.name }} &mdash; {{
+                currentGuarantee?.expectedVehicleCount }} xe</span>
+            </div>
           </div>
-
-          <!-- Remaining -->
-          <div>
-            <label>GHTD còn được sử dụng</label>
-            <input type="text" formControlName="remainingLimit" readonly />
-          </div>
-
         </div>
-      </form>
 
-    </div>
+        <!-- Hạn mức & Số dư -->
+        <div class="step3-card" *ngIf="exportForm">
+          <div class="step3-card-header">
+            <i class="fa-solid fa-calculator"></i>
+            <span>Cập nhật số dư & Hạn mức</span>
+          </div>
+          <form [formGroup]="exportForm">
 
-    <!-- ===== ACTION BUTTONS ===== -->
-    <div class="finish-actions">
-      <button class="btn-primary-lg" (click)="ThemBaoLanhMoi()">
-        Thêm thư bảo lãnh mới
-      </button>
-      <button class="btn-primary-lg" (click)="xuatBoHoSoBaoLanh()">
-        Xuất bộ hồ sơ bảo lãnh
-      </button>
-    </div>
-    <div class="finish-actions">
+            <!-- Hạn mức tổng quan -->
+            <div class="step3-limit-row">
+              <div class="step3-limit-box">
+                <span class="step3-limit-label">Hạn mức được cấp</span>
+                <span class="step3-limit-value">{{ formatMoney(exportForm.get('creditLimit')?.value) }}</span>
+              </div>
+              <div class="step3-limit-box step3-limit-available">
+                <span class="step3-limit-label">Hạn mức khả dụng</span>
+                <span class="step3-limit-value step3-green">{{ formatMoney(exportForm.get('remainingLimit')?.value)
+                  }}</span>
+              </div>
+            </div>
 
+            <!-- Nhập dư nợ -->
+            <div class="step3-balance-grid">
+              <div class="step3-field">
+                <label>Dư nợ vay xe</label>
+                <input type="text" [value]="formatMoney(exportForm.get('vehicleLoanBalance')?.value)"
+                  (input)="onMoneyInput($event, 'vehicleLoanBalance')" />
+              </div>
+              <div class="step3-field">
+                <label>Số dư bảo lãnh</label>
+                <input type="text" [value]="formatMoney(exportForm.get('guaranteeBalance')?.value)"
+                  (input)="onMoneyInput($event, 'guaranteeBalance')" />
+              </div>
+              <div class="step3-field">
+                <label>Dư nợ vay BĐS</label>
+                <input type="text" [value]="formatMoney(exportForm.get('realEstateLoanBalance')?.value)"
+                  (input)="onMoneyInput($event, 'realEstateLoanBalance')" />
+              </div>
+            </div>
 
-      <button class="btn-primary-lg" (click)="export()">
-        Xuất thư bảo lãnh
-      </button>
+            <!-- Phí bảo lãnh -->
+            <div class="step3-fee-box">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+              <span>Phí bảo lãnh (tạm tính):</span>
+              <strong>{{ formatMoney(exportForm.get('guaranteeFee')?.value) }} VNĐ</strong>
+            </div>
 
-      <button class="btn-secondary" (click)="exportDeXuatCapBaoLanh()">
-        Xuất đề xuất cấp bảo lãnh
-      </button>
+          </form>
+        </div>
+      </div>
 
-      <button class="btn-warning" (click)="exportPhanXetDuyet()">
-        Xuất phần xét duyệt
-      </button>
+      <!-- RIGHT: Export Actions -->
+      <div class="step3-right">
+        <div class="step3-card step3-export-card">
+          <div class="step3-card-header">
+            <i class="fa-solid fa-download"></i>
+            <span>Xuất hồ sơ bảo lãnh</span>
+          </div>
 
-      <button class="btn-secondary" (click)="exportPhanYKien()">
-        Xuất phần ý kiến
-      </button>
+          <!-- Nút xuất tổng -->
+          <button class="step3-btn-main" (click)="xuatBoHoSoBaoLanh()" [disabled]="isExporting">
+            <i class="fa-solid fa-file-zipper" *ngIf="!isExporting"></i>
+            <i class="fa-solid fa-spinner fa-spin" *ngIf="isExporting"></i>
+            Xuất toàn bộ bộ hồ sơ (.zip)
+          </button>
+
+          <div class="step3-divider">
+            <span>HOẶC TẢI LẺ</span>
+          </div>
+
+          <!-- 4 nút tải lẻ -->
+          <div class="step3-sub-grid">
+            <button class="step3-sub-btn step3-sub-blue" (click)="export()">
+              <i class="fa-solid fa-file-word"></i>
+              <span>Thư bảo lãnh</span>
+            </button>
+            <button class="step3-sub-btn step3-sub-cyan" (click)="exportDeXuatCapBaoLanh()">
+              <i class="fa-solid fa-file-lines"></i>
+              <span>Tờ trình đề xuất</span>
+            </button>
+            <button class="step3-sub-btn step3-sub-green" (click)="exportPhanXetDuyet()">
+              <i class="fa-solid fa-file-circle-check"></i>
+              <span>Phần xét duyệt</span>
+            </button>
+            <button class="step3-sub-btn step3-sub-orange" (click)="exportPhanYKien()">
+              <i class="fa-solid fa-comment-dots"></i>
+              <span>Mẫu ý kiến</span>
+            </button>
+          </div>
+
+          <!-- Nút lập mới -->
+          <div class="step3-footer">
+            <button class="step3-btn-ghost" (click)="ThemBaoLanhMoi()">
+              <i class="fa-solid fa-plus"></i> Lập thư bảo lãnh khác
+            </button>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
-
 
 </div>

@@ -1,0 +1,225 @@
+<div class="page-container">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-title-wrap">
+            <div class="page-icon">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+            </div>
+            <div>
+                <h1 class="page-title">Đề nghị giải ngân</h1>
+                <p class="page-subtitle">Danh sách các đợt giải ngân của bạn</p>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="stat-badge">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>{{ groups.length }} đợt giải ngân</span>
+            </div>
+            <div class="stat-badge stat-badge--green">
+                <i class="fa-solid fa-coins"></i>
+                <span>{{ formatCurrency(totalDisbursed) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== LOADING ===== -->
+    <div class="loading-box" *ngIf="loading">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- ===== ERROR ===== -->
+    <div class="error-box" *ngIf="!loading && error">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p>{{ error }}</p>
+        <button class="btn-retry" (click)="loadData()">
+            <i class="fa-solid fa-rotate-right"></i> Thử lại
+        </button>
+    </div>
+
+    <!-- ===== EMPTY STATE ===== -->
+    <div class="empty-state" *ngIf="!loading && !error && groups.length === 0">
+        <div class="empty-icon">
+            <i class="fa-solid fa-money-bill-transfer"></i>
+        </div>
+        <h3>Chưa có đợt giải ngân</h3>
+        <p>Hiện tại chưa có dữ liệu giải ngân nào cho tài khoản của bạn.</p>
+    </div>
+
+    <!-- ===== DANH SÁCH ĐỢT GIẢI NGÂN ===== -->
+    <div class="list-grid" *ngIf="!loading && !error && groups.length > 0">
+        <div class="disbursement-card" *ngFor="let group of groups" (click)="openDetail(group)">
+
+            <!-- Card Header - Contract number -->
+            <div class="card-header">
+                <div class="contract-info">
+                    <i class="fa-solid fa-file-contract"></i>
+                    <div>
+                        <span class="label-sm">Hợp đồng tín dụng</span>
+                        <span class="contract-num">{{ group.contractNumber }}</span>
+                    </div>
+                </div>
+                <div class="card-date">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    {{ formatDate(group.latestDate) }}
+                </div>
+            </div>
+
+            <!-- HĐTD Chi tiết -->
+            <div class="card-body">
+                <div class="detail-contract">
+                    <span class="label-sm">Số HĐTD chi tiết</span>
+                    <span class="code-text">{{ group.loanContractNumber }}</span>
+                </div>
+
+                <div class="card-metrics">
+                    <div class="metric">
+                        <span class="metric-label">Số khoản vay</span>
+                        <span class="metric-value primary">{{ group.loans.length }} khoản</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Tổng giải ngân</span>
+                        <span class="metric-value green">{{ formatCurrency(group.totalAmount) }}</span>
+                    </div>
+                </div>
+
+                <!-- Mini loan list preview -->
+                <div class="loan-preview">
+                    <div class="loan-preview-item" *ngFor="let loan of group.loans.slice(0, 3)">
+                        <span class="vehicle-chip">
+                            <i class="fa-solid fa-car-side"></i>
+                            {{ loan.vehicleDTO?.chassisNumber || ('Xe #' + loan.vehicleId) }}
+                        </span>
+                        <span class="loan-status-mini" [class]="getLoanStatusClass(loan.loanStatus?.toString())">
+                            {{ getLoanStatusLabel(loan.loanStatus?.toString()) }}
+                        </span>
+                    </div>
+                    <div class="more-loans" *ngIf="group.loans.length > 3">
+                        +{{ group.loans.length - 3 }} khoản nữa…
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button class="btn-detail">
+                    <i class="fa-solid fa-eye"></i> Xem chi tiết
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== MODAL CHI TIẾT GIẢI NGÂN ===== -->
+<div class="modal-overlay" *ngIf="showDetail" (click)="closeDetail()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <div class="modal-title-wrap">
+                <div class="modal-icon">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                </div>
+                <div>
+                    <h2>Chi tiết đợt giải ngân</h2>
+                    <p class="modal-subtitle">{{ selectedGroup?.loanContractNumber }}</p>
+                </div>
+            </div>
+            <button class="btn-close" (click)="closeDetail()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body" *ngIf="selectedGroup">
+
+            <!-- Thông tin đợt giải ngân (phần "Disbursement") -->
+            <div class="info-section">
+                <h3 class="section-title">
+                    <i class="fa-solid fa-circle-info"></i> Thông tin đợt giải ngân
+                </h3>
+                <div class="info-grid-2col">
+                    <div class="info-box">
+                        <span class="info-label">Hợp đồng tín dụng</span>
+                        <span class="info-val code-val">{{ selectedGroup.contractNumber }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Số HĐTD chi tiết</span>
+                        <span class="info-val code-val">{{ selectedGroup.loanContractNumber }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Số khoản vay</span>
+                        <span class="info-val highlight">{{ selectedGroup.loans.length }} khoản</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Tổng số tiền giải ngân</span>
+                        <span class="info-val amount-val">{{ formatCurrency(selectedGroup.totalAmount) }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Ngày giải ngân mới nhất</span>
+                        <span class="info-val">{{ formatDate(selectedGroup.latestDate) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách khoản vay con (phần "Loan") -->
+            <div class="loans-section">
+                <h3 class="section-title">
+                    <i class="fa-solid fa-list-ul"></i> Danh sách khoản vay
+                    <span class="count-badge">{{ selectedGroup.loans.length }}</span>
+                </h3>
+                <div class="loans-table-wrap">
+                    <table class="loans-table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Xe (Số khung)</th>
+                                <th>Số tài khoản</th>
+                                <th>Ngày vay</th>
+                                <th>Đến hạn</th>
+                                <th>Số tiền vay</th>
+                                <th>Đã trả</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let loan of selectedGroup.loans; let i = index">
+                                <td class="text-center">{{ i + 1 }}</td>
+                                <td class="vehicle-cell">
+                                    <span class="vehicle-icon"><i class="fa-solid fa-car-side"></i></span>
+                                    <div>
+                                        <div class="vehicle-name-sm">{{ loan.vehicleDTO?.vehicleName || '—' }}</div>
+                                        <div class="chassis-num">{{ loan.vehicleDTO?.chassisNumber || '—' }}</div>
+                                    </div>
+                                </td>
+                                <td class="code-cell">{{ loan.accountNumber || '—' }}</td>
+                                <td>{{ formatDate(loan.loanDate) }}</td>
+                                <td class="due-date" [class.overdue]="loan.loanStatus?.toString() === 'OVERDUE'">
+                                    {{ formatDate(loan.dueDate) }}
+                                </td>
+                                <td class="amount-cell primary">{{ formatCurrency(loan.loanAmount) }}</td>
+                                <td class="amount-cell green">{{ formatCurrency(loan.totalPaidAmount) }}</td>
+                                <td>
+                                    <span class="status-badge"
+                                        [class]="getLoanStatusClass(loan.loanStatus?.toString())">
+                                        {{ getLoanStatusLabel(loan.loanStatus?.toString()) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="5" class="total-label">Tổng cộng</td>
+                                <td class="amount-cell total-amount">{{ formatCurrency(selectedGroup.totalAmount) }}
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

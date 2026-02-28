@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OfficerGuaranteeService } from '../../../service/officer-guarantee.service';
-import { GuaranteeLetter } from '../../../models/guarantee_letter';
+import { GuaranteeApplication } from '../../../models/guarantee_application.model';
 import { PageResponse } from '../../../models/page-response';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
     styleUrl: './guarantee-application-management.component.css'
 })
 export class GuaranteeApplicationManagementComponent implements OnInit {
-    applications: GuaranteeLetter[] = [];
+    applications: GuaranteeApplication[] = [];
     isLoading = false;
     currentPage = 0;
     pageSize = 10;
@@ -32,7 +32,7 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
     loadApplications(): void {
         this.isLoading = true;
         this.officerGuaranteeService.getGuaranteeApplications(this.currentPage, this.pageSize).subscribe({
-            next: (response: PageResponse<GuaranteeLetter>) => {
+            next: (response: PageResponse<GuaranteeApplication>) => {
                 this.applications = response.content;
                 this.totalElements = response.totalElements;
                 this.isLoading = false;
@@ -45,12 +45,12 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
         });
     }
 
-    onApprove(app: GuaranteeLetter): void {
+    onApprove(app: GuaranteeApplication): void {
         // Chỉ chuyển sang bước lập hồ sơ bảo lãnh, không đổi trạng thái ngay
         this.router.navigate(['/manager/them-bao-lanh'], { queryParams: { applicationId: app.id } });
     }
 
-    onReject(app: GuaranteeLetter): void {
+    onReject(app: GuaranteeApplication): void {
         Swal.fire({
             title: 'Xác nhận từ chối',
             text: `Bạn có chắc chắn muốn từ chối hồ sơ này?`,

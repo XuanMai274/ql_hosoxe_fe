@@ -24,12 +24,14 @@ export interface LoanDTO {
   collateralAndPurpose?: string;
   withdrawnChassisNumber?: string;
 
-  loanStatus?: string;
-  loanType?: string;
+  loanStatus?: string | any;  // enum từ backend: ACTIVE, PAID, OVERDUE ...
+  loanType?: string | any;
 
   // ===== Relation =====
-  customerId?: Customer;
+  customerId?: number | Customer;
+  customerDTO?: Customer;     // object khách hàng đầy đủ
   vehicleId?: number;
+  guaranteeLetterId?: number;
   guaranteeLetterDTO?: GuaranteeLetter;
   creditContractDTO?: CreditContract;
   vehicleDTO?: Vehicle;

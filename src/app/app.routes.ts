@@ -19,6 +19,8 @@ import { CustomerManagementComponent } from './page/admin/customer-management/cu
 import { RoleManagementComponent } from './page/admin/role-management/role-management.component';
 import { HomeRouterComponent } from './page/home-router.component';
 import { DeNghiCapBaoLanhComponent } from './page/customer/de-nghi-cap-bao-lanh/de-nghi-cap-bao-lanh.component';
+import { DeNghiNhapKhoComponent } from './page/customer/de-nghi-nhap-kho/de-nghi-nhap-kho.component';
+import { DeNghiGiaiNganComponent } from './page/customer/de-nghi-giai-ngan/de-nghi-giai-ngan.component';
 
 import { AuthGuard } from './core/guard/auth.guard';
 import { RoleGuard } from './core/guard/role.guard';
@@ -141,6 +143,18 @@ export const routes: Routes = [
             {
                 path: 'de-nghi-cap-bao-lanh',
                 component: DeNghiCapBaoLanhComponent,
+                canActivate: [RoleGuard],
+                data: { roles: ['customer'] }
+            },
+            {
+                path: 'de-nghi-nhap-kho',
+                component: DeNghiNhapKhoComponent,
+                canActivate: [RoleGuard],
+                data: { roles: ['customer'] }
+            },
+            {
+                path: 'de-nghi-giai-ngan',
+                component: DeNghiGiaiNganComponent,
                 canActivate: [RoleGuard],
                 data: { roles: ['customer'] }
             }

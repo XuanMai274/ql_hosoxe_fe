@@ -36,8 +36,8 @@
                             </div>
                         </td>
                         <td>{{ app.manufacturerDTO?.name }}</td>
-                        <td>{{ app.expectedVehicleCount || 0 }} xe</td>
-                        <td>{{ app.expectedGuaranteeAmount | number:'1.0-0' }} VNĐ</td>
+                        <td>{{ app.totalVehicleCount || 0 }} xe</td>
+                        <td>{{ app.totalGuaranteeAmount | number:'1.0-0' }} VNĐ</td>
                         <td>{{ app.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
                         <td>
                             <span class="status-badge" [ngClass]="getStatusClass(app.status)">

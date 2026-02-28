@@ -179,7 +179,7 @@ export class ThemBaoLanhComponent implements OnInit {
       const appId = params['applicationId'];
       if (appId) {
         this.officerGuaranteeService.getApplicationById(Number(appId)).subscribe({
-          next: (app: GuaranteeLetter) => {
+          next: (app: any) => { // Use any or cast to GuaranteeApplication
             console.log("Populating application data:", app);
 
             if (app.manufacturerDTO) {
@@ -207,10 +207,10 @@ export class ThemBaoLanhComponent implements OnInit {
 
             // Điền các thông tin khác, ưu tiên dữ liệu từ app nếu có
             this.guaranteeForm.patchValue({
-              expectedVehicleCount: app.expectedVehicleCount || 1,
-              expectedGuaranteeAmount: app.expectedGuaranteeAmount || 0,
-              saleContractAmount: app.saleContractAmount || 0,
-              guaranteeContractNumber: app.guaranteeContractNumber || `BL/2025/${app.id || 'NEW'}/${Math.floor(Math.random() * 1000)}`
+              expectedVehicleCount: app.totalVehicleCount || 1,
+              expectedGuaranteeAmount: app.totalGuaranteeAmount || 0,
+              saleContractAmount: app.totalVehicleAmount || 0,
+              guaranteeContractNumber: app.applicationNumber || `BL/2025/${app.id || 'NEW'}/${Math.floor(Math.random() * 1000)}`
             });
 
             // Nếu app có saleContract thì mới ghi đè, nếu không thì giữ nguyên mẫu đã set ở applyBrandLogic

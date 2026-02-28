@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PageResponse } from '../models/page-response';
-import { GuaranteeLetter } from '../models/guarantee_letter';
+import { GuaranteeApplication } from '../models/guarantee_application.model';
 
 @Injectable({
     providedIn: 'root'
@@ -15,11 +15,11 @@ export class OfficerGuaranteeService {
     /**
      * Lấy danh sách hồ sơ bảo lãnh mà khách hàng đã gửi
      */
-    getGuaranteeApplications(page: number = 0, size: number = 10): Observable<PageResponse<GuaranteeLetter>> {
+    getGuaranteeApplications(page: number = 0, size: number = 10): Observable<PageResponse<GuaranteeApplication>> {
         const params = new HttpParams()
             .set('page', page.toString())
             .set('size', size.toString());
-        return this.http.get<PageResponse<GuaranteeLetter>>(this.BASE_URL, { params });
+        return this.http.get<PageResponse<GuaranteeApplication>>(this.BASE_URL, { params });
     }
 
     /**
@@ -39,8 +39,8 @@ export class OfficerGuaranteeService {
     /**
      * Lấy chi tiết một đơn bảo lãnh theo ID
      */
-    getApplicationById(id: number): Observable<GuaranteeLetter> {
-        return this.http.get<GuaranteeLetter>(`${this.BASE_URL}/${id}`);
+    getApplicationById(id: number): Observable<GuaranteeApplication> {
+        return this.http.get<GuaranteeApplication>(`${this.BASE_URL}/${id}`);
     }
 }
 
