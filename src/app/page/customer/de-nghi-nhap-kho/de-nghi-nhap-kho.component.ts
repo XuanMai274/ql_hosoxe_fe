@@ -48,20 +48,8 @@ export class DeNghiNhapKhoComponent implements OnInit {
     this.selectedItem = item;
     this.showDetail = true;
     document.body.style.overflow = 'hidden';
-
-    // Nếu chưa có danh sách xe, load chi tiết
-    if (!item.vehicles || item.vehicles.length === 0) {
-      this.loadingDetail = true;
-      this.service.getWarehouseImportDetail(item.id).subscribe({
-        next: (detail) => {
-          this.selectedItem = detail;
-          this.loadingDetail = false;
-        },
-        error: () => {
-          this.loadingDetail = false;
-        }
-      });
-    }
+    // Danh sách xe đã được load sẵn từ API danh sách nhờ JOIN FETCH
+    this.loadingDetail = false;
   }
 
   closeDetail(): void {

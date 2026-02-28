@@ -32,16 +32,16 @@ export class CustomerWarehouseService {
     // ===== ĐỀ NGHỊ GIẢI NGÂN =====
 
     /**
-     * Lấy danh sách khoản vay (giải ngân) của khách hàng đang đăng nhập
+     * Lấy danh sách đợt giải ngân của khách hàng đang đăng nhập
      */
-    getMyLoans(): Observable<LoanDTO[]> {
-        return this.http.get<LoanDTO[]>(`${this.BASE_URL}/loans`);
+    getMyDisbursements(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.BASE_URL}/disbursements`);
     }
 
     /**
-     * Lấy chi tiết khoản vay theo ID
+     * Lấy chi tiết đợt giải ngân theo ID
      */
-    getLoanDetail(id: number): Observable<LoanDTO> {
-        return this.http.get<LoanDTO>(`${this.BASE_URL}/loans/${id}`);
+    getDisbursementDetail(id: number): Observable<any> {
+        return this.http.get<any>(`${this.BASE_URL}/disbursements/${id}`);
     }
 }
