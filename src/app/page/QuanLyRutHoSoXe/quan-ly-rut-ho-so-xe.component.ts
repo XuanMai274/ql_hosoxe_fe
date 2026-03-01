@@ -39,17 +39,18 @@ export class QuanLyRutHoSoXeComponent implements OnInit {
         });
     }
 
+
     viewDetails(request: WarehouseExportDTO): void {
         this.selectedRequest = request;
         this.detailsLoading = true;
         this.vehicles = [];
-
+        console.log("đã chọn", this.selectedRequest);
         if (request.id) {
             this.exportService.getVehiclesByExportId(request.id).subscribe({
                 next: (data) => {
                     this.vehicles = data;
                     // Tinh tong tien thu no neu backend chua cung cap
-                    if (this.selectedRequest!.totalDebtCollection == 0 || null) {
+                    if (!this.selectedRequest!.totalDebtCollection) {
                         const total = data.reduce((sum, v) => sum + (v.guaranteeAmount || 0), 0);
                         this.selectedRequest!.totalDebtCollection = total;
                     }
@@ -62,6 +63,56 @@ export class QuanLyRutHoSoXeComponent implements OnInit {
                 }
             });
         }
+
+    }
+    approveRequest(): void {
+
+        if (!this.selectedRequest) return;
+
+        if (!confirm('Bạn có chắc chắn muốn duyệt đơn này?')) return;
+
+        // Gửi trực tiếp selectedRequest
+        this.exportService.approveExport(this.selectedRequest).subscribe({
+
+            next: (approvedResult: WarehouseExportDTO) => {
+
+                // Cập nhật lại selectedRequest theo dữ liệu server trả về
+                this.selectedRequest = approvedResult;
+
+                // Sau khi approve thành công mới export
+                this.exportService.exportAllFiles(approvedResult).subscribe({
+
+                    next: (blob: Blob) => {
+
+                        this.downloadFile(blob, 'Export_All.zip');
+
+                        alert('Duyệt và xuất hồ sơ thành công.');
+
+                        this.closeDetails();
+                        this.loadPendingRequests();
+                    },
+
+                    error: (err) => {
+                        console.error('Export file error:', err);
+                        alert('Duyệt thành công nhưng xuất file thất bại.');
+                    }
+                });
+            },
+
+            error: (err) => {
+                console.error('Approve error:', err);
+                alert('Có lỗi khi duyệt đơn.');
+            }
+
+        });
+    }
+    private downloadFile(blob: Blob, filename: string) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
     }
 
     closeDetails(): void {
@@ -90,5 +141,22 @@ export class QuanLyRutHoSoXeComponent implements OnInit {
     formatCurrency(value: number | undefined): string {
         if (value === undefined || value === null) return '0 ₫';
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+    }
+    formatNumber(value: number | undefined | null): string {
+        if (!value) return '';
+        return new Intl.NumberFormat('vi-VN').format(value);
+    }
+
+    onMoneyChange(value: string, field: 'totalCollateralValue' | 'realEstateValue'): void {
+        if (!this.selectedRequest) return;
+
+        // Bỏ dấu chấm
+        const rawValue = value.replace(/\./g, '');
+
+        const numericValue = Number(rawValue);
+
+        if (!isNaN(numericValue)) {
+            this.selectedRequest[field] = numericValue;
+        }
     }
 }

@@ -1,6 +1,6 @@
 <div class="page-container">
   <!-- STEPPER -->
-  <div class="stepper">
+  <!-- <div class="stepper">
     <div class="step" [class.active]="currentStep >= 1">
       <span class="circle">1</span>
       <span class="label">Chọn xe cần rút</span>
@@ -10,15 +10,28 @@
       <span class="circle">2</span>
       <span class="label">Xác nhận yêu cầu</span>
     </div>
-  </div>
+  </div> -->
 
   <div class="page-content">
-    
+
     <!-- STEP 1: CHỌN XE -->
     <div *ngIf="currentStep === 1">
-      <div class="header-section">
+      <!-- <div class="header-section">
         <h2 class="title">Đề nghị rút hồ sơ xe</h2>
         <p class="subtitle">Chọn các xe đang lưu kho để gửi yêu cầu rút hồ sơ</p>
+      </div> -->
+
+      <!-- SELECTION SUMMARY -->
+      <div class="selection-summary" *ngIf="selectedVehicles.length > 0">
+        <div class="summary-item-inline">
+          <i class="fa-solid fa-check-to-slot"></i>
+          <span>Đã chọn: <strong>{{ selectedVehicles.length }}</strong> xe</span>
+        </div>
+        <div class="summary-item-inline">
+          <i class="fa-solid fa-money-bill-transfer"></i>
+          <span>Tổng tiền thanh toán: <strong
+              class="text-primary">{{ formatCurrency(totalGuaranteeAmount) }}</strong></span>
+        </div>
       </div>
 
       <!-- FILTER BAR -->
@@ -38,20 +51,12 @@
 
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input 
-            type="text" 
-            placeholder="Tìm theo số khung..." 
-            [(ngModel)]="chassisNumber" 
-          />
+          <input type="text" placeholder="Tìm theo số khung..." [(ngModel)]="chassisNumber" />
         </div>
 
         <div class="search-box">
-          <i class="fa-solid fa-hashtag"></i>
-          <input 
-            type="text" 
-            placeholder="Tìm theo số REF..." 
-            [(ngModel)]="ref" 
-          />
+          <i class="fa-solid fa-file-contract"></i>
+          <input type="text" placeholder="Tìm theo số HĐTD..." [(ngModel)]="loanContractNumber" />
         </div>
 
         <button class="btn-search" (click)="search()">
@@ -67,8 +72,8 @@
               <th width="50">Chọn</th>
               <th>Hãng & Tên xe</th>
               <th>Số khung / Máy</th>
-              <th>Ngày nhập kho</th>
-              <th>REF</th>
+              <th>Ngày vay</th>
+              <th>Ngày đến hạn</th>
               <th>Giá trị</th>
             </tr>
           </thead>
@@ -76,12 +81,8 @@
             <tr *ngFor="let v of vehicles">
               <td>
                 <div class="checkbox-wrapper">
-                  <input 
-                    type="checkbox" 
-                    [checked]="isSelected(v)" 
-                    (change)="onSelectVehicle(v, $event)"
-                    [id]="'check-' + v.id"
-                  />
+                  <input type="checkbox" [checked]="isSelected(v)" (change)="onSelectVehicle(v, $event)"
+                    [id]="'check-' + v.id" />
                   <label [for]="'check-' + v.id"></label>
                 </div>
               </td>
@@ -101,15 +102,15 @@
               <td>
                 <div class="codes-cell">
                   <span class="code-text" title="Số khung">{{ v.chassisNumber }}</span>
-                  <span class="code-text engine-code" title="Số máy">{{ v.engineNumber }}</span>
+                  <!-- <span class="code-text engine-code" title="Số máy">{{ v.engineNumber }}</span> -->
                 </div>
               </td>
               <td>
-                <span class="date-text">{{ v.importDate | date:'dd/MM/yyyy' }}</span>
+                <span class="date-text">{{ v.loan?.loanDate| date:'dd/MM/yyyy' }}</span>
               </td>
               <td>
                 <span class="ref-text">
-                  {{ v.guaranteeLetterDTO?.referenceCode || '—' }}
+                  {{ v.loan?.dueDate }}
                 </span>
               </td>
               <td><span class="price-text">{{ formatCurrency(v.price) }}</span></td>
@@ -144,10 +145,7 @@
       </div>
 
       <!-- ACTIONS -->
-      <div class="footer-actions">
-        <div class="selected-count">
-          Đã chọn: <strong>{{ selectedVehicles.length }}</strong> xe
-        </div>
+      <div class="footer-actions right">
         <button class="btn-next" (click)="nextStep()" [disabled]="selectedVehicles.length === 0">
           Tiếp tục <i class="fa-solid fa-arrow-right"></i>
         </button>
@@ -156,10 +154,10 @@
 
     <!-- STEP 2: XÁC NHẬN -->
     <div *ngIf="currentStep === 2">
-      <div class="header-section">
+      <!-- <div class="header-section">
         <h2 class="title">Xác nhận danh sách rút hồ sơ</h2>
         <p class="subtitle">Vui lòng kiểm tra lại danh sách xe trước khi gửi yêu cầu</p>
-      </div>
+      </div> -->
 
       <div class="summary-card">
         <div class="card-header">
@@ -169,6 +167,10 @@
           <div class="summary-item">
             <span class="label">Tổng số xe:</span>
             <span class="value">{{ selectedVehicles.length }} xe</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Tổng tiền thanh toán:</span>
+            <span class="value text-primary">{{ formatCurrency(totalGuaranteeAmount) }}</span>
           </div>
           <div class="summary-item">
             <span class="label">Ngày lập yêu cầu:</span>
@@ -183,30 +185,47 @@
             <tr>
               <th>#</th>
               <th>Tên xe</th>
-              <th>Số khung</th>
-              <th>Số máy</th>
-              <th class="text-right">Giá trị</th>
+              <th>Số khung / Máy</th>
+              <th>Ngày vay</th>
+              <th>Ngày đến hạn</th>
+              <th>Tiền vay</th>
+              <th>Giá trị xe</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let v of selectedVehicles; let i = index">
               <td>{{ i + 1 }}</td>
               <td>{{ v.vehicleName }}</td>
-              <td><span class="code-text">{{ v.chassisNumber }}</span></td>
-              <td><span class="code-text">{{ v.engineNumber }}</span></td>
-              <td class="text-right"><span class="price-text">{{ formatCurrency(v.price) }}</span></td>
+              <td>
+                <div class="codes-cell">
+                  <span class="code-text">{{ v.chassisNumber }}</span>
+                  <span class="code-text engine-code">{{ v.engineNumber }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="ref-text">{{ v.loan?.loanDate }}</span>
+              </td>
+              <td>
+                <span class="ref-text">{{ v.loan?.dueDate }}</span>
+              </td>
+              <td class="text-right">
+                <span class="price-text">{{ formatCurrency(v.guaranteeAmount) }}</span>
+              </td>
+              <td class="text-right">
+                <span class="price-text muted">{{ formatCurrency(v.price) }}</span>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="footer-actions">
+      <div class="footer-actions right gap-12">
         <button class="btn-back" (click)="prevStep()">
           <i class="fa-solid fa-arrow-left"></i> Quay lại
         </button>
         <button class="btn-confirm" (click)="confirmRequest()" [disabled]="loading">
           <span *ngIf="!loading">Gửi yêu cầu rút hồ sơ</span>
-          <span *ngIf="loading" class="spinner-small"></span>
+          <div *ngIf="loading" class="spinner-small"></div>
         </button>
       </div>
     </div>

@@ -28,4 +28,18 @@ export class WarehouseExportService {
     getAvailableForExport(status: string): Observable<any[]> {
         return this.http.get<any[]>(`${this.customerUrl}/${status}`);
     }
+    approveExport(dto: WarehouseExportDTO) {
+        return this.http.post<WarehouseExportDTO>(
+            'http://localhost:8080/officer/warehouse-export/approve',
+            dto
+        );
+    }
+
+    exportAllFiles(dto: WarehouseExportDTO) {
+        return this.http.post(
+            'http://localhost:8080/officer/warehouse-export-files/export-all',
+            dto,
+            { responseType: 'blob' }
+        );
+    }
 }

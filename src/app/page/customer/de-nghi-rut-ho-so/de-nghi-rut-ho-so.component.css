@@ -220,6 +220,34 @@
     background: #02706e;
 }
 
+/* Selection Summary Bar */
+.selection-summary {
+    display: flex;
+    gap: 32px;
+    background: #f0fdf4;
+    padding: 12px 24px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #bbf7d0;
+    align-items: center;
+}
+
+.summary-item-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: #166534;
+}
+
+.summary-item-inline i {
+    color: #15803d;
+}
+
+.text-primary {
+    color: #028B89 !important;
+}
+
 /* Table Styling */
 .table-container {
     background: white;
@@ -310,6 +338,12 @@
     color: #0f172a;
 }
 
+.price-text.muted {
+    font-weight: 400;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
 /* Pagination */
 .pagination {
     display: flex;
@@ -347,12 +381,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: white;
-    padding: 20px 32px;
-    border-radius: 12px;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-    position: sticky;
-    bottom: 24px;
+    padding: 20px 0;
+    margin-top: 24px;
+}
+
+.footer-actions.right {
+    justify-content: flex-end;
+}
+
+.gap-12 {
+    gap: 12px;
 }
 
 .selected-count {

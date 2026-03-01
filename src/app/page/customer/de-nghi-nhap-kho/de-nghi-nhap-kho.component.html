@@ -1,7 +1,7 @@
 <div class="page-container">
 
     <!-- ===== PAGE BANNER ===== -->
-    <div class="page-banner">
+    <!-- <div class="page-banner">
         <div class="banner-left">
             <div class="banner-badge">
                 <i class="fa-solid fa-warehouse"></i> Nghiệp vụ khách hàng
@@ -12,13 +12,13 @@
         <div class="banner-icon-decor">
             <i class="fa-solid fa-warehouse"></i>
         </div>
-    </div>
+    </div> -->
 
     <!-- ===== QUICK STATS ===== -->
     <div class="stats-row" *ngIf="!loading && !error">
         <div class="stat-pill">
             <i class="fa-solid fa-file-invoice"></i>
-            <span class="pill-value">{{ totalElements }}</span>
+            <span class="pill-value">{{totalElements}}</span>
             <span class="pill-label">Tổng phiếu nhập</span>
         </div>
         <div class="stat-pill green">
@@ -89,7 +89,7 @@
                         <td class="code-cell">{{ item.mortgageContractDTO?.contractNumber || '—' }}</td>
                         <td>{{ formatDate(item.createdAt) }}</td>
                         <td class="text-center">
-                            <span class="count-chip">{{ item.vehicleCount || item.vehicleIds.length || 0 }} xe</span>
+                            <span class="count-chip">{{ item.vehicleIds.length || 0 }} xe</span>
                         </td>
                         <td class="text-center">
                             <button class="btn-view" (click)="openDetail(item); $event.stopPropagation()">
@@ -169,7 +169,7 @@
                     <div class="info-box">
                         <span class="info-label">Tổng số xe</span>
                         <span class="info-val success-text">
-                            {{ selectedItem.vehicleCount || selectedItem.vehicleIds.length || 0 }} xe
+                            {{  selectedItem.vehicleIds.length || 0 }} xe
                         </span>
                     </div>
                 </div>

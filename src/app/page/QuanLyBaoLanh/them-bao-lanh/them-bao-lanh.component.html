@@ -258,6 +258,11 @@
                 <span class="step3-limit-value step3-green">{{ formatMoney(exportForm.get('remainingLimit')?.value)
                   }}</span>
               </div>
+              <div class="step3-limit-box step3-limit-available">
+                <span class="step3-limit-label">Hạn mức đã sử dụng</span>
+                <span class="step3-limit-value step3-green">{{ formatMoney(exportForm.get('usedLimit')?.value)
+                  }}</span>
+              </div>
             </div>
 
             <!-- Nhập dư nợ -->
@@ -280,11 +285,11 @@
             </div>
 
             <!-- Phí bảo lãnh -->
-            <div class="step3-fee-box">
+            <!-- <div class="step3-fee-box">
               <i class="fa-solid fa-hand-holding-dollar"></i>
               <span>Phí bảo lãnh (tạm tính):</span>
               <strong>{{ formatMoney(exportForm.get('guaranteeFee')?.value) }} VNĐ</strong>
-            </div>
+            </div> -->
 
           </form>
         </div>

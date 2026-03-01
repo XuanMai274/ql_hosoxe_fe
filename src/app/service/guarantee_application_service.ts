@@ -30,6 +30,19 @@ export class GuaranteeApplicationService {
 
     return this.http.get<PageResponse<GuaranteeApplication>>(this.baseUrl, { params });
   }
+  exportDeNghi(id: number) {
+    return this.http.get(
+      `/customer/guarantee-export/de-nghi/${id}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  exportDanhSachXe(id: number) {
+    return this.http.get(
+      `/customer/guarantee-export/danh-sach-xe/${id}`,
+      { responseType: 'blob' }
+    );
+  }
 
   /**
    * Xem chi tiết một đề nghị bảo lãnh

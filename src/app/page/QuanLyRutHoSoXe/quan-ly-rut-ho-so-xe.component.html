@@ -66,7 +66,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title-group">
-          <h3>Chi tiết đơn yêu cầu: <span class="highlight">{{ selectedRequest.exportNumber || 'REQ-' + selectedRequest.id }}</span></h3>
+          <h3>Chi tiết đơn yêu cầu: <span
+              class="highlight">{{ selectedRequest.exportNumber || 'REQ-' + selectedRequest.id }}</span></h3>
           <span class="modal-subtitle">Danh sách xe trong yêu cầu</span>
         </div>
         <button class="close-btn" (click)="closeDetails()">&times;</button>
@@ -86,9 +87,18 @@
             <span class="label">Tổng tiền thu nợ:</span>
             <span class="value highlighting">{{ formatCurrency(selectedRequest.totalDebtCollection) }}</span>
           </div>
-          <div class="summary-item status-item">
-            <span class="label">Trạng thái:</span>
-            <span class="badge badge-pending">Đang chờ duyệt</span>
+          <div class="summary-item">
+            <span class="label">Tổng TS:</span>
+            <input type="text" class="value-input highlighting"
+              [ngModel]="formatNumber(selectedRequest.totalCollateralValue)"
+              (ngModelChange)="onMoneyChange($event, 'totalCollateralValue')" name="totalCollateralValue" />
+          </div>
+
+          <div class="summary-item">
+            <span class="label">Giá trị BĐS:</span>
+            <input type="text" class="value-input highlighting"
+              [ngModel]="formatNumber(selectedRequest.realEstateValue)"
+              (ngModelChange)="onMoneyChange($event, 'realEstateValue')" name="realEstateValue" />
           </div>
         </div>
 
@@ -96,23 +106,50 @@
           <table class="detail-table">
             <thead>
               <tr>
-                <th>STT</th>
-                <th>Tên xe</th>
-                <th>Số khung</th>
-                <th>Số máy</th>
-                <th class="text-right">Giá trị</th>
+                <th>#</th>
+                <th>Thông tin xe</th>
+                <th>Số khung / Máy</th>
+                <th>HDTDCT</th>
+                <th>Ngày đến hạn</th>
+                <th>Khoản vay</th>
+                <th>Giá trị xe</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let v of vehicles; let i = index">
                 <td>{{ i + 1 }}</td>
-                <td class="vehicle-name-cell">
-                  <span class="v-name">{{ v.vehicleName }}</span>
-                  <span class="v-color">{{ v.color }}</span>
+                <td class="vehicle-info-cell">
+                  <span class="manufacturer-tag">{{ v.manufacturerDTO?.name }}</span>
+                  <div class="vehicle-name-detail">
+                    <span class="v-name">{{ v.vehicleName }}</span>
+                    <span class="v-color"> {{ v.color }}</span>
+                  </div>
                 </td>
-                <td><code class="code-text">{{ v.chassisNumber }}</code></td>
-                <td><code class="code-text">{{ v.engineNumber }}</code></td>
-                <td class="text-right"><span class="price-text">{{ formatCurrency(v.price) }}</span></td>
+                <td>
+                  <div class="codes-cell">
+                    <code class="code-text" title="Số khung">{{ v.chassisNumber }}</code>
+                    <code class="code-text engine-code" title="Số máy">{{ v.engineNumber }}</code>
+                  </div>
+                </td>
+                <td>
+                  <div class="loan-info-cell">
+                    <span class="loan-number">{{ v.loan?.loanContractNumber || v.loanContractNumber || '—' }}</span>
+                    <span class="loan-date" *ngIf="v.loan?.loanDate">Ngày vay:
+                      {{ v.loan?.loanDate | date: 'dd/MM/yyyy' }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="loan-deadline-cell">
+                    <span class="due-date" [class.overdue]="v.deadlineLabel?.includes('quá hạn')">
+                      {{ v.loan?.dueDate || '—' }}
+                    </span>
+                    <span class="deadline-label" *ngIf="v.deadlineLabel">{{ v.deadlineLabel }}</span>
+                  </div>
+                </td>
+                <td class="text-right">
+                  <span class="price-text highlight-price">{{ formatCurrency(v.guaranteeAmount) }}</span>
+                </td>
+                <td class="text-right"><span class="price-text muted">{{ formatCurrency(v.price) }}</span></td>
               </tr>
               <tr *ngIf="vehicles.length === 0 && !detailsLoading">
                 <td colspan="5" class="empty-state">Không có dữ liệu xe.</td>
@@ -133,7 +170,7 @@
         <button class="btn btn-reject" (click)="rejectRequest(selectedRequest.id)">
           <i class="fa-solid fa-times-circle"></i> Từ chối yêu cầu
         </button>
-        <button class="btn btn-approve" disabled>
+        <button class="btn btn-approve" (click)="approveRequest()" [disabled]="!selectedRequest">
           <i class="fa-solid fa-check-circle"></i> Duyệt xuất kho
         </button>
       </div>

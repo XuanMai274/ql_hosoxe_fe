@@ -19,4 +19,6 @@ export interface WarehouseExportDTO {
 
     createdAt?: string;
     createdBy?: string;
+    totalCollateralValue?: number;
+    realEstateValue?: number;
 }

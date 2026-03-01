@@ -27,6 +27,12 @@ export interface DisbursementDTO {
   loanTerm?: number;
   startDate?: Date;
   dueDate?: Date;
+  interestRate?: number;            // Lãi suất (%)
+  interestAmount?: number;          // Tiền lãi
+  totalAmountPaid?: number;         // Tổng tiền đã trả
+  withdrawnVehiclesCount?: number;  // Số xe đã rút
+  totalVehiclesCount?: number;      // Tổng số xe vay
+  status?: string;   // Trạng thái
   // ===== Quan hệ =====
   creditContractId?: number;
   mortgageContractId?: number;

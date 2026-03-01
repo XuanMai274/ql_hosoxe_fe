@@ -210,7 +210,7 @@ export class ThemBaoLanhComponent implements OnInit {
               expectedVehicleCount: app.totalVehicleCount || 1,
               expectedGuaranteeAmount: app.totalGuaranteeAmount || 0,
               saleContractAmount: app.totalVehicleAmount || 0,
-              guaranteeContractNumber: app.applicationNumber || `BL/2025/${app.id || 'NEW'}/${Math.floor(Math.random() * 1000)}`
+              guaranteeContractNumber: app.applicationNumber 
             });
 
             // Nếu app có saleContract thì mới ghi đè, nếu không thì giữ nguyên mẫu đã set ở applyBrandLogic

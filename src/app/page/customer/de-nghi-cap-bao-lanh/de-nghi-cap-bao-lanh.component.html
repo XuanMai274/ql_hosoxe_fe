@@ -63,9 +63,9 @@
       <span class="pill-label">Chờ duyệt</span>
     </div>
     <div class="stat-pill teal">
-      <i class="fa-solid fa-calculator"></i>
+      <!-- <i class="fa-solid fa-calculator"></i> -->
       <span class="pill-value">{{ tongGiaTriBaoLanh | number:'1.0-0' }}</span>
-      <span class="pill-label">Tổng GT bảo lãnh (VNĐ)</span>
+      <span class="pill-label">Tổng GT đề nghị bảo lãnh</span>
     </div>
   </div>
 
@@ -108,7 +108,7 @@
           </tr>
           <tr *ngFor="let item of donHangList; let i = index" class="clickable-row" (click)="openDetail(item)">
             <td class="text-center stt-cell">{{ page * size + i + 1 }}</td>
-            <td class="code-cell font-bold">{{ item.applicationNumber || '—' }}</td>
+            <td class="code-cell font-bold">{{ item.subGuaranteeContractNumber || '—' }}</td>
             <td>
               <span class="tag-pill" [ngClass]="getManufacturerClass(item)">
                 {{ item.manufacturerDTO?.name || '—' }}
@@ -132,7 +132,7 @@
             <td colspan="5" class="total-label">
               <i class="fa-solid fa-calculator"></i> Tổng giá trị bảo lãnh
             </td>
-            <td class="text-right total-amount">{{ tongGiaTriBaoLanh | number:'1.0-0' }}</td>
+            <td class="text-right total-amount">{{tongGiaTriBaoLanh| number:'1.0-0' }}</td>
             <td colspan="2" class="total-unit">VNĐ</td>
           </tr>
         </tfoot>
@@ -229,7 +229,7 @@
             </span>
           </div>
           <div class="info-box">
-            <span class="info-label">Tổng giá trị bảo lãnh</span>
+            <span class="info-label">Tổng giá trị đề nghị cấp bảo lãnh</span>
             <span class="info-val primary amount-text">{{ (selectedItem.totalGuaranteeAmount || 0) | number:'1.0-0' }}
               VNĐ</span>
           </div>

@@ -29,7 +29,7 @@ export class DeNghiRutHoSoComponent implements OnInit {
     chassisNumber = '';
     status = '';
     manufacturer = '';
-    ref = '';
+    loanContractNumber = '';
 
     // ===== PAGING =====
     page = 0;
@@ -40,6 +40,10 @@ export class DeNghiRutHoSoComponent implements OnInit {
         private service: CustomerWarehouseService,
         private router: Router
     ) { }
+
+    get totalGuaranteeAmount(): number {
+        return this.selectedVehicles.reduce((sum, v) => sum + (v.guaranteeAmount || 0), 0);
+    }
 
     ngOnInit(): void {
         this.loadVehicles();
@@ -53,12 +57,14 @@ export class DeNghiRutHoSoComponent implements OnInit {
             this.size,
             this.chassisNumber,
             this.manufacturer,
-            this.ref
+            this.loanContractNumber
         ).subscribe({
             next: (res: any) => {
                 this.vehicles = res.content;
                 this.totalPages = res.totalPages;
                 this.loading = false;
+                console.log("danh sách xe: ", res)
+                console.log("danh sách xe: ", res.content)
             },
             error: (err) => {
                 console.error('Lỗi load xe:', err);

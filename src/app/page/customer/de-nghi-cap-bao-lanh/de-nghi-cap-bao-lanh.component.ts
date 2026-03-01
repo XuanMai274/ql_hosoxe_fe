@@ -5,6 +5,9 @@ import { GuaranteeApplication } from '../../../models/guarantee_application.mode
 import { GuaranteeApplicationService } from '../../../service/guarantee_application_service';
 import { Manufacturer } from '../../../models/manufacturer';
 import { ManufacturerService } from '../../../service/manufacturer.service';
+import { forkJoin } from 'rxjs';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 @Component({
     selector: 'app-de-nghi-cap-bao-lanh',
@@ -95,7 +98,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
                 this.loading = false;
             },
             error: () => {
-                this.donHangList = this.getMockData();
+                // this.donHangList = this.getMockData();
                 this.totalPages = 1;
                 this.loading = false;
                 // this.error = 'Không thể tải danh sách đề nghị bảo lãnh';
@@ -237,10 +240,19 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
         };
 
         this.guaranteeAppService.create(payload).subscribe({
-            next: () => {
+            next: (res) => {
+                if (!res.id) {
+                    alert('Không tìm thấy ID');
+                    return;
+                }
+                if (!res.id || !res.subGuaranteeContractNumber) {
+                    alert('Thiếu dữ liệu xuất file');
+                    return;
+                }
                 this.submitting = false;
                 this.closeForm();
                 this.loadData(0);
+                this.downloadZip(res.id, res.subGuaranteeContractNumber);
             },
             error: (err) => {
                 console.error(err);
@@ -302,32 +314,41 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
             return s === status.toUpperCase();
         }).length;
     }
+    downloadZip(id: number, contractNumber: string) {
 
-    private getMockData(): GuaranteeApplication[] {
-        return [
-            {
-                id: 1,
-                applicationNumber: 'YCB-2024-001',
-                subGuaranteeContractNumber: 'BL-VF-001',
-                manufacturerDTO: { code: 'VINFAST', name: 'VinFast', guaranteeRate: 0.75 },
-                totalVehicleAmount: 300000000,
-                totalGuaranteeAmount: 225000000,
-                totalVehicleCount: 2,
-                status: 'APPROVED',
-                createdAt: '2024-01-10T08:00:00',
-                expiryDate: '2024-12-31'
+        this.submitting = true;
+
+        forkJoin({
+            deNghi: this.guaranteeAppService.exportDeNghi(id),
+            danhSach: this.guaranteeAppService.exportDanhSachXe(id)
+        }).subscribe({
+
+            next: async ({ deNghi, danhSach }) => {
+
+                const zip = new JSZip();
+
+                zip.file(
+                    `${contractNumber}_de-nghi-cap-bao-lanh.docx`,
+                    deNghi
+                );
+
+                zip.file(
+                    `${contractNumber}_danh-sach-xe-cap-bao-lanh.docx`,
+                    danhSach
+                );
+
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+                saveAs(zipBlob, `${contractNumber}.zip`);
+
+                this.submitting = false;
             },
-            {
-                id: 2,
-                applicationNumber: 'YCB-2024-002',
-                manufacturerDTO: { code: 'HYUNDAI', name: 'Hyundai', guaranteeRate: 0.8 },
-                totalVehicleAmount: 500000000,
-                totalGuaranteeAmount: 400000000,
-                totalVehicleCount: 1,
-                status: 'PENDING',
-                createdAt: '2024-02-15T10:30:00'
+
+            error: () => {
+                this.submitting = false;
+                alert('Lỗi khi xuất file');
             }
-        ] as any[];
+        });
     }
 }
 
