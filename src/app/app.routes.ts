@@ -22,6 +22,7 @@ import { DeNghiCapBaoLanhComponent } from './page/customer/de-nghi-cap-bao-lanh/
 import { DeNghiNhapKhoComponent } from './page/customer/de-nghi-nhap-kho/de-nghi-nhap-kho.component';
 import { DeNghiGiaiNganComponent } from './page/customer/de-nghi-giai-ngan/de-nghi-giai-ngan.component';
 import { CustomerHomeComponent } from './page/customer/customer-home/customer-home.component';
+import { CustomerKhoanVayComponent } from './page/customer/khoan-vay/khoan-vay.component';
 
 import { AuthGuard } from './core/guard/auth.guard';
 import { RoleGuard } from './core/guard/role.guard';
@@ -29,11 +30,12 @@ import { DanhSachKhoanVayComponent } from './page/QuanLyKhoanVay/danh-sach-khoan
 import { ChiTietKhoanVayComponent } from './page/QuanLyKhoanVay/chi-tiet-khoan-vay/chi-tiet-khoan-vay.component';
 import { DanhSachHopDongTDComponent } from './page/QuanLyHopDongTD/danh-sach-hop-dong-td/danh-sach-hop-dong-td.component';
 import { FormHopDongTDComponent } from './page/QuanLyHopDongTD/form-hop-dong-td/form-hop-dong-td.component';
+import { RootRedirectComponent } from './page/root-redirect.component';
 
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'login',
+        component: RootRedirectComponent,
         pathMatch: 'full'
     },
     {
@@ -160,6 +162,12 @@ export const routes: Routes = [
             {
                 path: 'de-nghi-giai-ngan',
                 component: DeNghiGiaiNganComponent,
+                canActivate: [RoleGuard],
+                data: { roles: ['customer'] }
+            },
+            {
+                path: 'khoan-vay',
+                component: CustomerKhoanVayComponent,
                 canActivate: [RoleGuard],
                 data: { roles: ['customer'] }
             }

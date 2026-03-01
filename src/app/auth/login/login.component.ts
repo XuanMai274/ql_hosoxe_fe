@@ -31,9 +31,9 @@ export class LoginComponent implements OnInit {
     private authService: AuthServiceComponent,
     private router: Router
   ) {
-    // Ưu tiên lấy username thực thụ để đăng nhập
+    // Ưu tiên lấy username từ localStorage để hiển thị thông tin "Chào mừng quay trở lại"
     const lastUsername = localStorage.getItem('username') || localStorage.getItem('savedIdentifier') || '';
-    // Lấy fullName chỉ để hiển thị câu chào
+    // Lấy fullName từ localStorage để hiển thị câu chào
     this.displayFullName = localStorage.getItem('fullName') || '';
 
     if (lastUsername) {
@@ -48,10 +48,9 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Nếu đã đăng nhập, tự động chuyển hướng về trang chủ tương ứng
+    // Nếu người dùng quay lại trang login, buộc phải đăng nhập lại (xóa session cũ)
     if (this.authService.isAuthenticate()) {
-      const role = this.authService.getUserRole();
-      this.navigateByRole(role);
+      this.authService.logout();
     }
   }
 
@@ -81,30 +80,28 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: (response: AuthenticationResponse) => {
-        // Nếu đang đổi tài khoản → xóa thông tin tài khoản cũ trước
+        // Nếu đang đổi tài khoản → xóa thông tin tài khoản cũ trong localStorage
         if (this.isSwitching) {
           localStorage.removeItem('savedIdentifier');
           localStorage.removeItem('fullName');
           localStorage.removeItem('username');
-          localStorage.removeItem('userId');
           this.isSwitching = false;
         }
 
-        // Lưu thông tin tài khoản mới
+        // Ghi nhận đăng nhập vào localStorage (Để duy trì trạng thái "Returning User")
         localStorage.setItem('savedIdentifier', response.username);
         localStorage.setItem('fullName', response.fullName);
-        this.displayFullName = response.fullName;
         localStorage.setItem('username', response.username);
+        this.displayFullName = response.fullName;
 
-        // Lưu token và role vào localStorage (để đồng bộ giữa các Tab)
-        // Lưu ý: refreshToken được Backend lưu trong HttpOnly Cookie, KHÔNG có trong response body
-        localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('userRole', response.role);
-        localStorage.setItem('userId', response.id.toString());
+        // Lưu các thông tin phiên làm việc (Session) vào sessionStorage
+        sessionStorage.setItem('accessToken', response.accessToken);
+        sessionStorage.setItem('userRole', response.role);
+        sessionStorage.setItem('userId', response.id.toString());
 
-        // ===== DEBUG: Kiểm tra token đã lưu =====
-        console.log('✅ [LOGIN] accessToken lưu vào localStorage:', localStorage.getItem('accessToken') ? 'CÓ (length=' + localStorage.getItem('accessToken')!.length + ')' : '❌ KHÔNG CÓ');
-        console.log('✅ [LOGIN] userRole:', response.role);
+        // // ===== DEBUG: Kiểm tra token đã lưu =====
+        // console.log('[LOGIN] accessToken lưu vào sessionStorage:', sessionStorage.getItem('accessToken') ? 'CÓ (length=' + sessionStorage.getItem('accessToken')!.length + ')' : '❌ KHÔNG CÓ');
+        // console.log('[LOGIN] userRole:', response.role);
         // ========================================
 
         // Điều hướng sau login
@@ -138,7 +135,8 @@ export class LoginComponent implements OnInit {
   }
 
   private navigateByRole(role: string): void {
-    if (role?.toLowerCase() === 'customer') {
+    const normalizedRole = role?.toLowerCase() || '';
+    if (normalizedRole.includes('customer')) {
       this.router.navigate(['/customer']);
     } else {
       this.router.navigate(['/manager/home']);

@@ -669,6 +669,26 @@
   box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
+.invoice-date-inline {
+  border: 1px solid transparent;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  width: 130px;
+  background: #f3f4f6;
+  color: var(--text-body);
+  transition: var(--transition);
+  margin-left: 8px;
+}
+
+.invoice-date-inline:focus {
+  border-color: var(--primary);
+  background: white;
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
 .dealer-name {
   color: var(--text-muted);
   font-size: 14px;
@@ -1357,6 +1377,7 @@
     padding: 8px 12px;
   }
 }
+
 .vat-preview {
   margin-bottom: 12px;
   font-weight: 600;
@@ -1373,6 +1394,7 @@
   background: #ffffff;
   font-size: 15px;
 }
+
 .input-group-modern label {
   font-size: 12px;
   font-weight: 500;
@@ -1384,6 +1406,7 @@
   color: #6b7280;
   background: #f9fafb;
 }
+
 .vat-global-setting {
   display: flex;
   align-items: center;

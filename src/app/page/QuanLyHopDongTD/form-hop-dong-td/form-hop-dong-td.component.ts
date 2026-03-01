@@ -21,6 +21,8 @@ export class FormHopDongTDComponent implements OnInit {
     customers: Customer[] = [];
     isLoading = false;
 
+    fullContract: CreditContract | null = null; // Lưu giữ toàn bộ dữ liệu gốc
+
     constructor(
         private fb: FormBuilder,
         private creditContractService: CreditContractService,
@@ -65,6 +67,17 @@ export class FormHopDongTDComponent implements OnInit {
             next: (contracts) => {
                 const contract = contracts.find(c => c.id === id);
                 if (contract) {
+                    this.fullContract = { ...contract }; // Lưu lại bản gốc
+
+                    if (contract.contractDate) {
+                        const d = new Date(contract.contractDate);
+                        if (!isNaN(d.getTime())) {
+                            const yLocal = d.getFullYear();
+                            const mLocal = (d.getMonth() + 1).toString().padStart(2, '0');
+                            const ddLocal = d.getDate().toString().padStart(2, '0');
+                            contract.contractDate = `${yLocal}-${mLocal}-${ddLocal}`;
+                        }
+                    }
                     this.contractForm.patchValue(contract);
                 }
                 this.isLoading = false;
@@ -79,15 +92,22 @@ export class FormHopDongTDComponent implements OnInit {
             return;
         }
 
-        const data = this.contractForm.value;
-        if (this.isEditMode && this.contractId) {
-            this.creditContractService.updateCreditContract(this.contractId, data).subscribe({
+        const formData = this.contractForm.value;
+
+        if (this.isEditMode && this.contractId && this.fullContract) {
+            // Merge dữ liệu từ form vào bản gốc để giữ lại các trường như usedLimit, balance...
+            const updateData: CreditContract = {
+                ...this.fullContract,
+                ...formData
+            };
+
+            this.creditContractService.updateCreditContract(this.contractId, updateData).subscribe({
                 next: () => this.router.navigate(['/manager/credit-contract']),
                 error: (err) => alert(err.error?.message || 'Có lỗi xảy ra khi cập nhật')
             });
         } else {
             // Khi thêm mới, mặc định trạng thái là ACTIVE
-            const newData = { ...data, status: 'ACTIVE' };
+            const newData = { ...formData, status: 'ACTIVE' };
             this.creditContractService.addCreditContract(newData).subscribe({
                 next: () => this.router.navigate(['/manager/credit-contract']),
                 error: (err) => alert(err.error?.message || 'Có lỗi xảy ra khi thêm mới')

@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 interface InvoiceData {
   invoiceNumber: string;
   totalAmount: number | null;
+  invoiceDate: string; // Sử dụng 1 trường date duy nhất
   day: string;
   month: string;
   year: string;
@@ -275,7 +276,6 @@ export class ThemHoSoXeVinfastComponent {
       this.vehicleInvoiceService.extractPdf(this.pdfFiles[0]).subscribe({
         next: (res) => {
           if (res && res.success && res.data) {
-            // Nếu data là mảng hoặc object gom nhóm thì parse luôn
             this.parseApiResponse(res);
             resolve();
           } else reject();
@@ -317,83 +317,87 @@ export class ThemHoSoXeVinfastComponent {
       return match ? match[0].toUpperCase() : 'Mã chưa xác định';
     };
 
+    const now = new Date();
+    const currentDay = now.getDate().toString().padStart(2, '0');
+    const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0');
+    const currentYear = now.getFullYear().toString();
+
     // TRƯỜNG HỢP 1: Dữ liệu là Object (Key là mã bảo lãnh)
     if (typeof rawData === 'object' && !Array.isArray(rawData)) {
       console.log('🔍 Xử lý theo dạng Object Grouped (Key-Value)');
 
       const keys = Object.keys(rawData);
-      if (keys.length === 0) {
-        console.warn('⚠️ Object data rỗng');
-        return;
-      }
-
-      keys.forEach((key, gIdx) => {
+      keys.forEach((key) => {
         const invoicesArray = rawData[key];
-        console.log(`Key: ${key}, Số hóa đơn: ${invoicesArray?.length}`);
-
         if (Array.isArray(invoicesArray)) {
           this.guaranteeGroups.push({
-            code: key, // Lấy chính xác KEY làm mã bảo lãnh
+            code: key,
             expanded: true,
-            invoices: invoicesArray.map((item: any, iIdx: number) => ({
-              invoiceNumber: item.invoiceNumber || '',
-              totalAmount: this.parsePrice(item.totalAmount),
-              day: item.day || '',
-              month: item.month || '',
-              year: item.year || '',
-              vehicleList: (item.vehicleList || []).map((v: any) => {
-                const model = v.modelName || (v as any).vehicle_name || (v as any).asset_name || v.vehicleDescription || '';
-                const origin = v.origin || 'Việt Nam';
-                const newV = {
-                  ...v,
-                  modelName: model,
-                  origin: origin,
-                  numberOfSeats: v.numberOfSeats || '7',
-                  vehicleDescription: '',
-                  isAutoFilled: true,
-                  file: null
-                };
-                this.generateVehicleDescription(newV, 'VINFAST');
-                return newV;
-              }),
-              expanded: true
-            }))
+            invoices: invoicesArray.map((item: any) => {
+              const d = item.day || currentDay;
+              const m = item.month || currentMonth;
+              const y = item.year || currentYear;
+              return {
+                invoiceNumber: item.invoiceNumber || '',
+                totalAmount: this.parsePrice(item.totalAmount),
+                invoiceDate: `${y}-${m}-${d}`,
+                day: d, month: m, year: y,
+                vehicleList: (item.vehicleList || []).map((v: any) => {
+                  const model = v.modelName || v.vehicleDescription || '';
+                  const newV = {
+                    ...v,
+                    modelName: model,
+                    origin: v.origin || 'Việt Nam',
+                    numberOfSeats: v.numberOfSeats || '7',
+                    vehicleDescription: '',
+                    isAutoFilled: true,
+                    file: null
+                  };
+                  this.generateVehicleDescription(newV, 'VINFAST');
+                  return newV;
+                }),
+                expanded: true
+              };
+            })
           });
         }
       });
     }
     // TRƯỜNG HỢP 2: Dữ liệu là mảng phẳng
     else if (Array.isArray(rawData)) {
-      console.log('🔍 Xử lý theo dạng mảng phẳng');
       let code = extractCodeFromStr(response.message);
-
       this.guaranteeGroups.push({
         code: code,
         expanded: true,
-        invoices: rawData.map((item: any, index: number) => ({
-          ...item,
-          totalAmount: this.parsePrice(item.totalAmount),
-          expanded: true,
-          vehicleList: (item.vehicleList || []).map((v: any) => {
-            const model = v.modelName || (v as any).vehicle_name || (v as any).asset_name || v.vehicleDescription || '';
-            const origin = v.origin || 'Việt Nam';
-            const newV = {
-              ...v,
-              modelName: model,
-              origin: origin,
-              numberOfSeats: v.numberOfSeats || '7',
-              vehicleDescription: '',
-              isAutoFilled: true,
-              file: null
-            };
-            this.generateVehicleDescription(newV, 'VINFAST');
-            return newV;
-          })
-        }))
+        invoices: rawData.map((item: any) => {
+          const d = item.day || currentDay;
+          const m = item.month || currentMonth;
+          const y = item.year || currentYear;
+          return {
+            ...item,
+            totalAmount: this.parsePrice(item.totalAmount),
+            invoiceDate: `${y}-${m}-${d}`,
+            day: d, month: m, year: y,
+            expanded: true,
+            vehicleList: (item.vehicleList || []).map((v: any) => {
+              const model = v.modelName || v.vehicleDescription || '';
+              const newV = {
+                ...v,
+                modelName: model,
+                origin: v.origin || 'Việt Nam',
+                numberOfSeats: v.numberOfSeats || '7',
+                vehicleDescription: '',
+                isAutoFilled: true,
+                file: null
+              };
+              this.generateVehicleDescription(newV, 'VINFAST');
+              return newV;
+            })
+          };
+        })
       });
     }
 
-    console.log('✅ Kết quả sau khi parse:', this.guaranteeGroups);
     this.calculateSummary();
   }
 
@@ -406,8 +410,7 @@ export class ThemHoSoXeVinfastComponent {
     this.guaranteeGroups.forEach(group => {
       this.globalTotalInvoices += group.invoices.length;
       group.invoices.forEach(inv => {
-        const invVehicles = inv.vehicleList?.length || 0;
-        this.globalTotalVehicles += invVehicles;
+        this.globalTotalVehicles += inv.vehicleList?.length || 0;
         this.globalTotalAmount += this.getInvoiceTotal(inv);
       });
     });
@@ -420,7 +423,6 @@ export class ThemHoSoXeVinfastComponent {
       invoices: [],
       expanded: true
     });
-    // Thêm sẵn 1 hóa đơn trống cho mã mới
     this.addInvoiceToGuarantee(this.guaranteeGroups.length - 1);
   }
 
@@ -447,12 +449,18 @@ export class ThemHoSoXeVinfastComponent {
 
   /* ================= LEVEL 2: INVOICE ACTIONS ================= */
   addInvoiceToGuarantee(gIdx: number): void {
+    const now = new Date();
+    const yLocal = now.getFullYear();
+    const mLocal = (now.getMonth() + 1).toString().padStart(2, '0');
+    const dLocal = now.getDate().toString().padStart(2, '0');
+
     this.guaranteeGroups[gIdx].invoices.push({
       invoiceNumber: '',
       totalAmount: null,
-      day: '',
-      month: '',
-      year: '',
+      invoiceDate: `${yLocal}-${mLocal}-${dLocal}`,
+      day: dLocal,
+      month: mLocal,
+      year: yLocal.toString(),
       vehicleList: [],
       expanded: true
     });
@@ -467,10 +475,8 @@ export class ThemHoSoXeVinfastComponent {
   removeInvoice(gIdx: number, iIdx: number): void {
     Swal.fire({
       title: 'Xóa hóa đơn?',
-      text: "Dữ liệu xe trong hóa đơn này sẽ mất!",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#028B89',
       confirmButtonText: 'Xóa',
       cancelButtonText: 'Hủy'
     }).then((result) => {
@@ -484,57 +490,38 @@ export class ThemHoSoXeVinfastComponent {
   uploadInvoicePdf(event: Event, gIdx: number, iIdx: number): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
-
     const file = input.files[0];
     Swal.fire({ title: 'Đang xử lý PDF...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
     this.vehicleInvoiceService.extractPdf(file).subscribe({
       next: (res) => {
         if (res && res.success && res.data) {
           const inv = this.guaranteeGroups[gIdx].invoices[iIdx];
           const data = res.data;
-
           if (!inv.invoiceNumber) {
+            const now = new Date();
+            const d = data.day || now.getDate().toString().padStart(2, '0');
+            const m = data.month || (now.getMonth() + 1).toString().padStart(2, '0');
+            const y = data.year || now.getFullYear().toString();
             inv.invoiceNumber = data.invoiceNumber || '';
-            inv.day = data.day || '';
-            inv.month = data.month || '';
-            inv.year = data.year || '';
+            inv.invoiceDate = `${y}-${m}-${d}`;
+            inv.day = d; inv.month = m; inv.year = y;
           }
-
-          const newVehicles = (data.vehicleList || []).map((v: any) => ({
-            ...v,
-            isAutoFilled: true
-          }));
-
-          inv.vehicleList.push(...newVehicles);
+          inv.vehicleList.push(...(data.vehicleList || []).map((v: any) => ({ ...v, isAutoFilled: true })));
           this.calculateSummary();
-          Swal.fire('Thành công', `Đã thêm ${newVehicles.length} xe`, 'success');
-        } else {
-          Swal.fire('Lỗi', 'Không thể đọc dữ liệu PDF', 'error');
-        }
+          Swal.fire('Thành công', `Đã thêm xe`, 'success');
+        } else Swal.fire('Lỗi', 'Không thể đọc dữ liệu PDF', 'error');
         input.value = '';
       },
-      error: () => {
-        Swal.close();
-        Swal.fire('Lỗi', 'Xử lý thất bại', 'error');
-      }
+      error: () => { Swal.close(); Swal.fire('Lỗi', 'Xử lý thất bại', 'error'); }
     });
   }
 
   /* ================= LEVEL 3: VEHICLE ACTIONS ================= */
   addVehicleToInvoice(gIdx: number, iIdx: number): void {
     this.guaranteeGroups[gIdx].invoices[iIdx].vehicleList.push({
-      vehicleDescription: '',
-      modelName: '',
-      origin: 'Việt Nam',
-      chassisNumber: '',
-      engineNumber: '',
-      color: '',
-      numberOfSeats: '7',
-      quantity: '1',
-      unitPrice: '0',
-      isAutoFilled: false,
-      file: null
+      vehicleDescription: '', modelName: '', origin: 'Việt Nam', chassisNumber: '',
+      engineNumber: '', color: '', numberOfSeats: '7', quantity: '1', unitPrice: '0',
+      isAutoFilled: false, file: null
     });
     this.calculateSummary();
   }
@@ -543,13 +530,6 @@ export class ThemHoSoXeVinfastComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.guaranteeGroups[gIdx].invoices[iIdx].vehicleList[vIdx].file = input.files[0];
-      Swal.fire({
-        icon: 'success',
-        title: 'Đã đính kèm file',
-        text: `File: ${input.files[0].name}`,
-        timer: 1500,
-        showConfirmButton: false
-      });
     }
   }
 
@@ -568,8 +548,7 @@ export class ThemHoSoXeVinfastComponent {
   parsePrice(price: any): number {
     if (!price) return 0;
     if (typeof price === 'number') return price;
-    const cleaned = price.toString().replace(/[^0-9]/g, '');
-    return parseInt(cleaned) || 0;
+    return parseInt(price.toString().replace(/[^0-9]/g, '')) || 0;
   }
 
   formatCurrency(amount: number): string {
@@ -577,172 +556,56 @@ export class ThemHoSoXeVinfastComponent {
   }
 
   formatPrice(price: any): string {
-    const num = this.parsePrice(price);
-    return num === 0 ? '0' : num.toLocaleString('vi-VN');
+    return this.parsePrice(price).toLocaleString('vi-VN');
   }
 
   getInvoiceTotal(invoice: InvoiceData): number {
-    return (invoice.vehicleList || []).reduce((sum, v) => {
-      return sum + (this.parsePrice(v.unitPrice) * (parseInt(v.quantity) || 1));
-    }, 0);
+    return (invoice.vehicleList || []).reduce((sum, v) => sum + (this.parsePrice(v.unitPrice) * (parseInt(v.quantity) || 1)), 0);
   }
 
-  /* ================= RESET & SUBMIT ================= */
   resetAll(): void {
-    this.excelFile = null;
-    this.pdfFiles = [];
-    this.guaranteeGroups = [];
-    this.hasData = false;
-    this.globalTotalInvoices = 0;
-    this.globalTotalVehicles = 0;
-    this.globalTotalAmount = 0;
+    this.excelFile = null; this.pdfFiles = []; this.guaranteeGroups = []; this.hasData = false;
+    this.globalTotalInvoices = 0; this.globalTotalVehicles = 0; this.globalTotalAmount = 0;
   }
 
   submitData(): void {
-    if (this.guaranteeGroups.length === 0) {
-      Swal.fire('Chú ý', 'Không có dữ liệu để lưu', 'warning');
-      return;
-    }
-
-    const invalidGroups = this.guaranteeGroups.filter(g => !g.code);
-    if (invalidGroups.length > 0) {
-      Swal.fire('Lỗi', 'Có nhóm chưa nhập mã bảo lãnh', 'error');
-      return;
-    }
-
+    if (this.guaranteeGroups.length === 0) return;
     const saveRequests: Observable<any>[] = [];
-    let missingGuarantees: string[] = [];
-
-    console.log('🔍 Starting submitData VinFast - Available Guarantees:', this.availableGuarantees);
-
     this.guaranteeGroups.forEach(group => {
-      console.log('🔎 Searching for Guarantee Code:', group.code);
-      const guarantee = this.availableGuarantees.find(ag => {
-        const matchesNotice = ag.guaranteeNoticeNumber && ag.guaranteeNoticeNumber === group.code;
-        const matchesRef = ag.referenceCode && ag.referenceCode === group.code;
-        const matchesContract = ag.guaranteeContractNumber && ag.guaranteeContractNumber === group.code;
-        return matchesNotice || matchesRef || matchesContract;
-      });
-      console.log('✅ Found Guarantee:', guarantee);
-
-      if (!guarantee) {
-        missingGuarantees.push(group.code);
-        return;
-      }
-
+      const guarantee = this.availableGuarantees.find(ag => ag.guaranteeNoticeNumber === group.code || ag.referenceCode === group.code || ag.guaranteeContractNumber === group.code);
+      if (!guarantee) return;
       group.invoices.forEach(inv => {
         const payload = {
           manufacturerId: this.selectedBrand?.id,
-          invoice: {
-            invoiceNumber: inv.invoiceNumber,
-            invoiceDate: `${inv.year}-${inv.month}-${inv.day}`,
-            totalAmount: this.getInvoiceTotal(inv)
-          },
+          invoice: { invoiceNumber: inv.invoiceNumber, invoiceDate: inv.invoiceDate, totalAmount: this.getInvoiceTotal(inv) },
           vehicles: inv.vehicleList.map((v, vIdx) => ({
-            stt: vIdx + 1,
-            vehicleName: v.modelName, // Tên xe (VF8, VF9...) -> asset_name
-            description: v.vehicleDescription, // Nội dung chi tiết hóa đơn -> description
-            chassisNumber: v.chassisNumber,
-            engineNumber: v.engineNumber,
-            modelType: v.modelName, // Clean model name
-            color: v.color || '',
-            seats: Number(v.numberOfSeats) || 7,
-            price: this.parsePrice(v.unitPrice),
-            status: 'Giữ két',
-            guaranteeLetterDTO: {
-              id: guarantee.id
-            },
-            manufacturerDTO:{
-              id:2
-            }
-            
+            stt: vIdx + 1, vehicleName: v.modelName, description: v.vehicleDescription, chassisNumber: v.chassisNumber,
+            engineNumber: v.engineNumber, modelType: v.modelName, color: v.color || '', seats: Number(v.numberOfSeats) || 7,
+            price: this.parsePrice(v.unitPrice), status: 'Giữ két', guaranteeLetterDTO: { id: guarantee.id }, manufacturerDTO: { id: 2 }
           }))
         };
-        console.log('📤 Submitting VinFast Payload:', payload);
-
-        saveRequests.push(
-          this.vehicleInvoiceService.create(payload as any).pipe(
-            switchMap((res: any) => {
-              if (res && !res.error && res.vehicles) {
-                this.uploadFilesForVehicles(res.vehicles, inv.vehicleList);
-              }
-              return of(res);
-            }),
-            catchError(err => {
-              console.error(`Lỗi lưu HĐ ${inv.invoiceNumber}:`, err);
-              return of({ error: true, invoiceNumber: inv.invoiceNumber });
-            })
-          )
-        );
+        saveRequests.push(this.vehicleInvoiceService.create(payload as any).pipe(
+          switchMap((res: any) => { if (res && res.vehicles) this.uploadFilesForVehicles(res.vehicles, inv.vehicleList); return of(res); }),
+          catchError(err => of({ error: true }))
+        ));
       });
     });
-
-    if (missingGuarantees.length > 0) {
-      Swal.fire('Lỗi', `Các mã bảo lãnh sau không tồn tại trên hệ thống: ${missingGuarantees.join(', ')}`, 'error');
-      return;
-    }
-
-    if (saveRequests.length === 0) {
-      Swal.fire('Chú ý', 'Không có hóa đơn hợp lệ để lưu', 'warning');
-      return;
-    }
-
-    Swal.fire({
-      title: 'Đang lưu dữ liệu...',
-      text: `Đang xử lý ${saveRequests.length} hóa đơn VinFast`,
-      allowOutsideClick: false,
-      didOpen: () => Swal.showLoading()
-    });
-
+    if (saveRequests.length === 0) return;
+    Swal.fire({ title: 'Đang lưu...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     forkJoin(saveRequests).subscribe({
-      next: (results) => {
-        Swal.close();
-        const failures = results.filter(r => r && r.error);
-
-        if (failures.length === 0) {
-          this.showSuccessConfirm();
-        } else {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Hoàn tất một phần',
-            text: `Đã lưu ${results.length - failures.length} hóa đơn. Có ${failures.length} hóa đơn bị lỗi.`
-          });
-        }
-      },
-      error: () => {
-        Swal.close();
-        Swal.fire('Lỗi', 'Quá trình lưu dữ liệu gặp sự cố kỹ thuật', 'error');
-      }
+      next: () => { Swal.close(); this.resetAll(); Swal.fire('Thành công', 'Đã lưu hồ sơ', 'success'); },
+      error: () => { Swal.close(); Swal.fire('Lỗi', 'Lưu hồ sơ thất bại', 'error'); }
     });
   }
 
   uploadFilesForVehicles(resVehicles: any[], localVehicles: VehicleData[]): void {
     resVehicles.forEach((vehicle, index) => {
       const original = localVehicles[index];
-      if (!original?.file || !vehicle.id) return;
-
-      this.documentService.upload([original.file], vehicle.id).subscribe({
-        next: () => console.log(`Uploaded file for vehicle ${vehicle.id}`),
-        error: (err) => console.error(`Failed to upload file for vehicle ${vehicle.id}`, err)
-      });
-    });
-  }
-
-  private showSuccessConfirm(): void {
-    Swal.fire({
-      icon: 'success',
-      title: 'Hoàn tất',
-      text: 'Đã lưu thành công dữ liệu và đính kèm các tệp tin vào hệ thống.',
-      confirmButtonText: 'Đóng'
-    }).then(() => {
-      this.resetAll();
+      if (original?.file && vehicle.id) this.documentService.upload([original.file], vehicle.id).subscribe();
     });
   }
 
   generateVehicleDescription(v: VehicleData, brand: string): void {
-    const brandName = brand.toUpperCase();
-    const model = v.modelName ? v.modelName.trim() : '';
-    const origin = v.origin ? v.origin.trim() : 'Việt Nam';
-    v.vehicleDescription = `Xe ô tô chở người ${brandName} ${model} mới 100% xuất xứ ${origin}`;
+    v.vehicleDescription = `Xe ô tô chở người ${brand.toUpperCase()} ${v.modelName || ''} mới 100% xuất xứ ${v.origin || 'Việt Nam'}`;
   }
 }

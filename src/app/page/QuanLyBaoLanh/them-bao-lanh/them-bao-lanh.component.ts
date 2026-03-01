@@ -113,7 +113,7 @@ export class ThemBaoLanhComponent implements OnInit {
 
       guaranteeContractNumber: ['', Validators.required],
       saleContract: ['', Validators.required],
-      saleContractAmount: [null, [Validators.required, Validators.min(0)]],
+      saleContractAmount: [null, [Validators.required, Validators.min(1)]],
 
       expectedGuaranteeAmount: [{ value: null, disabled: true }],
       expectedVehicleCount: [null, [Validators.required, Validators.min(1)]]
@@ -210,7 +210,7 @@ export class ThemBaoLanhComponent implements OnInit {
               expectedVehicleCount: app.totalVehicleCount || 1,
               expectedGuaranteeAmount: app.totalGuaranteeAmount || 0,
               saleContractAmount: app.totalVehicleAmount || 0,
-              guaranteeContractNumber: app.applicationNumber || `BL/2025/${app.id || 'NEW'}/${Math.floor(Math.random() * 1000)}`
+              guaranteeContractNumber: app.subGuaranteeContractNumber || app.applicationNumber || `BL/2025/${app.id || 'NEW'}/${Math.floor(Math.random() * 1000)}`
             });
 
             // Nếu app có saleContract thì mới ghi đè, nếu không thì giữ nguyên mẫu đã set ở applyBrandLogic
@@ -360,7 +360,11 @@ export class ThemBaoLanhComponent implements OnInit {
           });
         }
       },
-      error: err => console.error("Error creating guarantee:", err)
+      error: err => {
+        console.error("Error creating guarantee:", err);
+        const msg = err.error?.message || "Có lỗi xảy ra khi lưu bảo lãnh (Bad Request)";
+        alert("Lỗi: " + msg);
+      }
     });
   }
 

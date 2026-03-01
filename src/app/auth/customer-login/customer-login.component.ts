@@ -46,8 +46,9 @@ export class CustomerLoginComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        // Nếu người dùng quay lại trang login, buộc phải đăng nhập lại (xóa session cũ)
         if (this.authService.isAuthenticate()) {
-            this.router.navigate(['/customer/don-hang-bao-lanh']);
+            this.authService.logout();
         }
     }
 
@@ -81,17 +82,19 @@ export class CustomerLoginComponent implements OnInit {
                     localStorage.removeItem('savedIdentifier');
                     localStorage.removeItem('fullName');
                     localStorage.removeItem('username');
-                    localStorage.removeItem('userId');
                     this.isSwitching = false;
                 }
 
+                // Ghi nhận định danh vào localStorage
                 localStorage.setItem('savedIdentifier', response.username);
                 localStorage.setItem('fullName', response.fullName);
                 localStorage.setItem('username', response.username);
-                localStorage.setItem('accessToken', response.accessToken);
-                localStorage.setItem('refreshToken', response.refreshToken);
-                localStorage.setItem('userRole', response.role);
-                localStorage.setItem('userId', response.id.toString());
+
+                // Lưu Token/Session vào sessionStorage
+                sessionStorage.setItem('accessToken', response.accessToken);
+                sessionStorage.setItem('refreshToken', response.refreshToken);
+                sessionStorage.setItem('userRole', response.role);
+                sessionStorage.setItem('userId', response.id.toString());
 
                 this.isLoading = false;
 

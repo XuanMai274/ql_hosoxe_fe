@@ -1,0 +1,256 @@
+<div class="page-container">
+
+    <!-- ===== PAGE BANNER ===== -->
+    <div class="page-banner">
+        <div class="banner-left">
+            <div class="banner-badge">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Nghiệp vụ tín dụng
+            </div>
+            <h1 class="page-title">Quản lý khoản vay</h1>
+            <p class="page-subtitle">Xem danh sách, dư nợ và trạng thái các khoản vay của bạn tại hệ thống</p>
+        </div>
+        <div class="banner-right">
+            <!-- Read-only for customer, no create button here -->
+        </div>
+    </div>
+
+    <!-- ===== FILTER BAR ===== -->
+    <div class="filter-card">
+        <div class="filter-inner">
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-file-signature"></i> Số hợp đồng vay</label>
+                <input type="text" placeholder="Tìm theo số HĐ..." [(ngModel)]="contractNumber" (keyup.enter)="search()"
+                    class="filter-input" />
+            </div>
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-car"></i> Số khung xe</label>
+                <input type="text" placeholder="Tìm theo số khung..." [(ngModel)]="chassisNumber"
+                    (keyup.enter)="search()" class="filter-input" />
+            </div>
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-circle-info"></i> Trạng thái</label>
+                <select [(ngModel)]="loanStatus" (change)="search()" class="filter-select">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="ACTIVE">Đang hiệu lực</option>
+                    <option value="CLOSED">Đã tất toán</option>
+                    <option value="OVERDUE">Quá hạn</option>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button class="btn-search" (click)="search()">
+                    <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== STATS TOP ROW ===== -->
+    <div class="stats-row" *ngIf="!loading">
+        <div class="stat-pill purple">
+            <i class="fa-solid fa-list-check"></i>
+            <span class="pill-value">{{ totalElements || 0 }}</span>
+            <span class="pill-label">Tổng khoản vay</span>
+        </div>
+        <div class="stat-pill blue">
+            <i class="fa-solid fa-money-bill-transfer"></i>
+            <span class="pill-value">{{ totalAmount | number:'1.0-0' }}</span>
+            <span class="pill-label">Tổng dư nợ hiện tại (VNĐ)</span>
+        </div>
+    </div>
+
+    <!-- ===== LOADING ===== -->
+    <div class="state-box" *ngIf="loading">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- ===== TABLE CARD ===== -->
+    <div class="table-card" *ngIf="!loading">
+        <div class="table-header">
+            <div class="table-title">
+                <i class="fa-solid fa-list-ul"></i> Danh sách khoản vay
+            </div>
+            <span class="record-count">{{ totalElements }} khoản vay</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width:56px">STT</th>
+                        <th>Số hợp đồng vay</th>
+                        <th>Số khung xe</th>
+                        <th class="text-right">Số tiền vay (VNĐ)</th>
+                        <th class="text-center">Ngày vay</th>
+                        <th class="text-center">Đến hạn</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let loan of loans; let i = index">
+                        <td class="text-center stt-cell">{{ i + 1 + page * size }}</td>
+                        <td>
+                            <div class="contract-num font-bold">{{ loan.loanContractNumber }}</div>
+                            <div class="sub-text" style="font-size: 12px; color: #9ca3af;">{{ loan.accountNumber }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="count-chip">
+                                {{ loan.vehicleDTO?.chassisNumber || '—' }}
+                            </span>
+                        </td>
+                        <td class="text-right amount-cell">
+                            {{ (loan.loanAmount || 0) | number:'1.0-0' }}
+                        </td>
+                        <td class="text-center">{{ (loan.loanDate | date:'dd/MM/yyyy') || '—' }}</td>
+                        <td class="text-center">
+                            <span style="color: #c2410c; font-weight: 600;">
+                                {{ (loan.dueDate | date:'dd/MM/yyyy') || '—' }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="status-badge" [ngClass]="getStatusClass(loan.loanStatus || '')">
+                                {{ getStatusLabel(loan.loanStatus || '') }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn-view" (click)="openDetail(loan.id!)">
+                                <i class="fa-solid fa-eye"></i> Xem
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- Empty State -->
+                    <tr *ngIf="loans.length === 0">
+                        <td colspan="8">
+                            <div class="no-data-row">
+                                <i class="fa-solid fa-file-circle-exclamation"></i>
+                                <p>{{ error || 'Không tìm thấy khoản vay nào' }}</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ===== PAGINATION ===== -->
+        <div class="pagination-bar" *ngIf="totalPages > 1">
+            <span class="page-info">Trang {{ page + 1 }} / {{ totalPages }}</span>
+            <div class="page-actions">
+                <button class="page-btn" [disabled]="page === 0" (click)="prev()">
+                    <i class="fa-solid fa-chevron-left"></i> Trước
+                </button>
+                <span class="page-tag">{{ page + 1 }} / {{ totalPages }}</span>
+                <button class="page-btn" [disabled]="page + 1 === totalPages" (click)="next()">
+                    Sau <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL CHI TIẾT KHOẢN VAY ===== -->
+    <div class="modal-overlay" *ngIf="showDetailModal">
+        <div class="modal-panel">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <div class="modal-icon">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                    <div>
+                        <h2>Chi tiết khoản vay</h2>
+                        <p class="modal-subtitle">{{ selectedLoan?.loanContractNumber || 'Đang tải...' }}</p>
+                    </div>
+                </div>
+                <button class="btn-close-modal" (click)="closeDetail()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <div class="state-box" *ngIf="detailLoading">
+                    <div class="spinner"></div>
+                    <p>Đang lấy thông tin chi tiết...</p>
+                </div>
+
+                <ng-container *ngIf="!detailLoading && selectedLoan">
+                    <!-- Thông tin chung -->
+                    <div class="info-section">
+                        <h3 class="section-title"><i class="fa-solid fa-circle-info"></i> Thông tin hợp đồng</h3>
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <span class="info-label">Số hợp đồng vay</span>
+                                <span class="info-val code-cell">{{ selectedLoan.loanContractNumber }}</span>
+                            </div>
+                            <div class="info-box">
+                                <span class="info-label">Số tài khoản vay</span>
+                                <span class="info-val">{{ selectedLoan.accountNumber }}</span>
+                            </div>
+                            <div class="info-box">
+                                <span class="info-label">Ngày vay</span>
+                                <span class="info-val">{{ (selectedLoan.loanDate | date:'dd/MM/yyyy') || '—' }}</span>
+                            </div>
+                            <div class="info-box">
+                                <span class="info-label">Ngày đến hạn</span>
+                                <span class="info-val" style="color: #c2410c; font-weight: 700;">{{
+                                    (selectedLoan.dueDate | date:'dd/MM/yyyy') || '—'
+                                    }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin tài chính -->
+                    <div class="info-section">
+                        <h3 class="section-title"><i class="fa-solid fa-briefcase"></i> Thông tin tài chính</h3>
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <span class="info-label">Số tiền vay gốc</span>
+                                <span class="info-val amount-cell" style="font-size: 16px;">{{ (selectedLoan.loanAmount
+                                    || 0) | number:'1.0-0' }}
+                                    VNĐ</span>
+                            </div>
+                            <div class="info-box">
+                                <span class="info-label">Trạng thái</span>
+                                <div>
+                                    <span class="status-badge"
+                                        [ngClass]="getStatusClass(selectedLoan.loanStatus || '')">
+                                        {{ getStatusLabel(selectedLoan.loanStatus || '') }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="info-box" *ngIf="selectedLoan.docId">
+                                <span class="info-label">Doc_id</span>
+                                <span class="info-val code-cell">{{ selectedLoan.docId }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin tài sản thế chấp (Xe) -->
+                    <div class="info-section" *ngIf="selectedLoan.vehicleDTO">
+                        <h3 class="section-title"><i class="fa-solid fa-car"></i> Tài sản đảm bảo</h3>
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <span class="info-label">Số khung</span>
+                                <span class="info-val code-cell">{{ selectedLoan.vehicleDTO.chassisNumber }}</span>
+                            </div>
+                            <div class="info-box">
+                                <span class="info-label">Số máy</span>
+                                <span class="info-val code-cell">{{ selectedLoan.vehicleDTO.engineNumber }}</span>
+                            </div>
+                            <div class="info-box full">
+                                <span class="info-label">Tên xe / Model</span>
+                                <span class="info-val font-bold">{{ selectedLoan.vehicleDTO.vehicleName }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button class="btn-retry" (click)="closeDetail()">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>

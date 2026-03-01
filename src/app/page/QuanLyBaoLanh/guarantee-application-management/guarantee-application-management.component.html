@@ -45,8 +45,7 @@
                             </span>
                         </td>
                         <td>
-                            <div class="action-buttons"
-                                *ngIf="app.status?.toLowerCase() === 'pending' || app.status?.toLowerCase() === 'pending_approval'">
+                            <div class="action-buttons" *ngIf="isPending(app.status)">
                                 <button class="btn-action btn-approve" (click)="onApprove(app)"
                                     title="Lập hồ sơ bảo lãnh">
                                     <i class="fa-solid fa-file-signature"></i> Lập hồ sơ
@@ -55,8 +54,7 @@
                                     <i class="fa-solid fa-xmark"></i> Từ chối
                                 </button>
                             </div>
-                            <div class="action-buttons"
-                                *ngIf="app.status?.toLowerCase() !== 'pending' && app.status?.toLowerCase() !== 'pending_approval'">
+                            <div class="action-buttons" *ngIf="!isPending(app.status)">
                                 <span class="processed-info">Đã xử lý</span>
                             </div>
                         </td>

@@ -52,10 +52,15 @@ export class ThemHoSoXeComponent {
     private vehicleInvoiceService: VehicleInvoiceService,
     private documentService: DocumentService
   ) {
+    const now = new Date();
+    const yLocal = now.getFullYear();
+    const mLocal = (now.getMonth() + 1).toString().padStart(2, '0');
+    const dLocal = now.getDate().toString().padStart(2, '0');
+
     this.form = this.fb.group({
       guaranteeId: [''],
       invoiceNumber: ['', Validators.required],
-      invoiceDate: ['', Validators.required],
+      invoiceDate: [`${yLocal}-${mLocal}-${dLocal}`, Validators.required],
       totalAmount: [0, [Validators.required, Validators.min(0)]],
       vehicles: this.fb.array([])
     });

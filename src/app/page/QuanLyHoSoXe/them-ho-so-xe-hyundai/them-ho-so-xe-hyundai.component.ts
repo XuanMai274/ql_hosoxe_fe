@@ -30,6 +30,7 @@ interface VehicleData {
 
 interface InvoiceGroup {
   invoiceNumber: string;
+  invoiceDate: string; // Thêm ngày hóa đơn
   dealerName: string;
   contractNumber: string;
   vehicles: VehicleData[];
@@ -283,9 +284,11 @@ export class ThemHoSoXeHyundaiComponent {
       });
 
       const invoiceGroups: InvoiceGroup[] = [];
+      const today = new Date().toISOString().split('T')[0];
       invoiceMap.forEach((vList, invNo) => {
         invoiceGroups.push({
           invoiceNumber: invNo === 'HĐ-CHƯA-XÁC-ĐỊNH' ? '' : invNo,
+          invoiceDate: today, // Mặc định hôm nay nếu excel k có
           dealerName: vList[0].dealerName || '',
           contractNumber: vList[0].contractNumber || '',
           vehicles: vList,
@@ -353,8 +356,14 @@ export class ThemHoSoXeHyundaiComponent {
 
   /* ================= LEVEL 2: INVOICE ACTIONS ================= */
   addInvoiceToGuarantee(gIdx: number): void {
+    const now = new Date();
+    const yLocal = now.getFullYear();
+    const mLocal = (now.getMonth() + 1).toString().padStart(2, '0');
+    const dLocal = now.getDate().toString().padStart(2, '0');
+
     this.guaranteeGroups[gIdx].invoices.push({
       invoiceNumber: '',
+      invoiceDate: `${yLocal}-${mLocal}-${dLocal}`,
       dealerName: '',
       contractNumber: '',
       vehicles: [],
@@ -494,7 +503,7 @@ export class ThemHoSoXeHyundaiComponent {
           manufacturerId: this.selectedBrand?.id,
           invoice: {
             invoiceNumber: inv.invoiceNumber,
-            invoiceDate: '', // Excel Hyundai thường k có ngày hđ chi tiết từng dòng
+            invoiceDate: inv.invoiceDate,
             totalAmount: this.getInvoiceTotal(inv)
           },
           vehicles: inv.vehicles.map((v, vIdx) => ({

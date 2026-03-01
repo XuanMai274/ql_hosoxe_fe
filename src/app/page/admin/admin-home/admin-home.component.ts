@@ -21,7 +21,7 @@ export class AdminHomeComponent implements OnInit {
   adminName: string = '';
 
   constructor(private adminService: AdminService) {
-    this.adminName = localStorage.getItem('fullName') || 'Administrator';
+    this.adminName = sessionStorage.getItem('fullName') || 'Administrator';
   }
 
   ngOnInit(): void {

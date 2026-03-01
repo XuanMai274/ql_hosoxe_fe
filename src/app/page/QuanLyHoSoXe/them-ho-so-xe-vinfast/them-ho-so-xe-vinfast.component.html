@@ -140,13 +140,12 @@
                   <input type="text" [(ngModel)]="invoice.invoiceNumber" placeholder="Nhập số hóa đơn..."
                     (click)="$event.stopPropagation()" class="invoice-input-inline"
                     [class.is-invalid]="!invoice.invoiceNumber" />
-                  <span class="invoice-date-display" *ngIf="invoice.day">
-                    {{ invoice.day }}/{{ invoice.month }}/{{ invoice.year }}
-                  </span>
+                  <input type="date" [(ngModel)]="invoice.invoiceDate" (click)="$event.stopPropagation()"
+                    class="invoice-date-inline" [class.is-invalid]="!invoice.invoiceDate" />
                 </div>
                 <div class="invoice-info-side">
                   <span class="invoice-amount-sum">{{ formatCurrency(getInvoiceTotal(invoice))
-                                        }}</span>
+                    }}</span>
                   <button class="btn-icon-del-sm" (click)="removeInvoice(gIdx, iIdx); $event.stopPropagation()">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
@@ -271,7 +270,7 @@
             <!-- ADD INVOICE BUTTON -->
             <button class="btn-add-invoice-dashed" (click)="addInvoiceToGuarantee(gIdx)">
               <i class="fa-solid fa-circle-plus"></i> Thêm hóa đơn mới vào mã {{ group.code || (gIdx + 1)
-                            }}
+              }}
             </button>
           </div>
         </div>

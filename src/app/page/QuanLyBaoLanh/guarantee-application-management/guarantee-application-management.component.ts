@@ -45,6 +45,12 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
         });
     }
 
+    isPending(status: string | undefined): boolean {
+        if (!status) return false;
+        const s = status.toLowerCase();
+        return s.includes('pending');
+    }
+
     onApprove(app: GuaranteeApplication): void {
         // Chỉ chuyển sang bước lập hồ sơ bảo lãnh, không đổi trạng thái ngay
         this.router.navigate(['/manager/them-bao-lanh'], { queryParams: { applicationId: app.id } });
@@ -82,7 +88,7 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
     getStatusClass(status: string | undefined): string {
         if (!status) return 'status-default';
         const s = status.toLowerCase();
-        if (s === 'pending' || s === 'pending_approval') return 'status-pending';
+        if (this.isPending(s)) return 'status-pending';
         switch (s) {
             case 'approved': return 'status-approved';
             case 'rejected': return 'status-rejected';
@@ -93,7 +99,7 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
     getStatusText(status: string | undefined): string {
         if (!status) return 'Không xác định';
         const s = status.toLowerCase();
-        if (s === 'pending' || s === 'pending_approval') return 'Chờ duyệt';
+        if (this.isPending(s)) return 'Chờ duyệt';
         switch (s) {
             case 'approved': return 'Đã duyệt';
             case 'rejected': return 'Đã từ chối';

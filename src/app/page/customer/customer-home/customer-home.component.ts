@@ -23,7 +23,7 @@ export class CustomerHomeComponent implements OnInit {
     loading = true;
 
     constructor(private warehouseService: CustomerWarehouseService) {
-        this.customerName = localStorage.getItem('fullName') || 'Khách hàng';
+        this.customerName = sessionStorage.getItem('fullName') || 'Khách hàng';
         const now = new Date();
         this.todayStr = now.toLocaleDateString('vi-VN', {
             weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric'

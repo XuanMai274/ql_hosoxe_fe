@@ -15,7 +15,7 @@ export class CustomerHeaderComponent {
     showUserDropdown: boolean = false;
 
     constructor(private authService: AuthServiceComponent) {
-        this.username = localStorage.getItem('fullName') || 'Khách hàng';
+        this.username = sessionStorage.getItem('fullName') || 'Khách hàng';
         this.userRole = this.authService.getUserRole();
     }
 

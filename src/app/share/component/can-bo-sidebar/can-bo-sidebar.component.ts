@@ -15,7 +15,7 @@ export class CanBoSidebarComponent {
   fullName: string = '';
 
   constructor(private authService: AuthServiceComponent) {
-    this.fullName = localStorage.getItem('fullName') || 'Cán bộ BIDV';
+    this.fullName = sessionStorage.getItem('fullName') || 'Cán bộ BIDV';
   }
 
   toggleSubmenu(name: string) {

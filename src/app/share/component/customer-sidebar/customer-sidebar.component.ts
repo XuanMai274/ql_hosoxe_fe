@@ -15,7 +15,7 @@ export class CustomerSidebarComponent {
     fullName: string = '';
 
     constructor(private authService: AuthServiceComponent) {
-        this.fullName = localStorage.getItem('fullName') || 'Khách hàng';
+        this.fullName = sessionStorage.getItem('fullName') || 'Khách hàng';
     }
 
     toggleSubmenu(name: string) {

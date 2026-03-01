@@ -16,7 +16,7 @@ export class AuthServiceComponent {
     private apiUrl = 'http://localhost:8080/api/auth/login';
 
     constructor(private http: HttpClient, private router: Router) {
-        // Lắng nghe sự kiện thay đổi storage từ các Tab khác
+        // Lắng nghe sự kiện thay đổi storage từ các Tab khác (Lưu ý: sessionStorage không kích hoạt sự kiện này giữa các tab độc lập)
         window.addEventListener('storage', (event) => {
             if (event.key === 'accessToken') {
                 if (!event.newValue) {
@@ -50,28 +50,38 @@ export class AuthServiceComponent {
 
     // đăng xuất
     logout() {
+        // Xóa session storage ngay lập tức để tránh race condition
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("userRole");
+        sessionStorage.removeItem("userId");
+        sessionStorage.removeItem("username");
+        sessionStorage.removeItem("fullName");
+
         this.http.post('http://localhost:8080/api/auth/logout', {}, { withCredentials: true }).subscribe({
             next: () => {
-                this.finalizeLogout();
+                console.log("Đã gọi API đăng xuất thành công");
+                this.router.navigate(["/login"]);
             },
             error: () => {
-                this.finalizeLogout();
+                console.log("API đăng xuất lỗi hoặc đã hết hạn");
+                this.router.navigate(["/login"]);
             }
         });
     }
 
     private finalizeLogout() {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("userRole");
-        localStorage.removeItem("userId");
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("userRole");
+        sessionStorage.removeItem("userId");
         console.log("đã đăng xuất");
         this.router.navigate(["/login"]);
     }
     // hàm kiểm tra người dùng đã đăng nhập chưa
     isAuthenticate(): boolean {
         // lấy token nếu có thì đã đăng nhập    
-        const token = localStorage.getItem("accessToken");
+        const token = sessionStorage.getItem("accessToken");
         if (token !== null) {
             return true;
         } else {
@@ -80,12 +90,12 @@ export class AuthServiceComponent {
     }
     // lấy role của người dùng
     getUserRole(): string {
-        // Ưu tiên lấy trực tiếp từ localStorage đã lưu lúc login
-        const storedRole = localStorage.getItem("userRole");
+        // Ưu tiên lấy trực tiếp từ sessionStorage đã lưu lúc login
+        const storedRole = sessionStorage.getItem("userRole");
         if (storedRole) return storedRole;
 
         // Nếu không có (ví dụ: f5 trang), thử giải mã từ accessToken
-        const token = localStorage.getItem("accessToken");
+        const token = sessionStorage.getItem("accessToken");
         if (!token) return "";
         try {
             const decodeToken: any = jwtDecode(token);
@@ -97,13 +107,19 @@ export class AuthServiceComponent {
 
     // lấy ID của người dùng
     getUserId(): string | null {
-        return localStorage.getItem("userId");
+        return sessionStorage.getItem("userId");
     }
 
     // kiểm tra phân quyền
     hasRole(allowedRoles: string[]): boolean {
         const role = this.getUserRole();
-        return allowedRoles.some(r => r.toLowerCase() === role.toLowerCase());
+        if (!role) return false;
+
+        const normalizedUserRole = role.toLowerCase().replace('role_', '');
+        return allowedRoles.some(r => {
+            const normalizedAllowedRole = r.toLowerCase().replace('role_', '');
+            return normalizedUserRole === normalizedAllowedRole;
+        });
     }
     // gửi email đặt lại mật khẩu
     sendResetPasswordEmail(email: string): Observable<any> {

@@ -14,35 +14,49 @@
             <i class="fa-solid" [ngClass]="isEditMode ? 'fa-file-pen' : 'fa-file-circle-plus'"></i>
             {{ isEditMode ? 'Cập nhật Hợp đồng Tín dụng' : 'Thêm mới Hợp đồng Tín dụng' }}
         </h1>
-        <p class="subtitle">Vui lòng điền đầy đủ các thông tin chi tiết của hợp đồng tín dụng vào các trường bên dưới.
-        </p>
+        <p class="subtitle">Vui lòng kiểm tra kỹ các thông tin định danh và hạn mức của hợp đồng tín dụng.</p>
     </div>
 
     <!-- Main Form -->
-    <div class="form-card glassmorphism">
+    <div class="form-card">
         <form [formGroup]="contractForm" (ngSubmit)="onSubmit()">
 
             <div class="form-section-title">
-                <i class="fa-solid fa-circle-info"></i> Thông tin cơ bản
+                <i class="fa-solid fa-circle-info"></i> Thông tin cơ bản & Hạn mức
             </div>
 
             <div class="form-grid">
+                <!-- Contract Number -->
                 <div class="form-group">
                     <label>Số hợp đồng <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <i class="fa-solid fa-hashtag"></i>
                         <input type="text" formControlName="contractNumber" placeholder="Ví dụ: CC-2024-001">
                     </div>
+                    <div class="error-msg"
+                        *ngIf="contractForm.get('contractNumber')?.touched && contractForm.get('contractNumber')?.invalid">
+                        <small class="text-danger" *ngIf="contractForm.get('contractNumber')?.errors?.['required']">
+                            Vui lòng nhập số hợp đồng
+                        </small>
+                    </div>
                 </div>
 
+                <!-- Date -->
                 <div class="form-group">
                     <label>Ngày ký hợp đồng <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <i class="fa-solid fa-calendar-day"></i>
                         <input type="date" formControlName="contractDate">
                     </div>
+                    <div class="error-msg"
+                        *ngIf="contractForm.get('contractDate')?.touched && contractForm.get('contractDate')?.invalid">
+                        <small class="text-danger" *ngIf="contractForm.get('contractDate')?.errors?.['required']">
+                            Vui lòng chọn ngày ký
+                        </small>
+                    </div>
                 </div>
 
+                <!-- Customer -->
                 <div class="form-group">
                     <label>Khách hàng <span class="required">*</span></label>
                     <div class="input-wrapper">
@@ -52,8 +66,15 @@
                             <option *ngFor="let c of customers" [value]="c.id">{{ c.customerName }}</option>
                         </select>
                     </div>
+                    <div class="error-msg"
+                        *ngIf="contractForm.get('customerId')?.touched && contractForm.get('customerId')?.invalid">
+                        <small class="text-danger" *ngIf="contractForm.get('customerId')?.errors?.['required']">
+                            Vui lòng chọn khách hàng
+                        </small>
+                    </div>
                 </div>
 
+                <!-- Credit Limit -->
                 <div class="form-group">
                     <label>Hạn mức tín dụng tối đa <span class="required">*</span></label>
                     <div class="input-wrapper">
@@ -61,9 +82,19 @@
                         <input type="number" formControlName="creditLimit" placeholder="0">
                         <span class="currency">₫</span>
                     </div>
+                    <div class="error-msg"
+                        *ngIf="contractForm.get('creditLimit')?.touched && contractForm.get('creditLimit')?.invalid">
+                        <small class="text-danger" *ngIf="contractForm.get('creditLimit')?.errors?.['required']">
+                            Vui lòng nhập hạn mức
+                        </small>
+                        <small class="text-danger" *ngIf="contractForm.get('creditLimit')?.errors?.['min']">
+                            Hạn mức không được âm
+                        </small>
+                    </div>
                 </div>
             </div>
 
+            <!-- Actions -->
             <div class="form-actions">
                 <button type="button" class="btn-cancel" [routerLink]="['/manager/credit-contract']">
                     Hủy bỏ

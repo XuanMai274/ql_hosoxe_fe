@@ -134,14 +134,16 @@
               <div class="invoice-header-row" (click)="toggleInvoice(gIdx, iIdx)">
                 <div class="invoice-info-main">
                   <i class="fa-solid fa-file-invoice"></i>
-                  <input type="text" [(ngModel)]="invoice.invoiceNumber" placeholder="Nhập số hóa đơn..."
+                  <input type="text" [(ngModel)]="invoice.invoiceNumber" placeholder="Số hóa đơn..."
                     (click)="$event.stopPropagation()" class="invoice-input-inline"
                     [class.is-invalid]="!invoice.invoiceNumber" />
+                  <input type="date" [(ngModel)]="invoice.invoiceDate" (click)="$event.stopPropagation()"
+                    class="invoice-date-inline" [class.is-invalid]="!invoice.invoiceDate" />
                   <span class="dealer-name">{{ invoice.dealerName }}</span>
                 </div>
                 <div class="invoice-info-side">
                   <span class="invoice-amount-sum">{{ formatCurrency(getInvoiceTotal(invoice))
-                                        }}</span>
+                    }}</span>
                   <button class="btn-icon-del-sm" (click)="removeInvoice(gIdx, iIdx); $event.stopPropagation()">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>

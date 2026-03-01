@@ -277,20 +277,22 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     }
 
     getStatusClass(status?: string): string {
-        switch (status?.toUpperCase()) {
+        const s = status?.toUpperCase() || '';
+        if (s.includes('PENDING')) return 'status-pending';
+        switch (s) {
             case 'APPROVED': case 'ACTIVE': return 'status-active';
             case 'REJECTED': case 'EXPIRED': return 'status-expired';
-            case 'PENDING': return 'status-pending';
             default: return 'status-default';
         }
     }
 
     getStatusLabel(status?: string): string {
-        switch (status?.toUpperCase()) {
+        const s = status?.toUpperCase() || '';
+        if (s.includes('PENDING')) return 'Chờ duyệt';
+        switch (s) {
             case 'APPROVED': case 'ACTIVE': return 'Đã duyệt';
             case 'REJECTED': return 'Từ chối';
             case 'EXPIRED': return 'Hết hạn';
-            case 'PENDING': return 'Chờ duyệt';
             default: return status || '—';
         }
     }

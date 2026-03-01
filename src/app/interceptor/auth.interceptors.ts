@@ -22,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     // tự động gửi kèm token trong mỗi request
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
         const isAuthEndpoint = req.url.includes('/api/auth/');
 
         let authReq = req.clone({
@@ -75,9 +75,9 @@ export class AuthInterceptor implements HttpInterceptor {
                     const newToken = response.accessToken;
                     const newRefreshToken = response.refreshToken;
 
-                    localStorage.setItem('accessToken', newToken);
+                    sessionStorage.setItem('accessToken', newToken);
                     if (newRefreshToken) {
-                        localStorage.setItem('refreshToken', newRefreshToken);
+                        sessionStorage.setItem('refreshToken', newRefreshToken);
                     }
                     this.refreshTokenSubject.next(newToken);
 
@@ -96,12 +96,12 @@ export class AuthInterceptor implements HttpInterceptor {
 
                     // Xóa token và redirect về login, KHÔNG gọi authService.logout()
                     // vì logout() sẽ gọi thêm API và có thể gây vòng lặp lỗi
-                    localStorage.removeItem('accessToken');
-                    localStorage.removeItem('refreshToken');
-                    localStorage.removeItem('userRole');
-                    localStorage.removeItem('username');
-                    localStorage.removeItem('fullName');
-                    localStorage.removeItem('userId');
+                    sessionStorage.removeItem('accessToken');
+                    sessionStorage.removeItem('refreshToken');
+                    sessionStorage.removeItem('userRole');
+                    sessionStorage.removeItem('username');
+                    sessionStorage.removeItem('fullName');
+                    sessionStorage.removeItem('userId');
                     this.router.navigate(['/login']);
                     return throwError(() => err);
                 })

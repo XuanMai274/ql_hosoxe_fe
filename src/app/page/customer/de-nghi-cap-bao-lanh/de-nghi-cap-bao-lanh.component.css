@@ -495,14 +495,12 @@
 }
 
 .code-cell {
-    font-family: 'JetBrains Mono', 'Fira Mono', monospace;
     font-size: 13px;
     color: #0f766e;
     font-weight: 600;
 }
 
 .amount-cell {
-    font-family: 'JetBrains Mono', 'Fira Mono', monospace;
     font-weight: 700;
     color: #1f2937;
 }
@@ -614,7 +612,6 @@
 }
 
 .total-amount {
-    font-family: 'JetBrains Mono', monospace;
     font-size: 15px;
     font-weight: 800;
     color: #0f766e;
@@ -776,7 +773,6 @@
     font-size: 13px;
     color: #6b7280;
     margin: 0;
-    font-family: 'JetBrains Mono', monospace;
 }
 
 .btn-close-modal {
@@ -875,7 +871,6 @@
 }
 
 .info-val.code-val {
-    font-family: 'JetBrains Mono', monospace;
     font-size: 13.5px;
 }
 
@@ -1255,7 +1250,6 @@
 }
 
 .calc-cell {
-    font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
     color: #059669;
 }
