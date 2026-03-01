@@ -9,5 +9,6 @@ export interface WarehouseImportDTO {
   mortgageContractDTO?: MortgageContract;
   vehicleIds: number[];
   vehicles?: Vehicle[]; // danh sách xe đầy đủ cho view chi tiết
+  vehicleCount?: number;
   createdAt: string; // LocalDateTime -> string ISO
 }

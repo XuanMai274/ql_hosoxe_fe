@@ -19,6 +19,7 @@ export interface DisbursementDTO {
   realEstateValueAfterFactor?: number;
 
   disbursementAmount?: number;
+  vehicleCount?: number;
 
   disbursementDate?: string;
   createdAt?: string;

@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
-import { GuaranteeLetter } from '../../../models/guarantee_letter';
-import { CustomerGuaranteeService } from '../../../service/customer-guarantee.service';
+import { GuaranteeApplication } from '../../../models/guarantee_application.model';
 import { GuaranteeApplicationService } from '../../../service/guarantee_application_service';
 import { Manufacturer } from '../../../models/manufacturer';
 import { ManufacturerService } from '../../../service/manufacturer.service';
@@ -16,16 +15,17 @@ import { ManufacturerService } from '../../../service/manufacturer.service';
 })
 export class DeNghiCapBaoLanhComponent implements OnInit {
 
-    donHangList: GuaranteeLetter[] = [];
+    donHangList: GuaranteeApplication[] = [];
     loading = true;
     error = '';
 
     // Filter
-    selectedManufacturer = '';
+    selectedManufacturerId: number | null = null;
     fromDate = '';
     toDate = '';
 
     manufacturers: Manufacturer[] = [];
+
     loadManufacturers(): void {
         this.manufacturerService.getManufactureCustomer().subscribe({
             next: (data) => {
@@ -36,6 +36,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
             }
         });
     }
+
     // Pagination
     page = 0;
     size = 20;
@@ -43,11 +44,10 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
 
     // Modal chi tiết
     showDetail = false;
-    selectedItem: GuaranteeLetter | null = null;
+    selectedItem: GuaranteeApplication | null = null;
 
     // Config tỉ lệ bảo lãnh theo hãng xe
     getTileByCode(code: string): number {
-
         const manufacturer = this.manufacturers
             .find(m => m.code?.toUpperCase() === code?.toUpperCase());
 
@@ -62,7 +62,6 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     newForm: FormGroup;
 
     constructor(
-        private service: CustomerGuaranteeService,
         private guaranteeAppService: GuaranteeApplicationService,
         private manufacturerService: ManufacturerService,
         private fb: FormBuilder
@@ -83,8 +82,8 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
         this.loading = true;
         this.error = '';
 
-        this.service.getDonHangBaoLanh(
-            this.selectedManufacturer || undefined,
+        this.guaranteeAppService.getList(
+            this.selectedManufacturerId || undefined,
             this.fromDate || undefined,
             this.toDate || undefined,
             this.page,
@@ -99,6 +98,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
                 this.donHangList = this.getMockData();
                 this.totalPages = 1;
                 this.loading = false;
+                // this.error = 'Không thể tải danh sách đề nghị bảo lãnh';
             }
         });
     }
@@ -106,7 +106,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     applyFilter() { this.loadData(0); }
 
     resetFilter() {
-        this.selectedManufacturer = '';
+        this.selectedManufacturerId = null;
         this.fromDate = '';
         this.toDate = '';
         this.loadData(0);
@@ -116,10 +116,25 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     next() { if (this.page + 1 < this.totalPages) this.loadData(this.page + 1); }
 
     // ===== MODAL CHI TIẾT =====
-    openDetail(item: GuaranteeLetter): void {
-        this.selectedItem = item;
-        this.showDetail = true;
-        document.body.style.overflow = 'hidden';
+    openDetail(item: GuaranteeApplication): void {
+        if (!item.id) return;
+        this.loading = true;
+        this.guaranteeAppService.getById(item.id).subscribe({
+            next: (res) => {
+                this.selectedItem = res;
+                this.showDetail = true;
+                this.loading = false;
+                document.body.style.overflow = 'hidden';
+            },
+            error: (err) => {
+                console.error('Lỗi khi tải chi tiết', err);
+                // Fallback to item from list if API fails
+                this.selectedItem = item;
+                this.showDetail = true;
+                this.loading = false;
+                document.body.style.overflow = 'hidden';
+            }
+        });
     }
 
     closeDetail(): void {
@@ -168,11 +183,6 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
         }
     }
 
-    // // Tỉ lệ bảo lãnh theo hãng
-    // getTileByCode(code: string): number {
-    //     return this.tileMap[code?.toUpperCase()] || 75;
-    // }
-
     // Tính giá trị BL cho từng dòng
     getGiaTriBL(row: AbstractControl): number {
         const giaXe = row.get('giaXe')?.value || 0;
@@ -201,19 +211,13 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     }
 
     submitForm(): void {
-
         if (this.newForm.invalid) {
             this.newForm.markAllAsTouched();
             return;
         }
-        const customer = { id: 2 };
+        const customer = { id: 2 }; // Thường lấy từ AuthService
 
-        if (!customer?.id) {
-            alert('Không tìm thấy thông tin khách hàng đăng nhập');
-            return;
-        }
         this.submitting = true;
-
         const manufacturerCode = this.newForm.get('manufacturerCode')?.value;
 
         // Map vehicles
@@ -222,19 +226,13 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
             vehicleType: row.get('loaiXe')?.value,
             color: row.get('mauXe')?.value,
             chassisNumber: row.get('soKhung')?.value,
-            invoiceNumber: row.get('soDonHang')?.value,
-            paymentMethod: 'BANK_TRANSFER',
-            bankName: 'BIDV',
+            invoiceNumber: row.get('soDonHang')?.value, // map to invoiceNumber or similar
             vehiclePrice: row.get('giaXe')?.value
         }));
 
         const payload: any = {
-            customerDTO: {
-                id: customer.id
-            },
-            manufacturerDTO: {
-                id: this.getManufacturerIdByCode(manufacturerCode)
-            },
+            customerDTO: { id: customer.id },
+            manufacturerDTO: { id: this.getManufacturerIdByCode(manufacturerCode) },
             vehicles: vehicles
         };
 
@@ -251,33 +249,27 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
             }
         });
     }
-    getManufacturerIdByCode(code: string): number {
 
+    getManufacturerIdByCode(code: string): number {
         const manufacturer = this.manufacturers
             .find(m => m.code?.toUpperCase() === code?.toUpperCase());
-
         return manufacturer?.id || 0;
     }
-    /** Tổng giá trị bảo lãnh */
+
+    /** Tổng giá trị bảo lãnh hiển thị */
     get tongGiaTriBaoLanh(): number {
         return this.donHangList.reduce((sum, item) => sum + (item.totalGuaranteeAmount || 0), 0);
     }
 
-    tinhGiaTriBaoLanh(item: GuaranteeLetter): number {
-        const giaXe = item.saleContractAmount || 0;
-        const tiLe = this.getTiLeBaoLanh(item);
-        return giaXe * (tiLe / 100);
-    }
-
-    getTiLeBaoLanh(item: GuaranteeLetter): number {
+    getTiLeBaoLanh(item: GuaranteeApplication): number {
         if (item.manufacturerDTO?.guaranteeRate) {
             return Math.round(item.manufacturerDTO.guaranteeRate * 100);
         }
-        if (!item.saleContractAmount || !item.totalGuaranteeAmount) return 0;
-        return Math.round((item.totalGuaranteeAmount / item.saleContractAmount) * 100);
+        if (!item.totalVehicleAmount || !item.totalGuaranteeAmount) return 0;
+        return Math.round((item.totalGuaranteeAmount / item.totalVehicleAmount) * 100);
     }
 
-    getManufacturerClass(item: GuaranteeLetter): string {
+    getManufacturerClass(item: GuaranteeApplication): string {
         const code = item.manufacturerDTO?.code?.toUpperCase();
         if (code === 'VINFAST') return 'tag-vinfast';
         if (code === 'HYUNDAI') return 'tag-hyundai';
@@ -286,8 +278,8 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
 
     getStatusClass(status?: string): string {
         switch (status?.toUpperCase()) {
-            case 'ACTIVE': return 'status-active';
-            case 'EXPIRED': return 'status-expired';
+            case 'APPROVED': case 'ACTIVE': return 'status-active';
+            case 'REJECTED': case 'EXPIRED': return 'status-expired';
             case 'PENDING': return 'status-pending';
             default: return 'status-default';
         }
@@ -295,43 +287,44 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
 
     getStatusLabel(status?: string): string {
         switch (status?.toUpperCase()) {
-            case 'ACTIVE': return 'Đã duyệt';
+            case 'APPROVED': case 'ACTIVE': return 'Đã duyệt';
+            case 'REJECTED': return 'Từ chối';
             case 'EXPIRED': return 'Hết hạn';
-            case 'PENDING': return 'Chưa duyệt';
+            case 'PENDING': return 'Chờ duyệt';
             default: return status || '—';
         }
     }
 
-    private getMockData(): GuaranteeLetter[] {
+    countStatus(status: string): number {
+        return this.donHangList.filter(item => {
+            const s = item.status?.toUpperCase();
+            if (status === 'ACTIVE') return s === 'ACTIVE' || s === 'APPROVED';
+            return s === status.toUpperCase();
+        }).length;
+    }
+
+    private getMockData(): GuaranteeApplication[] {
         return [
             {
                 id: 1,
-                guaranteeContractNumber: 'BL-2024-001',
-                manufacturerDTO: { code: 'VINFAST', name: 'VinFast', guaranteeRate: 0.75, templateCode: 'VINFAST_V1' },
-                saleContractAmount: 302400000,
-                totalGuaranteeAmount: 226800000,
-                usedAmount: 100000000,
-                remainingAmount: 126800000,
-                expectedVehicleCount: 5,
-                importedVehicleCount: 3,
-                exportedVehicleCount: 1,
-                status: 'ACTIVE',
-                guaranteeContractDate: '2024-01-15',
-                createdAt: '2024-01-10T08:00:00'
+                applicationNumber: 'YCB-2024-001',
+                subGuaranteeContractNumber: 'BL-VF-001',
+                manufacturerDTO: { code: 'VINFAST', name: 'VinFast', guaranteeRate: 0.75 },
+                totalVehicleAmount: 300000000,
+                totalGuaranteeAmount: 225000000,
+                totalVehicleCount: 2,
+                status: 'APPROVED',
+                createdAt: '2024-01-10T08:00:00',
+                expiryDate: '2024-12-31'
             },
             {
                 id: 2,
-                guaranteeContractNumber: 'BL-2024-002',
-                manufacturerDTO: { code: 'HYUNDAI', name: 'Hyundai', guaranteeRate: 0.85, templateCode: 'HYUNDAI_V1' },
-                saleContractAmount: 500000000,
-                totalGuaranteeAmount: 425000000,
-                usedAmount: 200000000,
-                remainingAmount: 225000000,
-                expectedVehicleCount: 8,
-                importedVehicleCount: 5,
-                exportedVehicleCount: 2,
-                status: 'ACTIVE',
-                guaranteeContractDate: '2024-02-20',
+                applicationNumber: 'YCB-2024-002',
+                manufacturerDTO: { code: 'HYUNDAI', name: 'Hyundai', guaranteeRate: 0.8 },
+                totalVehicleAmount: 500000000,
+                totalGuaranteeAmount: 400000000,
+                totalVehicleCount: 1,
+                status: 'PENDING',
                 createdAt: '2024-02-15T10:30:00'
             }
         ] as any[];

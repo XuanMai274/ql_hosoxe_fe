@@ -3,7 +3,7 @@
     <div class="header-left">
         <div class="welcome-msg">
             <span class="greeting">Xin chào,</span>
-            <h2 class="user-display-name">{{ username }}</h2>
+            <h2 class="user-display-name" [title]="username">{{ username }}</h2>
         </div>
     </div>
 
@@ -36,7 +36,7 @@
             <!-- Dropdown Content -->
             <div class="dropdown-content" *ngIf="showUserDropdown">
                 <div class="dropdown-header">
-                    <p class="full-name">{{ username }}</p>
+                    <p class="full-name" [title]="username">{{ username }}</p>
                     <p class="role-text">{{ userRole }}</p>
                 </div>
                 <div class="dropdown-divider"></div>
