@@ -303,54 +303,75 @@
             <span class="info-label">Ngày vay</span>
             <span class="info-value">{{ data.startDate | date:'dd/MM/yyyy' }}</span>
           </div>
-
+          <div class="info-item">
+            <span class="info-label">Ngày đến hạn</span>
+            <span class="info-value" [class.text-danger]="isNonWorkingDay(data.dueDate)">
+              {{ getDayOfWeek(data.dueDate) }}, {{ data.dueDate | date:'dd/MM/yyyy' }}
+              <i *ngIf="isNonWorkingDay(data.dueDate)" class="fa-solid fa-triangle-exclamation"
+                title="Ngày nghỉ/Lễ"></i>
+            </span>
+          </div>
           <div class="form-group highlight">
             <label>Thời hạn (ngày) *</label>
             <input type="number" class="form-control" [(ngModel)]="data.loanTerm" (input)="calculatePreviewDueDate()">
           </div>
 
+
+          <div class="form-group highlight">
+            <label>Số tiền giải ngân (VNĐ) *</label>
+            <input type="text" class="form-control large" [value]="formatMoney(data.disbursementAmount)"
+              (input)="onMoneyInput($event, 'disbursementAmount')" />
+          </div>
+          <div class="form-group">
+            <label>Tiền lãi (VNĐ)</label>
+            <input type="text" class="form-control" [value]="formatMoney(data.interestAmount)"
+              (input)="onMoneyInput($event, 'interestAmount')" />
+          </div>
+
+
           <div class="info-item">
-            <span class="info-label">Ngày đến hạn</span>
-            <span class="info-value" [class.text-danger]="isNonWorkingDay(data.dueDate)">
-              {{ getDayOfWeek(data.dueDate) }}, {{ data.dueDate | date:'dd/MM/yyyy' }}
-              <i *ngIf="isNonWorkingDay(data.dueDate)" class="fa-solid fa-triangle-exclamation" title="Ngày nghỉ/Lễ"></i>
+            <span class="info-label">Tổng số xe vay</span>
+            <span class="info-value">
+              {{ data.totalVehiclesCount }}
             </span>
+          </div>
+          <div class="form-group">
+            <label>Hệ số BĐS</label>
+            <input type="number" step="0.01" class="form-control" [(ngModel)]="realEstateFactor"
+              (input)="recalculateValues()">
           </div>
 
           <div class="form-group">
             <label>Hệ số TS xe</label>
-            <input type="number" class="form-control" [(ngModel)]="vehicleFactor" (input)="recalculateValues()">
-          </div>
-
-          <div class="form-group">
-            <label>Hệ số BĐS</label>
-            <input type="number" class="form-control" [(ngModel)]="realEstateFactor" (input)="recalculateValues()">
+            <input type="number" step="0.01" class="form-control" [(ngModel)]="vehicleFactor"
+              (input)="recalculateValues()">
           </div>
 
           <div class="form-group">
             <label>Giá trị TS xe (VNĐ)</label>
-            <input type="number" class="form-control" [(ngModel)]="data.totalCollateralValue" (input)="recalculateValues()" />
+            <input type="text" class="form-control" [value]="formatMoney(data.totalCollateralValue)"
+              (input)="onMoneyInput($event, 'totalCollateralValue')" />
           </div>
 
           <div class="form-group">
             <label>Giá trị BĐS (VNĐ)</label>
-            <input type="number" class="form-control" [(ngModel)]="data.realEstateValue" (input)="recalculateValues()" />
+            <input type="text" class="form-control" [value]="formatMoney(data.realEstateValue)"
+              (input)="onMoneyInput($event, 'realEstateValue')" />
           </div>
 
           <div class="form-group highlight">
             <label>TS xe sau hệ số</label>
-            <input type="number" class="form-control readonly" [value]="data.collateralValueAfterFactor" readonly>
+            <input type="text" class="form-control readonly" [value]="formatMoney(data.collateralValueAfterFactor)"
+              readonly />
           </div>
 
           <div class="form-group highlight">
             <label>BĐS sau hệ số</label>
-            <input type="number" class="form-control readonly" [value]="data.realEstateValueAfterFactor" readonly>
+            <input type="text" class="form-control readonly" [value]="formatMoney(data.realEstateValueAfterFactor)"
+              readonly />
           </div>
 
-          <div class="form-group highlight">
-            <label>Số tiền giải ngân (VNĐ) *</label>
-            <input type="number" class="form-control large" [(ngModel)]="data.disbursementAmount" />
-          </div>
+
 
         </div>
 

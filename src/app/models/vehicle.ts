@@ -2,6 +2,7 @@ import { DocumentVehicles } from "./document_vehicles";
 import { GuaranteeLetter } from "./guarantee_letter";
 import { Invoice } from "./invoice-data.model";
 import { Manufacturer } from "./manufacturer";
+import { LoanDTO } from "./loan.model";
 
 export interface Vehicle {
   id?: number;
@@ -28,6 +29,8 @@ export interface Vehicle {
   docsDeliveryDate?: string;
   description?: string;
   deadlineLabel?: string;
+  loanContractNumber?: string;
+  loan?: LoanDTO;
   createdAt?: string;
   documents?: DocumentVehicles[];
   invoiceId?: Invoice;

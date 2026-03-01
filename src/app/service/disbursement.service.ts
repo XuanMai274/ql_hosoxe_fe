@@ -12,12 +12,12 @@ export class DisbursementService {
 
     constructor(private http: HttpClient) { }
 
-    previewDisbursement(customerId: number):
+    previewDisbursement():
     
         Observable<DisbursementDTO> {
         
         return this.http.get<DisbursementDTO>(
-            `${this.apiUrl}/preview/${customerId}`
+            `${this.apiUrl}/preview`
         );
     }
 

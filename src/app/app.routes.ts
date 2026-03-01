@@ -21,6 +21,7 @@ import { HomeRouterComponent } from './page/home-router.component';
 import { DeNghiCapBaoLanhComponent } from './page/customer/de-nghi-cap-bao-lanh/de-nghi-cap-bao-lanh.component';
 import { DeNghiNhapKhoComponent } from './page/customer/de-nghi-nhap-kho/de-nghi-nhap-kho.component';
 import { DeNghiGiaiNganComponent } from './page/customer/de-nghi-giai-ngan/de-nghi-giai-ngan.component';
+import { DeNghiRutHoSoComponent } from './page/customer/de-nghi-rut-ho-so/de-nghi-rut-ho-so.component';
 import { CustomerHomeComponent } from './page/customer/customer-home/customer-home.component';
 import { CustomerKhoanVayComponent } from './page/customer/khoan-vay/khoan-vay.component';
 
@@ -31,6 +32,8 @@ import { ChiTietKhoanVayComponent } from './page/QuanLyKhoanVay/chi-tiet-khoan-v
 import { DanhSachHopDongTDComponent } from './page/QuanLyHopDongTD/danh-sach-hop-dong-td/danh-sach-hop-dong-td.component';
 import { FormHopDongTDComponent } from './page/QuanLyHopDongTD/form-hop-dong-td/form-hop-dong-td.component';
 import { RootRedirectComponent } from './page/root-redirect.component';
+import { QuanLyRutHoSoXeComponent } from './page/QuanLyRutHoSoXe/quan-ly-rut-ho-so-xe.component';
+
 
 export const routes: Routes = [
     {
@@ -111,7 +114,12 @@ export const routes: Routes = [
                 path: 'credit-contract/edit/:id',
                 component: FormHopDongTDComponent
             },
+            {
+                path: 'quan-ly-rut-ho-so-xe',
+                component: QuanLyRutHoSoXeComponent
+            },
             // ADMIN ROUTES
+
             {
                 path: 'admin/employees',
                 component: EmployeeManagementComponent,
@@ -168,6 +176,12 @@ export const routes: Routes = [
             {
                 path: 'khoan-vay',
                 component: CustomerKhoanVayComponent,
+                canActivate: [RoleGuard],
+                data: { roles: ['customer'] }
+            },
+            {
+                path: 'de-nghi-rut-ho-so',
+                component: DeNghiRutHoSoComponent,
                 canActivate: [RoleGuard],
                 data: { roles: ['customer'] }
             }

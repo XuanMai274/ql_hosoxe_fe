@@ -33,6 +33,7 @@ export class NhapKhoXeComponent {
   loanForms: VehicleLoanForm[] = [];
   vehicleFactor = 0.85;
   realEstateFactor = 0.8;
+
   //Lưu dữ liệu nhập kho trả về
   warehouseImportResult?: WarehouseImportDTO;
   createdDisbursement?: DisbursementDTO;
@@ -56,7 +57,8 @@ export class NhapKhoXeComponent {
   page = 0;
   size = 10;
   totalPages = 0;
-
+  baseRate = 7;
+  fundingRate = 5.86;
 
   constructor(
     private vehicleService: VehicleService,
@@ -119,9 +121,10 @@ export class NhapKhoXeComponent {
   previewBatchLoans() {
     if (!this.isBatchValid()) return;
     this.loading = true;
-
+    this.updateVehicleCount();
+    this.recalculateInterest();
     this.disbursementService
-      .previewDisbursement(2)
+      .previewDisbursement()
       .subscribe({
         next: (res) => {
           this.previewData = res;
@@ -139,13 +142,13 @@ export class NhapKhoXeComponent {
       });
   }
 
-  calculatePreviewDueDate() {
-    if (!this.previewData || !this.previewData.startDate || !this.previewData.loanTerm) return;
-    const start = new Date(this.previewData.startDate);
-    const due = new Date(start);
-    due.setDate(start.getDate() + Number(this.previewData.loanTerm));
-    this.previewData.dueDate = due;
-  }
+  // calculatePreviewDueDate() {
+  //   if (!this.previewData || !this.previewData.startDate || !this.previewData.loanTerm) return;
+  //   const start = new Date(this.previewData.startDate);
+  //   const due = new Date(start);
+  //   due.setDate(start.getDate() + Number(this.previewData.loanTerm));
+  //   this.previewData.dueDate = due;
+  // }
 
   isNonWorkingDay(date: any): boolean {
     if (!date) return false;
@@ -186,8 +189,9 @@ export class NhapKhoXeComponent {
         this.importNumber = res.importNumber;
         if (this.previewData) {
           this.previewData.mortgageContractId =
-            this.warehouseImportResult?.mortgageContractDTO?.id ;
+            this.warehouseImportResult?.mortgageContractDTO?.id;
         }
+        console.log("data giải ngân: ",this.previewData)
         // 2. Gọi API Tạo giải ngân
         this.disbursementService.createDisbursement(this.previewData!).subscribe({
           next: (resDis) => {
@@ -211,6 +215,31 @@ export class NhapKhoXeComponent {
         Swal.fire('Lỗi', err.error?.message || "Lỗi nhập kho", 'error');
       }
     });
+  }
+  // hàm tính lãi suất
+  recalculateInterest() {
+
+    if (!this.previewData) return;
+
+    const principal = Number(this.previewData.disbursementAmount) || 0;
+    const days = Number(this.previewData.loanTerm) || 0;
+
+    const rateDiff = (this.baseRate - this.fundingRate) / 100;
+
+    const interest =
+      principal * rateDiff / 365 * days;
+
+    this.previewData.interestAmount = Math.round(interest);
+  }
+  calculatePreviewDueDate() {
+    if (!this.previewData || !this.previewData.startDate || !this.previewData.loanTerm) return;
+
+    const start = new Date(this.previewData.startDate);
+    const due = new Date(start);
+    due.setDate(start.getDate() + Number(this.previewData.loanTerm));
+    this.previewData.dueDate = due;
+
+    this.recalculateInterest(); // thêm dòng này
   }
 
   submitBatchLoans() {
@@ -588,6 +617,34 @@ export class NhapKhoXeComponent {
     if (!this.previewData) return;
 
     this.previewData.disbursementAmount = this.getTotalLoanAmount();
+
+    this.recalculateInterest(); // thêm dòng này
+    this.updateVehicleCount();
+  }
+  updateVehicleCount() {
+    if (!this.previewData) return;
+
+    this.previewData.totalVehiclesCount =
+      this.selectedVehicles.length;
+  }
+  formatMoney(value: number | null | undefined): string {
+    if (!value && value !== 0) return '';
+    return value.toLocaleString('vi-VN');
+  }
+
+  parseMoney(value: string): number {
+    return Number(value.replace(/\./g, '').replace(/,/g, ''));
+  }
+  onMoneyInput(event: any, field: keyof DisbursementDTO) {
+
+    if (!this.previewData) return;
+
+    const rawValue = event.target.value;
+    const numericValue = this.parseMoney(rawValue);
+
+    this.previewData![field] = numericValue as any;
+
+    event.target.value = this.formatMoney(numericValue);
   }
 
 }

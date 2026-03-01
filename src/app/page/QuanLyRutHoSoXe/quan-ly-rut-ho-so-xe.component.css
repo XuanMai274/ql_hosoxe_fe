@@ -1,0 +1,557 @@
+.page-container {
+    padding: 24px 32px;
+    background-color: #f8fafc;
+    min-height: calc(100vh - 64px);
+    font-family: 'Inter', sans-serif;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 12px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    color: #64748b;
+    font-size: 15px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+}
+
+.btn-refresh {
+    background-color: #ffffff;
+    color: #0f172a;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        background-color: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+}
+
+.table-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.card-header {
+    padding: 20px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.badge-pending {
+    background-color: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fde047;
+}
+
+.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+
+    thead {
+        background-color: #f8fafc;
+
+        th {
+            padding: 16px 24px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+        }
+    }
+
+    tbody tr {
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f1f5f9;
+
+        &:hover {
+            background-color: #f8fafc;
+        }
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    td {
+        padding: 16px 24px;
+        font-size: 15px;
+        color: #334155;
+        vertical-align: middle;
+    }
+}
+
+.export-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #1a56db;
+    background: #eff6ff;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.vehicle-count {
+    font-weight: 500;
+    color: #475569;
+}
+
+.btn-action {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+}
+
+.btn-view {
+    background-color: #028B89;
+    color: #ffffff;
+
+    &:hover {
+        background-color: #027170;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(2, 139, 137, 0.2);
+    }
+}
+
+/* Modal */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 24px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+    background: #ffffff;
+    width: 95%;
+    max-width: 1200px;
+    max-height: 90vh;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.modal-title-group h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.modal-subtitle {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.highlight {
+    color: #028B89;
+    background: rgba(2, 139, 137, 0.1);
+    padding: 0 8px;
+    border-radius: 4px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.1s;
+
+    &:hover {
+        color: #ef4444;
+    }
+}
+
+.modal-body {
+    padding: 32px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.request-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    background-color: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 24px;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748b;
+        text-transform: uppercase;
+    }
+
+    .value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .highlighting {
+        color: #028B89;
+    }
+}
+
+.detail-table-wrapper {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow-x: auto;
+    background: white;
+}
+
+.detail-table {
+    width: 100%;
+    min-width: 1000px;
+    border-collapse: collapse;
+
+    th {
+        padding: 12px 20px;
+        background-color: #f1f5f9;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    td {
+        padding: 14px 20px;
+        font-size: 14px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+    }
+}
+
+.vehicle-info-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .manufacturer-tag {
+        font-size: 7px;
+        font-weight: 600;
+        color: #028B89;
+        background: rgba(2, 139, 137, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        width: fit-content;
+        text-transform: uppercase;
+    }
+
+    .v-name {
+        font-size: 12px;
+        font-weight: 500;
+        color: #1e293b;
+    }
+
+    .v-color {
+        font-size: 12px;
+        color: #64748b;
+    }
+}
+
+.codes-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.engine-code {
+    opacity: 0.6;
+    font-size: 11px !important;
+}
+
+.loan-info-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .loan-number {
+        font-size: 12px;
+        font-weight: 600;
+        color: #1a56db;
+    }
+
+    .loan-date {
+        font-size: 11px;
+        color: #64748b;
+    }
+}
+
+.loan-deadline-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+
+    .due-date {
+        font-weight: 500;
+        color: #475569;
+
+        &.overdue {
+            color: #ef4444;
+        }
+    }
+
+    .deadline-label {
+        font-size: 11px;
+        padding: 1px 6px;
+        background: #f1f5f9;
+        border-radius: 4px;
+        width: fit-content;
+    }
+}
+
+.price-text {
+    font-weight: 600;
+    color: #475569;
+}
+
+.highlight-price {
+    color: #028B89;
+    font-size: 15px;
+}
+
+.muted {
+    font-weight: 400;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.modal-footer {
+    padding: 24px 32px;
+    background-color: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+.btn-secondary {
+    background-color: #ffffff;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+
+    &:hover {
+        background-color: #f1f5f9;
+    }
+}
+
+.btn-reject {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+
+    &:hover {
+        background-color: #fee2e2;
+    }
+}
+
+.btn-approve {
+    background: linear-gradient(135deg, #028B89, #02a6a3);
+    color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(2, 139, 137, 0.4);
+
+    &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 15px -3px rgba(2, 139, 137, 0.4);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #cbd5e1;
+        color: #94a3b8;
+        box-shadow: none;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 0;
+    color: #94a3b8;
+
+    i {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+
+    p {
+        font-size: 16px;
+        font-weight: 500;
+    }
+}
+
+/* Animations and Spinners */
+.spinner,
+.spinner-small {
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top: 3px solid #028B89;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+}
+
+.spinner-small {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 0;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.value-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 15px;
+  border: 1px solid #dcdcdc;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  background-color: #fafafa;
+  box-sizing: border-box;
+}
+
+/* Khi focus */
+.value-input:focus {
+  border-color: #1a73e8;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+}
+
+/* Hover nhẹ */
+.value-input:hover {
+  border-color: #b5b5b5;
+}
+
+/* Ẩn mũi tên number input (Chrome, Edge) */
+.value-input::-webkit-outer-spin-button,
+.value-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Ẩn mũi tên number input (Firefox) */
+.value-input[type=number] {
+  -moz-appearance: textfield;
+}
+.highlighting {
+  color: #1a1a1a;
+  font-weight: 600;
+}

@@ -1,0 +1,179 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h2 class="title">Quản lý Rút Hồ Sơ Xe</h2>
+      <p class="subtitle">Xem và duyệt các đơn yêu cầu rút hồ sơ từ khách hàng</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-refresh" (click)="loadPendingRequests()">
+        <i class="fa-solid fa-sync"></i> Làm mới
+      </button>
+    </div>
+  </header>
+
+  <div class="page-content">
+    <div class="table-card">
+      <div class="card-header">
+        <h3 class="card-title">Đơn yêu cầu đang chờ duyệt</h3>
+        <span class="badge badge-pending">{{ pendingRequests.length }} đơn chờ</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th width="80">STT</th>
+              <th>Số đơn</th>
+              <th>Số lượng xe</th>
+              <th>Tổng tiền thu nợ</th>
+              <th>Ngày tạo</th>
+              <th class="text-right">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let request of pendingRequests; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td><span class="export-number">{{ request.exportNumber || 'REQ-' + request.id }}</span></td>
+              <td><span class="vehicle-count">{{ request.vehicleIds.length || 0 }} xe</span></td>
+              <td><span class="price-text">{{ formatCurrency(request.totalDebtCollection) }}</span></td>
+              <td>{{ request.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="text-right">
+                <button class="btn-action btn-view" (click)="viewDetails(request)">
+                  <i class="fa-solid fa-eye"></i> Xem chi tiết
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="pendingRequests.length === 0 && !loading">
+              <td colspan="5" class="empty-state">
+                <i class="fa-solid fa-folder-open"></i>
+                <p>Không có đơn yêu cầu nào đang chờ duyệt</p>
+              </td>
+            </tr>
+            <tr *ngIf="loading">
+              <td colspan="5" class="loading-state">
+                <div class="spinner"></div>
+                <p>Đang tải dữ liệu...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-backdrop" *ngIf="selectedRequest">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3>Chi tiết đơn yêu cầu: <span
+              class="highlight">{{ selectedRequest.exportNumber || 'REQ-' + selectedRequest.id }}</span></h3>
+          <span class="modal-subtitle">Danh sách xe trong yêu cầu</span>
+        </div>
+        <button class="close-btn" (click)="closeDetails()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="request-summary">
+          <div class="summary-item">
+            <span class="label">Ngày tạo:</span>
+            <span class="value">{{ selectedRequest.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Tổng số xe:</span>
+            <span class="value highlighting">{{ vehicles.length }} xe</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Tổng tiền thu nợ:</span>
+            <span class="value highlighting">{{ formatCurrency(selectedRequest.totalDebtCollection) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Tổng TS:</span>
+            <input type="text" class="value-input highlighting"
+              [ngModel]="formatNumber(selectedRequest.totalCollateralValue)"
+              (ngModelChange)="onMoneyChange($event, 'totalCollateralValue')" name="totalCollateralValue" />
+          </div>
+
+          <div class="summary-item">
+            <span class="label">Giá trị BĐS:</span>
+            <input type="text" class="value-input highlighting"
+              [ngModel]="formatNumber(selectedRequest.realEstateValue)"
+              (ngModelChange)="onMoneyChange($event, 'realEstateValue')" name="realEstateValue" />
+          </div>
+        </div>
+
+        <div class="detail-table-wrapper">
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Thông tin xe</th>
+                <th>Số khung / Máy</th>
+                <th>HDTDCT</th>
+                <th>Ngày đến hạn</th>
+                <th>Khoản vay</th>
+                <th>Giá trị xe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let v of vehicles; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td class="vehicle-info-cell">
+                  <span class="manufacturer-tag">{{ v.manufacturerDTO?.name }}</span>
+                  <div class="vehicle-name-detail">
+                    <span class="v-name">{{ v.vehicleName }}</span>
+                    <span class="v-color"> {{ v.color }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="codes-cell">
+                    <code class="code-text" title="Số khung">{{ v.chassisNumber }}</code>
+                    <code class="code-text engine-code" title="Số máy">{{ v.engineNumber }}</code>
+                  </div>
+                </td>
+                <td>
+                  <div class="loan-info-cell">
+                    <span class="loan-number">{{ v.loan?.loanContractNumber || v.loanContractNumber || '—' }}</span>
+                    <span class="loan-date" *ngIf="v.loan?.loanDate">Ngày vay:
+                      {{ v.loan?.loanDate | date: 'dd/MM/yyyy' }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="loan-deadline-cell">
+                    <span class="due-date" [class.overdue]="v.deadlineLabel?.includes('quá hạn')">
+                      {{ v.loan?.dueDate || '—' }}
+                    </span>
+                    <span class="deadline-label" *ngIf="v.deadlineLabel">{{ v.deadlineLabel }}</span>
+                  </div>
+                </td>
+                <td class="text-right">
+                  <span class="price-text highlight-price">{{ formatCurrency(v.guaranteeAmount) }}</span>
+                </td>
+                <td class="text-right"><span class="price-text muted">{{ formatCurrency(v.price) }}</span></td>
+              </tr>
+              <tr *ngIf="vehicles.length === 0 && !detailsLoading">
+                <td colspan="5" class="empty-state">Không có dữ liệu xe.</td>
+              </tr>
+              <tr *ngIf="detailsLoading">
+                <td colspan="5" class="loading-state">
+                  <div class="spinner-small"></div>
+                  <p>Đang tải danh sách xe...</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDetails()">Đóng</button>
+        <button class="btn btn-reject" (click)="rejectRequest(selectedRequest.id)">
+          <i class="fa-solid fa-times-circle"></i> Từ chối yêu cầu
+        </button>
+        <button class="btn btn-approve" (click)="approveRequest()" [disabled]="!selectedRequest">
+          <i class="fa-solid fa-check-circle"></i> Duyệt xuất kho
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
