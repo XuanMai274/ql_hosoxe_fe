@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { Renderer2, OnInit, OnDestroy } from '@angular/core';
 @Component({
   selector: 'app-manager',
+  standalone: true,
   imports: [
     RouterModule,
     CanBoSidebarComponent,

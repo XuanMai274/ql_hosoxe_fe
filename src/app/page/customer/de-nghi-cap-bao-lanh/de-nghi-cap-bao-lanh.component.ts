@@ -8,6 +8,7 @@ import { ManufacturerService } from '../../../service/manufacturer.service';
 import { forkJoin } from 'rxjs';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { AuthServiceComponent } from '../../../core/service/auth-service.component';
 
 @Component({
     selector: 'app-de-nghi-cap-bao-lanh',
@@ -23,9 +24,10 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     error = '';
 
     // Filter
-    selectedManufacturerId: number | null = null;
+    selectedManufacturerId: any = '';
     fromDate = '';
     toDate = '';
+    statusSearch = '';
 
     manufacturers: Manufacturer[] = [];
 
@@ -67,7 +69,8 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     constructor(
         private guaranteeAppService: GuaranteeApplicationService,
         private manufacturerService: ManufacturerService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private authService: AuthServiceComponent
     ) {
         this.newForm = this.fb.group({
             manufacturerCode: ['', Validators.required],
@@ -89,6 +92,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
             this.selectedManufacturerId || undefined,
             this.fromDate || undefined,
             this.toDate || undefined,
+            this.statusSearch || undefined,
             this.page,
             this.size
         ).subscribe({
@@ -109,9 +113,10 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     applyFilter() { this.loadData(0); }
 
     resetFilter() {
-        this.selectedManufacturerId = null;
+        this.selectedManufacturerId = '';
         this.fromDate = '';
         this.toDate = '';
+        this.statusSearch = '';
         this.loadData(0);
     }
 
@@ -218,7 +223,8 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
             this.newForm.markAllAsTouched();
             return;
         }
-        const customer = { id: 2 }; // Thường lấy từ AuthService
+        const userId = this.authService.getUserId();
+        const customer = { id: userId ? Number(userId) : null }; // Lấy từ AuthService
 
         this.submitting = true;
         const manufacturerCode = this.newForm.get('manufacturerCode')?.value;

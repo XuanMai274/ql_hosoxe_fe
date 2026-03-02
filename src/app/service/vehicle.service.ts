@@ -55,6 +55,29 @@ export class VehicleService {
         });
     }
 
+    getVehiclesForCustomer(params: {
+        chassisNumber?: string;
+        status?: string;
+        manufacturer?: string;
+        page: number;
+        size: number;
+        ref?: string
+    }): Observable<PageResponse<VehicleList>> {
+
+        let httpParams = new HttpParams()
+            .set('page', params.page)
+            .set('size', params.size);
+
+        if (params.chassisNumber) httpParams = httpParams.set('chassisNumber', params.chassisNumber);
+        if (params.status) httpParams = httpParams.set('status', params.status);
+        if (params.manufacturer) httpParams = httpParams.set('manufacturer', params.manufacturer);
+        if (params.ref) httpParams = httpParams.set('ref', params.ref);
+
+        return this.http.get<PageResponse<VehicleList>>('http://localhost:8080/customer/vehicles', {
+            params: httpParams
+        });
+    }
+
     getVehicleDetail(id: number): Observable<Vehicle> {
         return this.http.get<Vehicle>(`${this.apiUrl}/${id}`);
     }

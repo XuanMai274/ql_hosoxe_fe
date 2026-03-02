@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Employee, CreateEmployeeWithAccountRequest, UpdateEmployeeRequest } from '../models/employee.model';
 import { Customer } from '../models/customer.model';
 import { Role, CreateRoleRequest, UpdateRoleRequest } from '../models/role.model';
+import { PageResponse } from '../models/page-response';
 
 @Injectable({
     providedIn: 'root'
@@ -15,10 +16,10 @@ export class AdminService {
     constructor(private http: HttpClient) { }
 
     // ===================== EMPLOYEE APIs =====================
-    getEmployees(keyword?: string): Observable<Employee[]> {
-        let params = new HttpParams();
+    getEmployees(page: number = 0, size: number = 20, keyword?: string): Observable<PageResponse<Employee>> {
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
         if (keyword) params = params.set('keyword', keyword);
-        return this.http.get<Employee[]>(`${this.baseUrl}/admin/employees`, { params });
+        return this.http.get<PageResponse<Employee>>(`${this.baseUrl}/admin/employees`, { params });
     }
 
     getEmployeeById(id: number): Observable<Employee> {
@@ -38,10 +39,10 @@ export class AdminService {
     }
 
     // ===================== CUSTOMER APIs =====================
-    getCustomers(keyword?: string): Observable<Customer[]> {
-        let params = new HttpParams();
+    getCustomers(page: number = 0, size: number = 20, keyword?: string): Observable<PageResponse<Customer>> {
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
         if (keyword) params = params.set('keyword', keyword);
-        return this.http.get<Customer[]>(`${this.baseUrl}/admin/customers`, { params });
+        return this.http.get<PageResponse<Customer>>(`${this.baseUrl}/admin/customers`, { params });
     }
 
     getCustomerById(id: number): Observable<Customer> {

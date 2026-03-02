@@ -16,6 +16,7 @@ import { DisbursementService } from '../../../service/disbursement.service';
 import { DisbursementDTO } from '../../../models/disbursement.model';
 import { DisbursementExportRequest } from '../../../models/disbursement-export-request';
 import Swal from 'sweetalert2';
+import { AuthServiceComponent } from '../../../core/service/auth-service.component';
 
 @Component({
   selector: 'app-nhap-kho-xe',
@@ -65,7 +66,8 @@ export class NhapKhoXeComponent {
     private loanService: LoanService,
     private warehouseService: WarehouseService,
     private disbursementService: DisbursementService,
-    private router: Router
+    private router: Router,
+    private authService: AuthServiceComponent
   ) { }
 
   ngOnInit(): void {
@@ -191,7 +193,7 @@ export class NhapKhoXeComponent {
           this.previewData.mortgageContractId =
             this.warehouseImportResult?.mortgageContractDTO?.id;
         }
-        console.log("data giải ngân: ",this.previewData)
+        console.log("data giải ngân: ", this.previewData)
         // 2. Gọi API Tạo giải ngân
         this.disbursementService.createDisbursement(this.previewData!).subscribe({
           next: (resDis) => {
@@ -274,7 +276,7 @@ export class NhapKhoXeComponent {
       loanStatus: 'ACTIVE',
       loanType: 'VEHICLE',
 
-      customerDTO: { id: 2 },
+      customerDTO: { id: this.authService.getUserId() ? Number(this.authService.getUserId()) : null },
       vehicleDTO: { id: f.vehicleId }
 
     } as any));

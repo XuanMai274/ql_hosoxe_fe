@@ -3,6 +3,9 @@
    ============================================================ */
 
 :host {
+  display: block;
+  width: 280px;
+  flex-shrink: 0;
   --sidebar-width: 280px;
   --transition-speed: 0.4s;
   --primary-teal: #028B89;

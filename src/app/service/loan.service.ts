@@ -64,7 +64,11 @@ export class LoanService {
 
     return this.http.get<PageResponse<LoanDTO>>(this.apiUrl, { params });
   }
-  getDetail(id: number) {
-    return this.http.get<LoanDTO>(`http://localhost:8080/officer/loans/${id}`);
+  getDetail(id: number): Observable<LoanDTO> {
+    return this.http.get<LoanDTO>(`${this.apiUrl}/${id}`);
+  }
+
+  updateLoan(id: number, dto: LoanDTO): Observable<LoanDTO> {
+    return this.http.put<LoanDTO>(`${this.apiUrl}/${id}`, dto);
   }
 }

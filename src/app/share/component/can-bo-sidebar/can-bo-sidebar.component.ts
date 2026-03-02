@@ -6,6 +6,7 @@ import { AuthServiceComponent } from '../../../core/service/auth-service.compone
 
 @Component({
   selector: 'app-can-bo-sidebar',
+  standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './can-bo-sidebar.component.html',
   styleUrl: './can-bo-sidebar.component.css'

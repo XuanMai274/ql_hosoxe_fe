@@ -1,127 +1,133 @@
 <div class="page-container">
-
-  <!-- HEADER -->
-  <div class="page-header">
-    <div class="header-actions">
-      <button class="btn-primary" (click)="goToCreate()">
-        Tạo khoản vay
-      </button>
+  <div class="page-banner">
+    <div class="banner-left">
+      <div class="banner-badge">
+        <i class="fa-solid fa-file-invoice-dollar"></i> Quản lý giải ngân
+      </div>
+      <h1 class="page-title">Danh sách đợt giải ngân</h1>
+      <p class="page-subtitle">Quản lý và theo dõi toàn bộ các đợt giải ngân tín dụng của khách hàng</p>
     </div>
   </div>
 
-  <!-- FILTER CARD -->
-  <div class="loan-filter-card">
+  <div class="filter-card">
+    <div class="filter-inner">
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-file-signature"></i> Số HĐTD chi tiết</label>
+        <input type="text" placeholder="Tìm theo số HĐ..." [(ngModel)]="contractNumber" (keyup.enter)="search()"
+          class="filter-input" />
+      </div>
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-calendar"></i> Từ ngày</label>
+        <input type="date" [(ngModel)]="fromDate" (change)="search()" class="filter-input" />
+      </div>
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-calendar"></i> Đến ngày</label>
+        <input type="date" [(ngModel)]="toDate" (change)="search()" class="filter-input" />
+      </div>
+      <div class="filter-actions">
+        <button class="btn-search" (click)="search()">
+          <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
+        </button>
+      </div>
+    </div>
+  </div>
 
-    <div class="filter-row">
+  <div class="stats-row" *ngIf="!loading">
+    <div class="stat-pill purple">
+      <i class="fa-solid fa-list-check"></i>
+      <span class="pill-value">{{ totalElements || 0 }}</span>
+      <span class="pill-label">Tổng đợt giải ngân</span>
+    </div>
+    <div class="stat-pill blue">
+      <i class="fa-solid fa-money-bill-transfer"></i>
+      <span class="pill-value">{{ totalAmount | number:'1.0-0' }}</span>
+      <span class="pill-label">Tổng tiền giải ngân (VNĐ)</span>
+    </div>
+  </div>
 
-      <input type="text" placeholder="Tìm theo số HĐ vay" [(ngModel)]="contractNumber" />
+  <div class="state-box" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Đang tải dữ liệu giải ngân...</p>
+  </div>
 
-      <input type="text" placeholder="Tìm theo số khung xe" [(ngModel)]="chassisNumber" />
-
-      <input type="text" placeholder="Tìm theo docId" [(ngModel)]="docId" />
-
-      <input type="number" placeholder="Gần đến hạn (số ngày)" [(ngModel)]="dueInDays" />
-
-      <select [(ngModel)]="loanStatus">
-        <option value="">Tất cả trạng thái</option>
-        <option value="ACTIVE">Đang hiệu lực</option>
-        <option value="CLOSED">Đã tất toán</option>
-        <option value="OVERDUE">Quá hạn</option>
-      </select>
-
-      <button class="btn-primary" (click)="search()">
-        Tìm kiếm
-      </button>
-
+  <div class="table-card" *ngIf="!loading">
+    <div class="table-header">
+      <div class="table-title">
+        <i class="fa-solid fa-list-ul"></i> Danh sách đợt giải ngân
+      </div>
+      <span class="record-count">{{ totalElements }} đợt</span>
     </div>
 
-  </div>
-
-  <!-- SUMMARY BAR -->
-  <div class="loan-summary-bar">
-
-    <div class="summary-item">
-      <span class="label">Tổng khoản vay:</span>
-      <span class="value"> {{ totalElements }}</span>
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th class="text-center" style="width:56px">STT</th>
+            <th>Số HĐTD chi tiết</th>
+            <th>Ngày giải ngân</th>
+            <th class="text-center">Số lượng xe</th>
+            <th class="text-center">SL xe đã trả</th>
+            <th class="text-right">Tiền giải ngân (VNĐ)</th>
+            <th class="text-right">Số đã trả (VNĐ)</th>
+            <th class="text-center">Trạng thái</th>
+            <th class="text-center">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of disbursements; let i = index">
+            <td class="text-center stt-cell">{{ i + 1 + page * size }}</td>
+            <td>
+              <div class="contract-num font-bold">{{ item.loanContractNumber }}</div>
+            </td>
+            <td>{{ item.disbursementDate | date:'dd/MM/yyyy' }}</td>
+            <td class="text-center">
+              <span class="count-chip">{{ item.vehicleCount || 0 }} xe</span>
+            </td>
+            <td class="text-center">
+              <span class="count-chip" style="background: #ecfdf5; color: #059669; border: 1px solid #10b981;">
+                {{ item.withdrawnVehiclesCount || 0 }} xe
+              </span>
+            </td>
+            <td class="text-right amount-cell">
+              {{ (item.disbursementAmount || 0) | number:'1.0-0' }}
+            </td>
+            <td class="text-right amount-cell" style="color: #059669;">
+              {{ (item.totalAmountPaid || 0) | number:'1.0-0' }}
+            </td>
+            <td class="text-center">
+              <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                {{ getStatusLabel(item.status) }}
+              </span>
+            </td>
+            <td class="text-center">
+              <button class="btn-view" [routerLink]="['/manager/chinh-sua-khoan-vay', item.id]">
+                <i class="fa-solid fa-eye"></i> Chi tiết
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="disbursements.length === 0">
+            <td colspan="9">
+              <div class="no-data-row">
+                <i class="fa-solid fa-file-circle-exclamation"></i>
+                <p>Không tìm thấy đợt giải ngân nào khớp với tìm kiếm của bạn.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="summary-item highlight">
-      <span class="label">Tổng dư nợ:</span>
-      <span class="value"> {{ totalAmount | number }} VNĐ</span>
+    <div class="pagination-bar" *ngIf="totalPages > 1">
+      <span class="page-info">Trang {{ page + 1 }} / {{ totalPages }}</span>
+      <div class="page-actions">
+        <button class="page-btn" [disabled]="page === 0" (click)="changePage(page - 1)">
+          <i class="fa-solid fa-chevron-left"></i> Trước
+        </button>
+        <span class="page-tag">{{ page + 1 }} / {{ totalPages }}</span>
+        <button class="page-btn" [disabled]="page + 1 >= totalPages" (click)="changePage(page + 1)">
+          Sau <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
     </div>
-
   </div>
-
-  <!-- TABLE CARD -->
-  <div class="loan-table-card">
-
-    <table class="loan-table">
-
-      <thead>
-        <tr>
-          <th>Số HĐ vay</th>
-          <th>Số khung</th>
-          <th>Doc_id</th>
-          <th>Số tiền vay</th>
-          <th>Ngày vay</th>
-          <th>Đến hạn</th>
-          <th>Trạng thái</th>
-          <th></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr *ngFor="let loan of loans">
-
-          <td class="contract">
-            {{ loan.loanContractNumber }}
-            <div class="sub-text">
-              {{ loan.accountNumber }}
-            </div>
-          </td>
-
-          <td>
-            {{ loan.vehicleDTO?.chassisNumber }}
-          </td>
-
-          <td>
-            {{ loan.docId||'N/A' }}
-          </td>
-          <td class="amount">
-            {{ loan.loanAmount }} VNĐ
-          </td>
-
-          <td>{{ loan.loanDate }}</td>
-          <td>{{ loan.dueDate }}</td>
-
-          <td>
-            <span class="status-badge" [ngClass]="getStatusClass(loan.loanStatus || '')">
-              {{ loan.loanStatus }}
-            </span>
-          </td>
-
-          <td class="actions-col">
-            <button class="btn-link" [routerLink]="['/manager/chinh-sua-khoan-vay', loan.id]">
-              Sửa
-            </button>
-          </td>
-
-        </tr>
-      </tbody>
-
-    </table>
-
-  </div>
-
-  <!-- PAGINATION -->
-  <div class="pagination">
-
-    <button (click)="changePage(page-1)" [disabled]="page===0">‹</button>
-
-    <span>Trang {{page + 1}} / {{totalPages || 1}}</span>
-
-    <button (click)="changePage(page+1)" [disabled]="page+1 >= totalPages">›</button>
-
-  </div>
-
 </div>
