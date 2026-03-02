@@ -20,6 +20,7 @@ export class GuaranteeApplicationService {
     manufacturerId?: number,
     fromDate?: string,
     toDate?: string,
+    status?: string,
     page = 0,
     size = 20
   ): Observable<PageResponse<GuaranteeApplication>> {
@@ -27,9 +28,11 @@ export class GuaranteeApplicationService {
     if (manufacturerId) params.manufacturerId = manufacturerId;
     if (fromDate) params.fromDate = fromDate;
     if (toDate) params.toDate = toDate;
+    if (status) params.status = status;
 
     return this.http.get<PageResponse<GuaranteeApplication>>(this.baseUrl, { params });
   }
+
   exportDeNghi(id: number) {
     return this.http.get(
       `/customer/guarantee-export/de-nghi/${id}`,

@@ -15,9 +15,14 @@ import Swal from 'sweetalert2';
 export class CustomerManagementComponent implements OnInit {
 
   customers: Customer[] = [];
-  filteredCustomers: Customer[] = [];
   isLoading = false;
   searchKeyword = '';
+
+  // Pagination
+  page = 0;
+  size = 10;
+  totalElements = 0;
+  totalPages = 0;
 
   showModal = false;
   isEditing = false;
@@ -54,10 +59,22 @@ export class CustomerManagementComponent implements OnInit {
 
   loadCustomers(): void {
     this.isLoading = true;
-    this.adminService.getCustomers().subscribe({
-      next: (data) => {
-        this.customers = data;
-        this.filteredCustomers = data;
+    this.adminService.getCustomers(this.page, this.size, this.searchKeyword).subscribe({
+      next: (res: any) => {
+        // Hỗ trợ cả PageResponse và mảng trực tiếp
+        if (res && res.content) {
+          this.customers = res.content;
+          this.totalElements = res.totalElements;
+          this.totalPages = res.totalPages;
+        } else if (Array.isArray(res)) {
+          this.customers = res;
+          this.totalElements = res.length;
+          this.totalPages = Math.ceil(res.length / this.size) || 1;
+        } else {
+          this.customers = [];
+          this.totalElements = 0;
+          this.totalPages = 0;
+        }
         this.isLoading = false;
       },
       error: (err) => {
@@ -68,17 +85,14 @@ export class CustomerManagementComponent implements OnInit {
   }
 
   onSearch(): void {
-    const kw = this.searchKeyword.toLowerCase().trim();
-    if (!kw) {
-      this.filteredCustomers = this.customers;
-    } else {
-      this.filteredCustomers = this.customers.filter(c =>
-        c.customerName?.toLowerCase().includes(kw) ||
-        c.cif?.toLowerCase().includes(kw) ||
-        c.phone?.includes(kw) ||
-        c.email?.toLowerCase().includes(kw) ||
-        c.taxCode?.toLowerCase().includes(kw)
-      );
+    this.page = 0;
+    this.loadCustomers();
+  }
+
+  changePage(newPage: number): void {
+    if (newPage >= 0 && newPage < this.totalPages) {
+      this.page = newPage;
+      this.loadCustomers();
     }
   }
 

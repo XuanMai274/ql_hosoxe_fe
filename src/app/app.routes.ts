@@ -24,6 +24,7 @@ import { DeNghiGiaiNganComponent } from './page/customer/de-nghi-giai-ngan/de-ng
 import { DeNghiRutHoSoComponent } from './page/customer/de-nghi-rut-ho-so/de-nghi-rut-ho-so.component';
 import { CustomerHomeComponent } from './page/customer/customer-home/customer-home.component';
 import { CustomerKhoanVayComponent } from './page/customer/khoan-vay/khoan-vay.component';
+import { DanhSachXeComponent } from './page/customer/danh-sach-xe/danh-sach-xe.component';
 
 import { AuthGuard } from './core/guard/auth.guard';
 import { RoleGuard } from './core/guard/role.guard';
@@ -176,6 +177,12 @@ export const routes: Routes = [
             {
                 path: 'khoan-vay',
                 component: CustomerKhoanVayComponent,
+                canActivate: [RoleGuard],
+                data: { roles: ['customer'] }
+            },
+            {
+                path: 'ho-so-xe',
+                component: DanhSachXeComponent,
                 canActivate: [RoleGuard],
                 data: { roles: ['customer'] }
             },

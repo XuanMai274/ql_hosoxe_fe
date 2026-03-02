@@ -581,7 +581,7 @@ export class ThemHoSoXeVinfastComponent {
           vehicles: inv.vehicleList.map((v, vIdx) => ({
             stt: vIdx + 1, vehicleName: v.modelName, description: v.vehicleDescription, chassisNumber: v.chassisNumber,
             engineNumber: v.engineNumber, modelType: v.modelName, color: v.color || '', seats: Number(v.numberOfSeats) || 7,
-            price: this.parsePrice(v.unitPrice), status: 'Giữ két', guaranteeLetterDTO: { id: guarantee.id }, manufacturerDTO: { id: 2 }
+            price: this.parsePrice(v.unitPrice), status: 'Giữ két', guaranteeLetterDTO: { id: guarantee.id }, manufacturerDTO: { id: this.selectedBrand?.id }
           }))
         };
         saveRequests.push(this.vehicleInvoiceService.create(payload as any).pipe(

@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
-import { LoanDTO } from '../../../models/loan.model';
-import { LoanService } from '../../../service/loan.service';
+import { DisbursementDTO } from '../../../models/disbursement.model';
+import { DisbursementService } from '../../../service/disbursement.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-danh-sach-khoan-vay',
-  imports: [CommonModule, FormsModule,RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './danh-sach-khoan-vay.component.html',
   styleUrl: './danh-sach-khoan-vay.component.css'
 })
 export class DanhSachKhoanVayComponent {
-  loans: LoanDTO[] = [];
+  disbursements: DisbursementDTO[] = [];
 
   page = 0;
   size = 10;
@@ -20,42 +20,37 @@ export class DanhSachKhoanVayComponent {
   totalElements = 0;
   totalAmount = 0;
   contractNumber: string = '';
-  accountNumber: string = '';
-  loanStatus: string = '';
+  fromDate: string = '';
+  toDate: string = '';
   loading = false;
-  chassisNumber: string = '';
-  docId: string = '';
-  dueInDays?: number;
-  constructor(private loanService: LoanService) { }
+
+  constructor(private disbursementService: DisbursementService) { }
 
   ngOnInit(): void {
-    this.loadLoans();
+    this.loadData();
   }
 
-  loadLoans(): void {
+  loadData(): void {
     this.loading = true;
 
-    this.loanService
-      .getLoans(
+    this.disbursementService
+      .getDisbursements(
         this.page,
         this.size,
         this.contractNumber,
-        this.chassisNumber,
-        this.loanStatus,
-        this.docId,
-        this.dueInDays
+        this.fromDate,
+        this.toDate
       )
       .subscribe({
         next: (res) => {
-          this.loans = res.content;
+          this.disbursements = res.content;
           this.totalPages = res.totalPages;
           this.totalElements = res.totalElements;
-
-          this.calculateTotalAmount();
+          this.calculateTotal();
           this.loading = false;
         },
         error: (err) => {
-          console.error('Load loans error:', err);
+          console.error('Load disbursements error:', err);
           this.loading = false;
         }
       });
@@ -63,36 +58,41 @@ export class DanhSachKhoanVayComponent {
 
   search(): void {
     this.page = 0;
-    this.loadLoans();
+    this.loadData();
   }
 
   changePage(newPage: number): void {
     if (newPage < 0 || newPage >= this.totalPages) return;
     this.page = newPage;
-    this.loadLoans();
+    this.loadData();
   }
 
-  calculateTotalAmount(): void {
-    this.totalAmount = this.loans
-      .map(l => l.loanAmount || 0)
-      .reduce((a, b) => a + b, 0);
+  calculateTotal(): void {
+    this.totalAmount = this.disbursements
+      .reduce((sum, d) => sum + (d.disbursementAmount || 0), 0);
   }
 
-  getStatusClass(status: string): string {
-    switch (status) {
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('vi-VN').format(value);
+  }
+
+  getStatusClass(status?: string): string {
+    switch (status?.toUpperCase()) {
       case 'ACTIVE': return 'status-active';
-      case 'CLOSED': return 'status-closed';
+      case 'PAID_OFF':
+      case 'PAID': return 'status-closed';
       case 'OVERDUE': return 'status-overdue';
-      default: return '';
+      default: return 'status-default';
     }
   }
 
-  viewDetail(id: number): void {
-    console.log('View loan detail:', id);
-    // có thể navigate sang trang detail
-  }
-
-  goToCreate(): void {
-    console.log('Navigate create loan');
+  getStatusLabel(status?: string): string {
+    switch (status?.toUpperCase()) {
+      case 'ACTIVE': return 'Đang vay';
+      case 'PAID_OFF':
+      case 'PAID': return 'Đã tất toán';
+      case 'OVERDUE': return 'Quá hạn';
+      default: return status || '—';
+    }
   }
 }

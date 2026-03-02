@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminService } from '../../../service/admin.service';
+import { Role } from '../../../models/role.model';
 import { Employee, CreateEmployeeWithAccountRequest, UpdateEmployeeRequest } from '../../../models/employee.model';
 import Swal from 'sweetalert2';
 
@@ -15,9 +16,14 @@ import Swal from 'sweetalert2';
 export class EmployeeManagementComponent implements OnInit {
 
   employees: Employee[] = [];
-  filteredEmployees: Employee[] = [];
   isLoading = false;
   searchKeyword = '';
+
+  // Pagination
+  page = 0;
+  size = 10;
+  totalElements = 0;
+  totalPages = 0;
 
   // Modal state
   showModal = false;
@@ -26,7 +32,7 @@ export class EmployeeManagementComponent implements OnInit {
 
   employeeForm: FormGroup;
 
-  readonly ROLES = ['admin', 'manager', 'officer', 'manager_1'];
+  availableRoles: Role[] = [];
   readonly DEPARTMENTS = ['Phòng Tín dụng', 'Phòng Khách hàng', 'Phòng Kế toán', 'Phòng IT', 'Phòng Hành chính', 'Phòng Kiểm soát'];
 
   constructor(private adminService: AdminService, private fb: FormBuilder) {
@@ -48,14 +54,36 @@ export class EmployeeManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadEmployees();
+    this.loadRoles();
+  }
+
+  loadRoles(): void {
+    this.adminService.getRoles().subscribe({
+      next: (data) => {
+        this.availableRoles = data || [];
+      },
+      error: (err) => console.error('Không thể tải danh sách vai trò:', err)
+    });
   }
 
   loadEmployees(): void {
     this.isLoading = true;
-    this.adminService.getEmployees().subscribe({
-      next: (data) => {
-        this.employees = data;
-        this.filteredEmployees = data;
+    this.adminService.getEmployees(this.page, this.size, this.searchKeyword).subscribe({
+      next: (res: any) => {
+        // Hỗ trợ cả PageResponse và mảng trực tiếp
+        if (res && res.content) {
+          this.employees = res.content;
+          this.totalElements = res.totalElements;
+          this.totalPages = res.totalPages;
+        } else if (Array.isArray(res)) {
+          this.employees = res;
+          this.totalElements = res.length;
+          this.totalPages = Math.ceil(res.length / this.size) || 1;
+        } else {
+          this.employees = [];
+          this.totalElements = 0;
+          this.totalPages = 0;
+        }
         this.isLoading = false;
       },
       error: (err) => {
@@ -66,23 +94,21 @@ export class EmployeeManagementComponent implements OnInit {
   }
 
   onSearch(): void {
-    const kw = this.searchKeyword.toLowerCase().trim();
-    if (!kw) {
-      this.filteredEmployees = this.employees;
-    } else {
-      this.filteredEmployees = this.employees.filter(e =>
-        e.fullName?.toLowerCase().includes(kw) ||
-        e.employeeCode?.toLowerCase().includes(kw) ||
-        e.department?.toLowerCase().includes(kw) ||
-        e.email?.toLowerCase().includes(kw)
-      );
+    this.page = 0;
+    this.loadEmployees();
+  }
+
+  changePage(newPage: number): void {
+    if (newPage >= 0 && newPage < this.totalPages) {
+      this.page = newPage;
+      this.loadEmployees();
     }
   }
 
   openCreateModal(): void {
     this.isEditing = false;
     this.selectedEmployee = null;
-    this.employeeForm.reset({ status: 'ACTIVE', role: 'officer' });
+    this.employeeForm.reset({ status: 'ACTIVE', role: 'OFFICER' });
     // Enable tất cả fields khi tạo mới
     this.employeeForm.get('username')?.enable();
     this.employeeForm.get('password')?.enable();
@@ -104,7 +130,7 @@ export class EmployeeManagementComponent implements OnInit {
       status: emp.status || 'ACTIVE',
       username: emp.username,
       password: '••••••••',
-      role: emp.role || 'officer',
+      role: emp.role || 'OFFICER',
     });
     this.employeeForm.get('username')?.disable();
     this.employeeForm.get('password')?.disable();

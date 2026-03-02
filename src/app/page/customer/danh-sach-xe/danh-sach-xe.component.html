@@ -1,0 +1,140 @@
+<div class="page-container">
+
+    <!-- ===== PAGE BANNER ===== -->
+    <div class="page-banner">
+        <div class="banner-left">
+            <div class="banner-badge">
+                <i class="fa-solid fa-car"></i> Quản lý phương tiện
+            </div>
+            <h1 class="page-title">Danh sách phương tiện của tôi</h1>
+            <p class="page-subtitle">Xem và tra cứu thông tin chi tiết các phương tiện bạn đang sở hữu hoặc quản lý</p>
+        </div>
+        <div class="banner-right">
+            <!-- <button class="btn-create" (click)="exportExcel()">
+        <i class="fa-solid fa-file-excel"></i> Xuất Excel
+      </button> -->
+        </div>
+    </div>
+
+    <!-- ===== FILTER BAR ===== -->
+    <div class="filter-card">
+        <div class="filter-inner">
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-industry"></i> Hãng xe</label>
+                <select [(ngModel)]="manufacturer" class="filter-select">
+                    <option value="">-- Tất cả hãng --</option>
+                    <option value="VINFAST">VinFast</option>
+                    <option value="HYUNDAI">Hyundai</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-circle-info"></i> Trạng thái</label>
+                <select [(ngModel)]="status" class="filter-select">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="Giữ két">Giữ két</option>
+                    <option value="Giữ trong kho">Giữ trong kho</option>
+                    <option value="Đã trả khách hàng">Đã trả khách hàng</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-barcode"></i> Số khung</label>
+                <input type="text" placeholder="Nhập số khung..." [(ngModel)]="chassisNumber" class="filter-input"
+                    (keyup.enter)="search()" />
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-file-invoice"></i> Số REF bảo lãnh</label>
+                <input type="text" placeholder="Nhập số REF..." [(ngModel)]="ref" class="filter-input"
+                    (keyup.enter)="search()" />
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn-search" (click)="search()">
+                    <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
+                </button>
+                <button class="btn-reset" (click)="resetFilter()">
+                    <i class="fa-solid fa-rotate-left"></i> Đặt lại
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== LOADING ===== -->
+    <div class="state-box" *ngIf="loading">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu phương tiện...</p>
+    </div>
+
+    <!-- ===== TABLE ===== -->
+    <div class="table-card" *ngIf="!loading">
+        <div class="table-header">
+            <div class="table-title">
+                <i class="fa-solid fa-list-ul"></i> Danh sách phương tiện
+            </div>
+            <span class="record-count">{{ vehicles.length }} phương tiện</span>
+        </div>
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width:56px">STT</th>
+                        <th>Tên xe</th>
+                        <th>Số khung</th>
+                        <th>Số máy</th>
+                        <th class="text-right">Giá niêm yết</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th>Số REF Bảo lãnh</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="vehicles.length === 0">
+                        <td colspan="8">
+                            <div class="no-data-row">
+                                <i class="fa-solid fa-inbox"></i>
+                                <p>Chưa có phương tiện nào khớp với tìm kiếm của bạn.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngFor="let v of vehicles; let i = index" class="clickable-row" (click)="viewDetail(v.id)">
+                        <td class="text-center stt-cell">{{ page * size + i + 1 }}</td>
+                        <td class="font-bold">{{ v.vehicleName }}</td>
+                        <td class="code-cell">{{ v.chassisNumber }}</td>
+                        <td>{{ v.engineNumber }}</td>
+                        <td class="text-right amount-cell">{{ (v.price || 0) | number:'1.0-0' }} VNĐ</td>
+                        <td class="text-center">
+                            <span class="status-badge" [class.status-expired]="v.status === 'Giữ két'"
+                                [class.status-active]="v.status === 'Giữ trong kho'"
+                                [class.status-default]="v.status === 'Đã trả khách hàng'">
+                                {{ v.status }}
+                            </span>
+                        </td>
+                        <td>{{ v.ref || '—' }}</td>
+                        <td class="text-center">
+                            <button class="btn-view" (click)="viewDetail(v.id); $event.stopPropagation()">
+                                <i class="fa-solid fa-eye"></i> Chi tiết
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination-bar" *ngIf="totalPages > 1">
+            <span class="page-info">Trang {{ page + 1 }} / {{ totalPages }}</span>
+            <div class="page-actions">
+                <button class="page-btn" [disabled]="page === 0" (click)="changePage(page - 1)">
+                    <i class="fa-solid fa-chevron-left"></i> Trước
+                </button>
+                <span class="page-tag">{{ page + 1 }} / {{ totalPages }}</span>
+                <button class="page-btn" [disabled]="page + 1 >= totalPages" (click)="changePage(page + 1)">
+                    Sau <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>

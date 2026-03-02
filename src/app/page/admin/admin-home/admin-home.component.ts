@@ -30,17 +30,28 @@ export class AdminHomeComponent implements OnInit {
 
   loadQuickStats(): void {
     // Gọi API để lấy số liệu thực tế
-    this.adminService.getEmployees().subscribe(data => {
-      this.stats.totalEmployees = data.length;
-      this.stats.activeAccounts = data.filter(e => e.status === 'ACTIVE').length;
+    this.adminService.getEmployees().subscribe({
+      next: (data: any) => {
+        const content = data?.content || (Array.isArray(data) ? data : []);
+        this.stats.totalEmployees = content.length;
+        this.stats.activeAccounts = content.filter((e: any) => e.status === 'ACTIVE').length;
+      },
+      error: () => console.error('Không thể tải thống kê nhân viên')
     });
 
-    this.adminService.getCustomers().subscribe(data => {
-      this.stats.totalCustomers = data.length;
+    this.adminService.getCustomers().subscribe({
+      next: (data: any) => {
+        const content = data?.content || (Array.isArray(data) ? data : []);
+        this.stats.totalCustomers = content.length;
+      },
+      error: () => console.error('Không thể tải thống kê khách hàng')
     });
 
-    this.adminService.getRoles().subscribe(data => {
-      this.stats.totalRoles = data.length;
+    this.adminService.getRoles().subscribe({
+      next: (data) => {
+        this.stats.totalRoles = data?.length || 0;
+      },
+      error: () => console.error('Không thể tải thống kê vai trò')
     });
   }
 }

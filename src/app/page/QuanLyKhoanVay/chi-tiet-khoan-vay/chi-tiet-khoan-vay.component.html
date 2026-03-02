@@ -1,112 +1,167 @@
 <div class="page-container">
-
-  <div class="card">
-
-    <div class="card-header">
-      <button class="btn-back" (click)="goBack()">
-        <i class="fa-solid fa-angle-left"></i> Trở về
-      </button>
-      <div class="contract">
-        {{ loanForm.value.loanContractNumber }}
+  <!-- ===== PAGE HEADER ===== -->
+  <div class="page-banner">
+    <div class="banner-left">
+      <div class="banner-badge">
+        <i class="fa-solid fa-file-invoice-dollar"></i> Chi tiết đợt giải ngân
       </div>
-      <div class="manufacturer" [ngClass]="{
-       'status-active': loanForm.getRawValue().loanStatus === 'ACTIVE',
-       'status-closed': loanForm.getRawValue().loanStatus === 'CLOSED',
-       'status-overdue': loanForm.getRawValue().loanStatus === 'OVERDUE'
-     }">
-        {{ loanForm.getRawValue().loanStatus }}
-      </div>
+      <h1 class="page-title">{{ disbursement?.loanContractNumber || 'Chi tiết giải ngân' }}</h1>
+      <p class="page-subtitle">Quản lý và điều chỉnh thông tin giải ngân và các khoản vay đi kèm</p>
     </div>
-    <div class="section-title">Thông tin khoản vay</div>
-    <form [formGroup]="loanForm" class="card-body">
-
-      <div class="info">
-        <label>Số tài khoản</label>
-        <input formControlName="accountNumber" />
-      </div>
-      <div class="info">
-        <label>Doc_id</label>
-        <input formControlName="docId" />
-      </div>
-
-      <div class="info">
-        <label>Kỳ hạn vay (ngày)</label>
-        <input type="number" formControlName="loanTerm" />
-      </div>
-
-      <div class="info">
-        <label>Ngày vay</label>
-        <input type="date" formControlName="loanDate" />
-      </div>
-
-      <div class="info">
-        <label>Ngày đến hạn</label>
-        <input type="date" formControlName="dueDate" />
-      </div>
-
-      <div class="info">
-        <label>Số tiền vay</label>
-        <input type="number" formControlName="loanAmount" />
-      </div>
-
-      <div class="info full">
-        <label>Mục đích & TSĐB</label>
-        <textarea formControlName="collateralAndPurpose"></textarea>
-      </div>
-
-      <div class="info">
-        <label>Trạng thái</label>
-        <select formControlName="loanStatus">
-          <option value="ACTIVE">ACTIVE</option>
-          <option value="CLOSED">CLOSED</option>
-          <option value="OVERDUE">OVERDUE</option>
-        </select>
-      </div>
-
-    </form>
-    <!-- VEHICLE INFO -->
-    <div class="section-title">Thông tin xe đảm bảo</div>
-    <div class="vehicle-box" *ngIf="vehicle">
-      <div class="info">
-        <label>Tên xe</label>
-        <span>{{ vehicle.vehicleName }}</span>
-      </div>
-
-      <div class="info">
-        <label>Số khung</label>
-        <span>{{ vehicle.chassisNumber }}</span>
-      </div>
-
-      <div class="info">
-        <label>Số máy</label>
-        <span>{{ vehicle.engineNumber }}</span>
-      </div>
-
-      <div class="info">
-        <label>Màu sắc</label>
-        <span>{{ vehicle.color }}</span>
-      </div>
-
-      <div class="info">
-        <label>Số chỗ</label>
-        <span>{{ vehicle.seats }}</span>
-      </div>
-
-      <div class="info">
-        <label>Giá xe</label>
-        <span>{{ vehicle.price | number }}</span>
-      </div>
-    </div>
-
-    <div class="card-actions">
-      <button class="btn-back" (click)="goBack()">
-        <i class="fa-solid fa-angle-left"></i> Trở về
-      </button>
-      <button class="btn-primary" (click)="save()" [disabled]="loading">
-        Lưu thay đổi
+    <div class="banner-right">
+      <button class="btn-back-main" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
       </button>
     </div>
-
   </div>
 
+  <div class="state-box" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <div class="content-wrapper" *ngIf="!loading && disbursement">
+    <!-- ===== DISBURSEMENT INFO SECTION ===== -->
+    <div class="detail-card">
+      <div class="card-header-styled">
+        <div class="header-icon"><i class="fa-solid fa-circle-info"></i></div>
+        <h3>Thông tin đợt giải ngân</h3>
+        <div class="status-wrap">
+          <span class="status-badge" [ngClass]="getStatusClass(disbursementForm.get('status')?.value)">
+            {{ getStatusLabel(disbursementForm.get('status')?.value) }}
+          </span>
+        </div>
+      </div>
+
+      <form [formGroup]="disbursementForm" class="card-body-grid">
+        <div class="form-section">
+          <div class="form-group">
+            <label class="form-label">Số HĐTD chi tiết</label>
+            <input formControlName="loanContractNumber" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ngày giải ngân</label>
+            <input type="date" formControlName="disbursementDate" class="form-input" />
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-group">
+            <label class="form-label">Kỳ hạn vay (ngày)</label>
+            <input type="number" formControlName="loanTerm" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Lãi suất (%)</label>
+            <input type="number" formControlName="interestRate" class="form-input" step="0.1" />
+          </div>
+        </div>
+        <div class="form-section full-width text-right">
+          <button class="btn-save" (click)="saveDisbursement()">
+            <i class="fa-solid fa-floppy-disk"></i> Lưu thông tin chung
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ===== LOANS LIST SECTION ===== -->
+    <div class="detail-card">
+      <div class="card-header-styled teal-header">
+        <div class="header-icon"><i class="fa-solid fa-list-ul"></i></div>
+        <h3>Danh sách các khoản vay chi tiết</h3>
+        <div class="count-wrap">
+          <span class="count-badge">Tổng: {{ disbursement.loans?.length || 0 }} xe</span>
+          <span class="count-badge success-badge">Đã tất toán: {{ disbursement.withdrawnVehiclesCount || 0 }} xe</span>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="inner-table">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Xe</th>
+              <th>Số tài khoản</th>
+              <th>Số tiền vay</th>
+              <th class="text-center">Ngày vay</th>
+              <th class="text-center">Đến hạn</th>
+              <th class="text-center">Trạng thái</th>
+              <th class="text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let loan of disbursement.loans; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>
+                <div class="font-bold">{{ loan.vehicleDTO?.vehicleName }}</div>
+                <div class="sub-text">{{ loan.vehicleDTO?.chassisNumber }}</div>
+              </td>
+              <td class="code-cell">{{ loan.accountNumber || '—' }}</td>
+              <td class="amount-cell">{{ loan.loanAmount | number }} VNĐ</td>
+              <td class="text-center">{{ loan.loanDate | date:'dd/MM/yyyy' }}</td>
+              <td class="text-center">{{ loan.dueDate | date:'dd/MM/yyyy' }}</td>
+              <td class="text-center">
+                <span class="status-badge" [ngClass]="getStatusClass(loan.loanStatus)">
+                  {{ getStatusLabel(loan.loanStatus) }}
+                </span>
+              </td>
+              <td class="text-center">
+                <button class="btn-edit-row" (click)="openEditLoan(loan)">
+                  <i class="fa-solid fa-pen-to-square"></i> Sửa
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LOAN EDIT MODAL ===== -->
+  <div class="modal-overlay" *ngIf="showLoanModal" (click)="closeLoanModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-pen-to-square"></i> Cập nhật khoản vay</h3>
+        <button class="btn-close" (click)="closeLoanModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" [formGroup]="loanEditForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Số tài khoản vay</label>
+            <input formControlName="accountNumber" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Số tiền vay (VNĐ)</label>
+            <input type="number" formControlName="loanAmount" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ngày vay</label>
+            <input type="date" formControlName="loanDate" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Đến hạn</label>
+            <input type="date" formControlName="dueDate" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Doc_id</label>
+            <input formControlName="docId" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Trạng thái</label>
+            <select formControlName="loanStatus" class="form-select">
+              <option value="ACTIVE">Đang vay</option>
+              <option value="PAID_OFF">Đã tất toán</option>
+              <option value="OVERDUE">Quá hạn</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Mục đích & TSĐB</label>
+            <textarea formControlName="collateralAndPurpose" class="form-textarea"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeLoanModal()">Hủy</button>
+        <button class="btn-save" (click)="saveLoan()">Lưu khoản vay</button>
+      </div>
+    </div>
+  </div>
 </div>

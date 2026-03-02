@@ -1,341 +1,535 @@
+/* ============================================================
+   CHI TIẾT KHOẢN VAY – UNIFIED TEAL THEME
+   (Refined for Admin/Manager view)
+   ============================================================ */
+
+:host {
+  display: block;
+  font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+  color: #1f2937;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== PAGE CONTAINER ===== */
 .page-container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
+  width: 100%;
+  animation: fadeIn 0.5s ease-out;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.card {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 10px 26px rgba(0,0,0,0.06);
-}
-
-.card-header {
+/* ===== PAGE BANNER ===== */
+.page-banner {
+  background: linear-gradient(135deg, #006b68 0%, #01a59e 60%, #00cec7 100%);
+  border-radius: 22px;
+  padding: 30px 40px;
+  margin-bottom: 24px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  align-items: center;
+  color: white;
+  box-shadow: 0 12px 32px rgba(2, 139, 137, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
-.contract {
+.banner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 5px 14px;
+  border-radius: 30px;
+  font-size: 12px;
   font-weight: 600;
-  font-size: 18px;
+  letter-spacing: 0.4px;
+  margin-bottom: 10px;
 }
 
-.manufacturer {
-  background: #02949320;
-  color: #029493;
-  padding: 4px 12px;
-  border-radius: 999px;
+.page-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 6px;
 }
 
-.card-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.page-subtitle {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.btn-back-main {
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-back-main:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateX(-3px);
+}
+
+/* ===== CONTENT LAYOUT ===== */
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detail-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0f0f0;
+  overflow: hidden;
+}
+
+.card-header-styled {
+  padding: 20px 24px;
+  background: #f0fdfc;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
   gap: 16px;
 }
 
-.info {
-  display: flex;
-  flex-direction: column;
+.card-header-styled.teal-header {
+  background: #f0fdfa;
 }
 
-.info.full {
+.header-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #028B89, #006b68);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+}
+
+.card-header-styled h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.card-header-styled p {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 2px 0 0;
+}
+
+.status-wrap {
+  margin-left: auto;
+}
+
+/* ===== FORM STYLING ===== */
+.card-body-grid {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-section.full-width {
   grid-column: 1 / -1;
 }
 
-input, select, textarea {
-  height: 36px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-}
-
-textarea {
-  height: 80px;
-}
-
-.card-actions {
-  margin-top: 20px;
+.form-group {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 7px;
 }
 
-.btn-primary {
-  height: 36px;
-  padding: 0 20px;
-  border-radius: 10px;
-  background: #029493;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-/* =========================
-   VEHICLE BOX
-========================= */
-.vehicle-box {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 14px;
-  background: #f8fdfd;
-  border-radius: 12px;
-  border: 1px solid #d9f0ee;
-}
-
-.vehicle-box .info label {
-  display: block;
-  font-size: 12px;
-  color: #6b7280;
-  margin-bottom: 2px;
-}
-
-.vehicle-box .info span {
-  font-size: 14px;
-  font-weight: 500;
-  color: #111827;
-}
-
-/* FORM INPUT STYLE MATCH LIST */
-.card-body input,
-.card-body select,
-.card-body textarea {
-  height: 36px;
-  padding: 0 10px;
-  border-radius: 10px;
-  border: 1px solid #cfe8e6;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.card-body textarea {
-  height: 70px;
-  padding: 8px 10px;
-  resize: none;
-}
-
-.card-body input:focus,
-.card-body select:focus,
-.card-body textarea:focus {
-  outline: none;
-  border-color: #029493;
-  box-shadow: 0 0 0 2px rgba(2, 148, 147, 0.15);
-}
-
-/* FULL WIDTH */
-.info.full {
-  grid-column: span 2;
-}
-/* =========================
-   HEADER IMPROVE
-========================= */
-.card-header {
-  padding-bottom: 14px;
-  border-bottom: 1px solid #eef2f7;
-}
-
-.contract {
+.form-label {
+  font-size: 12.5px;
   font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 0.3px;
-  color: #111827;
+  color: #546e7a;
+  display: block;
 }
 
-/* =========================
-   STATUS COLORS
-========================= */
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  font-size: 14px;
+  transition: all 0.2s;
+  background: #fafcfc;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #028B89;
+  box-shadow: 0 0 0 3px rgba(2, 139, 137, 0.08);
+  background: white;
+}
+
+.form-input.read-only {
+  background: #f8fafc;
+  border-color: #f1f5f9;
+  color: #475569;
+  cursor: default;
+}
+
+.amount-input {
+  color: #028B89;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.amount-paid-input {
+  color: #059669;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.hint {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* ===== VEHICLE INFO GRID ===== */
+.vehicle-info-grid {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.v-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.v-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.v-val {
+  font-size: 15px;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.code-font {
+  font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+  color: #0d9488;
+}
+
+.price-text {
+  color: #d97706;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* ===== STATUS BADGES ===== */
+.status-badge {
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .status-active {
-  background: rgba(34,197,94,0.15);
-  color: #15803d;
+  background: #d1fae5;
+  color: #065f46;
 }
 
 .status-closed {
-  background: rgba(239,68,68,0.15);
-  color: #b91c1c;
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .status-overdue {
-  background: rgba(245,158,11,0.18);
-  color: #b45309;
+  background: #fee2e2;
+  color: #991b1b;
 }
 
-/* =========================
-   SECTION TITLE
-========================= */
-.section-title {
-  margin: 22px 0 12px 0;
-  font-weight: 600;
-  font-size: 15px;
-  color: #029493;
-  position: relative;
-  padding-left: 14px;
+.status-default {
+  background: #f1f5f9;
+  color: #64748b;
 }
 
-.section-title::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 4px;
-  height: 14px;
-  width: 4px;
-  background: #029493;
-  border-radius: 4px;
-}
-
-/* =========================
-   VEHICLE BOX IMPROVE
-========================= */
-.vehicle-box {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* ===== FOOTER ACTIONS ===== */
+.page-footer-actions {
+  display: flex;
+  justify-content: flex-end;
   gap: 16px;
-  margin-bottom: 16px;
-  padding: 18px;
-  background: linear-gradient(145deg, #f8fdfd, #f1fbfb);
-  border-radius: 14px;
-  border: 1px solid #d9f0ee;
-  box-shadow: 0 6px 16px rgba(2, 148, 147, 0.08);
+  padding: 10px 0 40px;
 }
 
-/* nổi bật giá xe */
-.vehicle-box .info:nth-child(6) span {
-  font-size: 16px;
-  font-weight: 700;
-  color: #029493;
-}
-
-/* =========================
-   INPUT HOVER EFFECT
-========================= */
-.card-body input:hover,
-.card-body select:hover,
-.card-body textarea:hover {
-  border-color: #029493;
-}
-
-/* =========================
-   SAVE BUTTON IMPROVE
-========================= */
-.btn-primary {
-  height: 40px;
-  padding: 0 26px;
+.btn-cancel {
+  padding: 12px 24px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #029493, #027f7a);
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  transition: all 0.25s ease;
-  box-shadow: 0 8px 18px rgba(2, 148, 147, 0.25);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 28px rgba(2, 148, 147, 0.35);
-}
-
-.btn-primary:active {
-  transform: scale(0.96);
-}
-
-/* =========================
-   CARD POLISH
-========================= */
-.card {
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 24px;
-  box-shadow: 0 16px 40px rgba(2, 148, 147, 0.12);
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  box-shadow: 0 20px 50px rgba(2, 148, 147, 0.18);
-}
-
-/* =========================
-   LABEL STYLE IMPROVE
-========================= */
-.info label {
-  font-size: 12px;
-  font-weight: 500;
-  color: #6b7280;
-  margin-bottom: 4px;
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-@media (max-width: 768px) {
-  .card-body,
-  .vehicle-box {
-    grid-template-columns: 1fr;
-  }
-
-  .info.full {
-    grid-column: span 1;
-  }
-}
-.contract {
-  font-weight: 600;
-  font-size: 18px;
-  color: #111827;
-
-  padding-bottom: 6px;
-  border-bottom: 3px solid #029493;
-}
-.btn-back {
-  background: transparent;
-  border: 1px solid #d1d5db;
-  padding: 6px 14px;
-  border-radius: 10px;
-  font-size: 14px;
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  color: #64748b;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
 }
 
-.btn-back:hover {
-  background: #f3f4f6;
-  border-color: #029493;
-  color: #029493;
+.btn-cancel:hover {
+  background: #f8fafc;
+  color: #1f2937;
 }
-.card-actions {
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
 
+.btn-save {
+  padding: 12px 30px;
+  border-radius: 12px;
+  background: #028B89;
+  border: none;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(2, 139, 137, 0.2);
+}
+
+.btn-save:hover {
+  background: #006b68;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(2, 139, 137, 0.3);
+}
+
+/* ===== STATE BOX (Loading) ===== */
+.state-box {
+  background: white;
+  border-radius: 18px;
+  padding: 60px 20px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.state-box .spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(2, 139, 137, 0.15);
+  border-top-color: #028B89;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== INNER TABLE STYLING ===== */
+.table-responsive {
+  padding: 0 24px 24px;
+}
+
+.inner-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.inner-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-bottom: 2px solid #edf2f7;
+  color: #4b5563;
+  font-weight: 700;
+}
+
+.inner-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #374151;
+}
+
+.sub-text {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.count-badge {
+  background: #028B89;
+  color: white;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.count-wrap {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.success-badge {
+  background: #ecfdf5 !important;
+  color: #059669 !important;
+  border: 1px solid #10b981 !important;
+}
+
+.btn-edit-row {
+  background: #f0fdfa;
+  color: #0d9488;
+  border: 1px solid #99f6e4;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-edit-row:hover {
+  background: #ccfbf1;
+  border-color: #5eead4;
+}
+
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-panel {
+  background: white;
+  width: 100%;
+  max-width: 800px;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalPop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  padding: 20px 30px;
+  border-bottom: 1px solid #f1f5f9;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* Back button nhẹ hơn */
-.btn-back {
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  padding: 8px 18px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.modal-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 18px;
+  color: #1f2937;
 }
 
-.btn-back:hover {
-  background: #e5e7eb;
-}
-
-/* Primary nổi bật hơn */
-.btn-primary {
-  height: 38px;
-  padding: 0 22px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #029493, #017a79);
-  color: white;
+.btn-close {
+  background: none;
   border: none;
-  font-weight: 600;
+  font-size: 20px;
+  color: #94a3b8;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.btn-primary:hover {
-  box-shadow: 0 6px 16px rgba(2, 148, 147, 0.25);
-  transform: translateY(-1px);
+.modal-body {
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.modal-footer {
+  padding: 20px 30px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }

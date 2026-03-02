@@ -1,245 +1,267 @@
-<!-- ===== CUSTOMER MANAGEMENT PAGE ===== -->
-<div class="admin-page">
+<div class="page-container">
 
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="page-header-left">
-            <div class="page-icon">
-                <i class="fa-solid fa-building-user"></i>
+    <!-- ===== PAGE BANNER ===== -->
+    <div class="page-banner">
+        <div class="banner-left">
+            <div class="banner-badge">
+                <i class="fa-solid fa-address-book"></i> Quản trị hệ thống
             </div>
-            <div>
-                <h1 class="page-title">Quản lý Khách hàng</h1>
-                <p class="page-subtitle">Quản lý thông tin khách hàng cá nhân và doanh nghiệp</p>
-            </div>
+            <h1 class="page-title">Quản lý Khách hàng</h1>
+            <p class="page-subtitle">Quản lý danh sách khách hàng doanh nghiệp và cá nhân trên hệ thống</p>
         </div>
-        <button class="btn-primary" (click)="openCreateModal()">
-            <i class="fa-solid fa-user-plus"></i>
-            Thêm khách hàng
-        </button>
-    </div>
-
-    <!-- Stats -->
-    <div class="stats-row">
-        <div class="stat-card">
-            <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
-            <div class="stat-info">
-                <span class="stat-number">{{ customers.length }}</span>
-                <span class="stat-label">Tổng khách hàng</span>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon green"><i class="fa-solid fa-person"></i></div>
-            <div class="stat-info">
-                <span class="stat-number">{{ getCountByType('INDIVIDUAL') }}</span>
-                <span class="stat-label">Khách hàng cá nhân</span>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon orange"><i class="fa-solid fa-building"></i></div>
-            <div class="stat-info">
-                <span class="stat-number">{{ getCountByType('ENTERPRISE') }}</span>
-                <span class="stat-label">Doanh nghiệp</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toolbar -->
-    <div class="toolbar">
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Tìm theo tên, CIF, số điện thoại, MST..." [(ngModel)]="searchKeyword"
-                (input)="onSearch()" />
-            <button *ngIf="searchKeyword" class="clear-search" (click)="searchKeyword=''; onSearch()">
-                <i class="fa-solid fa-xmark"></i>
+        <div class="banner-right">
+            <button class="btn-create" (click)="openCreateModal()">
+                <i class="fa-solid fa-user-plus"></i> Thêm khách hàng mới
             </button>
         </div>
-        <span class="result-count">{{ filteredCustomers.length }} kết quả</span>
     </div>
 
-    <!-- Table -->
-    <div class="table-card">
-        <div *ngIf="isLoading" class="loading-container">
-            <div class="skeleton-row" *ngFor="let i of [1,2,3,4,5]">
-                <div class="skeleton-cell w-80"></div>
-                <div class="skeleton-cell w-150"></div>
-                <div class="skeleton-cell w-120"></div>
-                <div class="skeleton-cell w-130"></div>
-                <div class="skeleton-cell w-150"></div>
-                <div class="skeleton-cell w-100"></div>
+    <!-- ===== STATS ROW ===== -->
+    <div class="stats-row" *ngIf="!isLoading">
+        <div class="stat-pill blue">
+            <i class="fa-solid fa-users"></i>
+            <div>
+                <span class="pill-value">{{ totalElements || 0 }}</span>
+                <span class="pill-label">Tổng khách hàng</span>
             </div>
         </div>
+        <div class="stat-pill purple">
+            <i class="fa-solid fa-building"></i>
+            <div>
+                <span class="pill-value">{{ getCountByType('ENTERPRISE') }}</span>
+                <span class="pill-label">Doanh nghiệp</span>
+            </div>
+        </div>
+        <div class="stat-pill green">
+            <i class="fa-solid fa-user-tag"></i>
+            <div>
+                <span class="pill-value">{{ getCountByType('INDIVIDUAL') }}</span>
+                <span class="pill-label">Cá nhân</span>
+            </div>
+        </div>
+        <div class="stat-pill orange">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>
+                <span class="pill-value">{{ totalElements }}</span>
+                <span class="pill-label">Đang hoạt động</span>
+            </div>
+        </div>
+    </div>
 
-        <div *ngIf="!isLoading && filteredCustomers.length === 0" class="empty-state">
-            <i class="fa-regular fa-folder-open"></i>
-            <p>Không tìm thấy khách hàng nào</p>
+    <!-- ===== FILTER & SEARCH ===== -->
+    <div class="filter-card">
+        <div class="filter-inner">
+            <div class="filter-group search-group">
+                <label class="filter-label"><i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm khách hàng</label>
+                <div class="search-input-wrapper">
+                    <input type="text" placeholder="Tìm theo tên, CIF, email, mã số thuế..." [(ngModel)]="searchKeyword"
+                        (keyup.enter)="onSearch()" class="filter-input" />
+                    <button class="btn-inline-search" (click)="onSearch()">Tìm kiếm</button>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="btn-reset" (click)="searchKeyword=''; onSearch()">
+                    <i class="fa-solid fa-rotate-left"></i> Làm mới
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== LOADING ===== -->
+    <div class="state-box" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Đang tải danh sách khách hàng...</p>
+    </div>
+
+    <!-- ===== TABLE CARD ===== -->
+    <div class="table-card" *ngIf="!isLoading">
+        <div class="table-header">
+            <div class="table-title">
+                <i class="fa-solid fa-list-ul"></i> Danh sách thông tin khách hàng
+            </div>
+            <span class="record-count">{{ totalElements }} khách hàng</span>
         </div>
 
-        <table *ngIf="!isLoading && filteredCustomers.length > 0" class="data-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>CIF</th>
-                    <th>Tên khách hàng</th>
-                    <th>Loại KH</th>
-                    <th>Điện thoại</th>
-                    <th>Email</th>
-                    <th>Mã số thuế</th>
-                    <th>Người đại diện</th>
-                    <th class="text-center">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let c of filteredCustomers; let i = index">
-                    <td class="index-cell">{{ i + 1 }}</td>
-                    <td><span class="cif-code">{{ c.cif || '—' }}</span></td>
-                    <td>
-                        <div class="customer-cell">
-                            <div class="avatar-sm" [class.enterprise]="c.customerType === 'ENTERPRISE'">
-                                <i class="fa-solid" [class.fa-person]="c.customerType !== 'ENTERPRISE'"
-                                    [class.fa-building]="c.customerType === 'ENTERPRISE'"></i>
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width:50px">STT</th>
+                        <th>Khách hàng</th>
+                        <th>Mã CIF</th>
+                        <th>Loại</th>
+                        <th>Liên hệ</th>
+                        <th>Mã số thuế / GPKD</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let c of customers; let i = index">
+                        <td class="text-center stt-cell">{{ i + 1 + page * size }}</td>
+                        <td>
+                            <div class="user-info">
+                                <div class="avatar-circle" [class.enterprise]="c.customerType === 'ENTERPRISE'">
+                                    <i class="fa-solid" [class.fa-building]="c.customerType === 'ENTERPRISE'"
+                                        [class.fa-user]="c.customerType !== 'ENTERPRISE'"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">{{ c.customerName || '—' }}</div>
+                                    <small class="text-muted" *ngIf="c.representativeName">ĐD: {{ c.representativeName
+                                        }}</small>
+                                </div>
                             </div>
-                            <span class="customer-name">{{ c.customerName || '—' }}</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="type-badge" [ngClass]="getTypeBadge(c.customerType).cssClass">
-                            {{ getTypeBadge(c.customerType).label }}
-                        </span>
-                    </td>
-                    <td class="text-muted">{{ c.phone || '—' }}</td>
-                    <td class="text-muted">{{ c.email || '—' }}</td>
-                    <td class="text-muted">{{ c.taxCode || '—' }}</td>
-                    <td>
-                        <span *ngIf="c.representativeName">
-                            {{ c.representativeName }}
-                            <small class="text-muted">({{ c.representativeTitle }})</small>
-                        </span>
-                        <span *ngIf="!c.representativeName" class="text-muted">—</span>
-                    </td>
-                    <td class="actions-cell">
-                        <button class="btn-icon btn-edit" title="Chỉnh sửa" (click)="openEditModal(c)">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn-icon btn-delete" title="Xóa" (click)="onDelete(c)">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        </td>
+                        <td><span class="cif-badge">{{ c.cif || '—' }}</span></td>
+                        <td>
+                            <span class="type-badge" [ngClass]="getTypeBadge(c.customerType).cssClass">
+                                {{ getTypeBadge(c.customerType).label }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="contact-info">
+                                <div><i class="fa-solid fa-phone-flip"></i> {{ c.phone || '—' }}</div>
+                                <div class="text-muted"><i class="fa-regular fa-envelope"></i> {{ c.email || '—' }}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="tax-info">
+                                <div>{{ c.taxCode || '—' }}</div>
+                                <small class="text-muted">{{ c.businessRegistrationNo || '' }}</small>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="status-badge active" *ngIf="c.status === 'ACTIVE'">Hoạt động</span>
+                            <span class="status-badge inactive" *ngIf="c.status !== 'ACTIVE'">Vô hiệu</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="action-buttons">
+                                <button class="btn-action edit" (click)="openEditModal(c)" title="Chỉnh sửa">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn-action delete" (click)="onDelete(c)" title="Xóa">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="customers.length === 0">
+                        <td colspan="8">
+                            <div class="no-data-row">
+                                <i class="fa-solid fa-user-slash"></i>
+                                <p>Không tìm thấy khách hàng nào khớp với tìm kiếm.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ===== PAGINATION ===== -->
+        <div class="pagination-bar" *ngIf="totalPages > 1">
+            <span class="page-info">Trang {{ page + 1 }} / {{ totalPages }}</span>
+            <div class="page-actions">
+                <button class="page-btn" [disabled]="page === 0" (click)="changePage(page - 1)">
+                    <i class="fa-solid fa-chevron-left"></i> Trước
+                </button>
+                <span class="page-tag">{{ page + 1 }}</span>
+                <button class="page-btn" [disabled]="page + 1 >= totalPages" (click)="changePage(page + 1)">
+                    Sau <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
     </div>
+
 </div>
 
-<!-- ===== MODAL THÊM / SỬA KHÁCH HÀNG ===== -->
+<!-- ===== MODAL THÊM / SỬA ===== -->
 <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
-    <div class="modal-panel modal-wide" (click)="$event.stopPropagation()">
-
-        <div class="modal-header">
-            <div class="modal-title-group">
-                <div class="modal-icon">
-                    <i class="fa-solid fa-building-user"></i>
-                </div>
-                <div>
-                    <h2>{{ isEditing ? 'Chỉnh sửa khách hàng' : 'Thêm khách hàng mới' }}</h2>
-                    <p>{{ isEditing ? 'Cập nhật thông tin khách hàng' : 'Điền đầy đủ thông tin bên dưới' }}</p>
-                </div>
+    <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header-teal">
+            <div class="header-icon">
+                <i class="fa-solid" [class.fa-user-plus]="!isEditing" [class.fa-user-pen]="isEditing"></i>
             </div>
-            <button class="modal-close" (click)="closeModal()">
+            <div class="header-text">
+                <h3>{{ isEditing ? 'Cập nhật khách hàng' : 'Thêm khách hàng mới' }}</h3>
+                <p>{{ isEditing ? 'Chỉnh sửa thông tin hồ sơ khách hàng' : 'Tạo mới hồ sơ khách hàng doanh nghiệp hoặc
+                    cá nhân' }}</p>
+            </div>
+            <button class="btn-close-modal" (click)="closeModal()">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
-        <form [formGroup]="customerForm" (ngSubmit)="onSubmit()" class="modal-body">
+        <form [formGroup]="customerForm" (ngSubmit)="onSubmit()" class="modal-body-scroll">
 
-            <!-- Thông tin cơ bản -->
-            <div class="form-section">
-                <div class="section-header">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span>Thông tin cơ bản</span>
+            <div class="form-section-title">Thông tin cơ bản</div>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label class="form-label">Tên khách hàng <span class="required">*</span></label>
+                    <input type="text" formControlName="customerName" class="form-input"
+                        placeholder="Nhập tên khách hàng" />
                 </div>
-                <div class="form-grid">
-                    <div class="form-group span-2">
-                        <label>Tên khách hàng <span class="required">*</span></label>
-                        <input type="text" formControlName="customerName"
-                            placeholder="Nguyễn Văn A hoặc Công ty TNHH XYZ" class="form-control"
-                            [class.is-invalid]="customerForm.get('customerName')?.invalid && customerForm.get('customerName')?.touched" />
-                        <div class="invalid-feedback"
-                            *ngIf="customerForm.get('customerName')?.errors?.['required'] && customerForm.get('customerName')?.touched">
-                            Vui lòng nhập tên khách hàng
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Loại khách hàng <span class="required">*</span></label>
-                        <select formControlName="customerType" class="form-control">
-                            <option *ngFor="let t of CUSTOMER_TYPES" [value]="t.value">{{ t.label }}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Mã CIF</label>
-                        <input type="text" formControlName="cif" placeholder="Mã CIF ngân hàng" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Số điện thoại</label>
-                        <input type="text" formControlName="phone" placeholder="0912345678" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" formControlName="email" placeholder="email@example.com" class="form-control"
-                            [class.is-invalid]="customerForm.get('email')?.errors?.['email'] && customerForm.get('email')?.touched" />
-                        <div class="invalid-feedback">Email không hợp lệ</div>
-                    </div>
-                    <div class="form-group span-2">
-                        <label>Địa chỉ</label>
-                        <input type="text" formControlName="address"
-                            placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" class="form-control" />
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Loại khách hàng <span class="required">*</span></label>
+                    <select formControlName="customerType" class="form-select">
+                        <option *ngFor="let t of CUSTOMER_TYPES" [value]="t.value">{{ t.label }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mã CIF</label>
+                    <input type="text" formControlName="cif" class="form-input" placeholder="Nhập mã CIF" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" formControlName="email" class="form-input" placeholder="email@example.com" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" formControlName="phone" class="form-input" placeholder="Nhập số điện thoại" />
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">Địa chỉ</label>
+                    <input type="text" formControlName="address" class="form-input"
+                        placeholder="Nhập địa chỉ chi tiết" />
                 </div>
             </div>
 
-            <!-- Thông tin pháp lý -->
-            <div class="form-section">
-                <div class="section-header">
-                    <i class="fa-solid fa-scale-balanced"></i>
-                    <span>Pháp lý & Tài chính</span>
+            <div class="form-section-title mt-4">Thông tin pháp lý & Ngân hàng</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Mã số thuế</label>
+                    <input type="text" formControlName="taxCode" class="form-input" placeholder="Nhập mã số thuế" />
                 </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Mã số thuế</label>
-                        <input type="text" formControlName="taxCode" placeholder="0123456789" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Số ĐKKD</label>
-                        <input type="text" formControlName="businessRegistrationNo" placeholder="Giấy phép kinh doanh"
-                            class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Tên người đại diện</label>
-                        <input type="text" formControlName="representativeName" placeholder="Họ và tên"
-                            class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Chức danh đại diện</label>
-                        <input type="text" formControlName="representativeTitle" placeholder="Giám đốc, TGĐ..."
-                            class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Số tài khoản ngân hàng</label>
-                        <input type="text" formControlName="bankAccountNo" placeholder="01201xxxx"
-                            class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Tên ngân hàng</label>
-                        <input type="text" formControlName="bankName" placeholder="BIDV, Vietcombank..."
-                            class="form-control" />
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Số GPKD</label>
+                    <input type="text" formControlName="businessRegistrationNo" class="form-input"
+                        placeholder="Số giấy phép kinh doanh" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Người đại diện</label>
+                    <input type="text" formControlName="representativeName" class="form-input"
+                        placeholder="Họ tên người đại diện" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Chức vụ đại diện</label>
+                    <input type="text" formControlName="representativeTitle" class="form-input"
+                        placeholder="VD: Giám đốc" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Số tài khoản ngân hàng</label>
+                    <input type="text" formControlName="bankAccountNo" class="form-input" placeholder="Số tài khoản" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tên ngân hàng</label>
+                    <input type="text" formControlName="bankName" class="form-input"
+                        placeholder="VD: BIDV - CN Đông Hà Nội" />
                 </div>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" (click)="closeModal()">Hủy</button>
-                <button type="submit" class="btn-submit">
-                    <i class="fa-solid fa-check"></i>
-                    {{ isEditing ? 'Lưu thay đổi' : 'Thêm khách hàng' }}
+            <div class="modal-footer-actions">
+                <button type="button" class="btn-modal-cancel" (click)="closeModal()">Hủy bỏ</button>
+                <button type="submit" class="btn-modal-submit" [disabled]="customerForm.invalid">
+                    <i class="fa-solid fa-floppy-disk"></i> {{ isEditing ? 'Lưu thay đổi' : 'Thêm khách hàng' }}
                 </button>
             </div>
         </form>
