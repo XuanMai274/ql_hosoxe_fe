@@ -327,7 +327,7 @@
               <tr>
                 <th style="width:44px">STT</th>
                 <th>Loại xe <span class="required">*</span></th>
-                <th>Màu xe <span class="required">*</span></th>
+                <th>Màu xe <span ></span></th>
                 <th>Số khung</th>
                 <th>Số đơn đề nghị</th>
                 <th>NPP xác nhận</th>
@@ -345,7 +345,7 @@
                 <td class="text-center">{{ i + 1 }}</td>
                 <td><input type="text" class="td-input" [class.invalid]="isRowInvalid(i, 'loaiXe')"
                     formControlName="loaiXe" placeholder="VF 3 PLUS" /></td>
-                <td><input type="text" class="td-input" [class.invalid]="isRowInvalid(i, 'mauXe')"
+                <td><input type="text" class="td-input" 
                     formControlName="mauXe" placeholder="TRẮNG" /></td>
                 <td><input type="text" class="td-input" formControlName="soKhung" placeholder="Số khung" /></td>
                 <td><input type="text" class="td-input" formControlName="soDonHang" placeholder="Số đơn" /></td>

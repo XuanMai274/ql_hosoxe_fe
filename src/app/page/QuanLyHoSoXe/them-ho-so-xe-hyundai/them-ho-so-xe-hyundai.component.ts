@@ -68,7 +68,8 @@ export class ThemHoSoXeHyundaiComponent {
   globalTotalVehicles: number = 0;
   globalTotalAmount: number = 0;
   vatPercent: number = 10;
-
+  manufacturer?: Manufacturer;
+  code: string = 'HYUNDAI';
   /* ================= GUARANTEE DATA ================= */
   availableGuarantees: any[] = [];
 
@@ -87,6 +88,20 @@ export class ThemHoSoXeHyundaiComponent {
 
   ngOnInit(): void {
     this.loadHyundaiBrand();
+    this.loadManufacturer()
+  }
+  loadManufacturer() {
+    if (!this.code) return;
+
+    this.manufacturerService.getByCode(this.code).subscribe({
+      next: (res) => {
+        this.manufacturer = res;
+      },
+      error: (err) => {
+        console.error('Không tìm thấy hãng:', err);
+        this.manufacturer = undefined;
+      }
+    });
   }
 
   loadHyundaiBrand(): void {
@@ -521,7 +536,7 @@ export class ThemHoSoXeHyundaiComponent {
               id: guarantee.id
             },
             manufacturerDTO: {
-              id: 1
+              id: this.manufacturer?.id
             }
           }))
         };

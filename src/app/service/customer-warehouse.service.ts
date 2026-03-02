@@ -6,6 +6,9 @@ import { PageResponse } from '../models/page-response';
 import { LoanDTO } from '../models/loan.model';
 import { Vehicle } from '../models/vehicle';
 import { WarehouseExportDTO } from '../models/warehouseExport.model';
+import { DisbursementDTO } from '../models/disbursement.model';
+import { DisbursementExportRequest } from '../models/disbursement-export-request';
+import { ExportPNKRequest } from '../models/exportPNK-request';
 
 @Injectable({
     providedIn: 'root'
@@ -74,5 +77,36 @@ export class CustomerWarehouseService {
      */
     requestExport(dto: WarehouseExportDTO): Observable<WarehouseExportDTO> {
         return this.http.post<WarehouseExportDTO>(`${this.BASE_URL}/warehouse-export/request`, dto);
+    }
+    // xuất file 
+    //API export file zip
+    exportSpecific(dto: WarehouseExportDTO): Observable<Blob> {
+        return this.http.post(
+            `${this.BASE_URL}/export-specific`,
+            dto,
+            {
+                responseType: 'blob'
+            }
+        );
+    }
+
+    // xuất bộ hồ sơ giải ngân của khách hàng
+    exportSpecificGN(
+        request: DisbursementExportRequest
+    ): Observable<Blob> {
+
+        return this.http.post(
+            `${this.BASE_URL}/disbursements/export-specific`,
+            request,
+            { responseType: 'blob' }
+        );
+    }
+    // xuất bộ hồ sơ nhập kho bên khách
+    exportCustomerExportZip(request: ExportPNKRequest) {
+        return this.http.post(
+            `${this.BASE_URL}/vehicles/nhapkho/export-ho-so-khach-hang`,
+            request,
+            { responseType: 'blob' }
+        );
     }
 }

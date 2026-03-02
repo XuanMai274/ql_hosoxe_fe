@@ -36,4 +36,7 @@ export class ManufacturerService {
                 })
             );
     }
+    getByCode(code: string): Observable<Manufacturer> {
+    return this.http.get<Manufacturer>(`http://localhost:8080/officer/manufacturer/code/${code}`);
+  }
 }

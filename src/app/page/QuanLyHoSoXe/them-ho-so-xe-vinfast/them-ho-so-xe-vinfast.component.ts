@@ -58,7 +58,8 @@ export class ThemHoSoXeVinfastComponent {
   /* ================= BRAND - CỐ ĐỊNH CHO VINFAST ================= */
   selectedBrand: Manufacturer | null = null;
   readonly VINFAST_BRAND_CODE = 'VINFAST';
-
+   manufacturer?: Manufacturer;
+  code: string = 'HYUNDAI';
   /* ================= UPLOAD FILES ================= */
   excelFile: File | null = null;
   pdfFiles: File[] = [];
@@ -90,8 +91,21 @@ export class ThemHoSoXeVinfastComponent {
 
   ngOnInit(): void {
     this.loadVinfastBrand();
+    this.loadManufacturer();
   }
+  loadManufacturer() {
+    if (!this.code) return;
 
+    this.manufacturerService.getByCode(this.code).subscribe({
+      next: (res) => {
+        this.manufacturer = res;
+      },
+      error: (err) => {
+        console.error('Không tìm thấy hãng:', err);
+        this.manufacturer = undefined;
+      }
+    });
+  }
   loadVinfastBrand(): void {
     this.manufacturerService.getManufacture().subscribe({
       next: res => {
@@ -576,7 +590,7 @@ export class ThemHoSoXeVinfastComponent {
       if (!guarantee) return;
       group.invoices.forEach(inv => {
         const payload = {
-          manufacturerId: this.selectedBrand?.id,
+          manufacturerId: this.manufacturer?.id,
           invoice: { invoiceNumber: inv.invoiceNumber, invoiceDate: inv.invoiceDate, totalAmount: this.getInvoiceTotal(inv) },
           vehicles: inv.vehicleList.map((v, vIdx) => ({
             stt: vIdx + 1, vehicleName: v.modelName, description: v.vehicleDescription, chassisNumber: v.chassisNumber,

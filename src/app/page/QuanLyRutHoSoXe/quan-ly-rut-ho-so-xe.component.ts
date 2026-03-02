@@ -78,13 +78,18 @@ export class QuanLyRutHoSoXeComponent implements OnInit {
 
                 // Cập nhật lại selectedRequest theo dữ liệu server trả về
                 this.selectedRequest = approvedResult;
+                const now = new Date();
 
+                const fileName = `XuatKho_${String(now.getDate()).padStart(2, '0')
+                    }_${String(now.getMonth() + 1).padStart(2, '0')
+                    }_${now.getFullYear()
+                    }`;
                 // Sau khi approve thành công mới export
                 this.exportService.exportAllFiles(approvedResult).subscribe({
 
                     next: (blob: Blob) => {
 
-                        this.downloadFile(blob, 'Export_All.zip');
+                        this.downloadFile(blob, `${fileName}_XuatKho.zip`);
 
                         alert('Duyệt và xuất hồ sơ thành công.');
 

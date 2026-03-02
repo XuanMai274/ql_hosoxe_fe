@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomerWarehouseService } from '../../../service/customer-warehouse.service';
 import { DisbursementDTO } from '../../../models/disbursement.model';
+import { DisbursementExportRequest } from '../../../models/disbursement-export-request';
 
 @Component({
   selector: 'app-de-nghi-giai-ngan',
@@ -11,7 +12,7 @@ import { DisbursementDTO } from '../../../models/disbursement.model';
   styleUrl: './de-nghi-giai-ngan.component.css'
 })
 export class DeNghiGiaiNganComponent implements OnInit {
-
+  exporting = false;
   list: DisbursementDTO[] = [];
   loading = true;
   error = '';
@@ -26,7 +27,7 @@ export class DeNghiGiaiNganComponent implements OnInit {
   showDetail = false;
   selectedItem: DisbursementDTO | null = null;
 
-  constructor(private service: CustomerWarehouseService) { }
+  constructor(private customerWarehouseService: CustomerWarehouseService) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -36,7 +37,7 @@ export class DeNghiGiaiNganComponent implements OnInit {
     this.page = page;
     this.loading = true;
     this.error = '';
-    this.service.getMyDisbursements(this.page, this.size).subscribe({
+    this.customerWarehouseService.getMyDisbursements(this.page, this.size).subscribe({
       next: (res) => {
         this.list = res.content;
         this.totalPages = res.totalPages;
@@ -50,6 +51,43 @@ export class DeNghiGiaiNganComponent implements OnInit {
       }
     });
   }
+  exportFile(): void {
+
+    if (!this.selectedItem) return;
+
+    const vehicleIds = this.selectedItem.loans
+      ?.map(l => l.vehicleDTO?.id!)
+      ?.filter(Boolean) as number[] || [];
+
+    if (vehicleIds.length === 0) {
+      alert('Không có phương tiện để xuất.');
+      return;
+    }
+
+    const request: DisbursementExportRequest = {
+      disbursementDTO: this.selectedItem,
+      vehicleIds: vehicleIds
+    };
+    console.log("dữ liệu gửi đi xuất file: " ,request)
+    this.
+      customerWarehouseService.exportSpecificGN(request)
+      .subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `HoSoGiaiNgan_${Date.now()}.zip`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+          this.exporting = false;
+        },
+        error: () => {
+          alert('Xuất file thất bại.');
+          this.exporting = false;
+        }
+      });
+  }
+
 
   next() {
     if (this.page + 1 < this.totalPages) {

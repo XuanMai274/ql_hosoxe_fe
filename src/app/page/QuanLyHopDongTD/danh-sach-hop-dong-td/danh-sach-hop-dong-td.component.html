@@ -1,116 +1,116 @@
 <div class="page-container animate-fade-in">
-    <!-- Header Section -->
-    <div class="header-section">
-        <div class="title-group">
-            <h1 class="page-title">Quản lý Hợp đồng Tín dụng</h1>
-            <p class="page-subtitle">Quản lý và theo dõi hạn mức tín dụng của khách hàng</p>
-        </div>
-        <button class="btn-add" (click)="goToAdd()">
-            <i class="fa-solid fa-plus"></i> Thêm mới Hợp đồng
-        </button>
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-group">
+      <h1 class="page-title">Quản lý Hợp đồng Tín dụng</h1>
+      <p class="page-subtitle">Quản lý và theo dõi hạn mức tín dụng của khách hàng</p>
     </div>
+    <button class="btn-add" (click)="goToAdd()">
+      <i class="fa-solid fa-plus"></i> Thêm mới Hợp đồng
+    </button>
+  </div>
 
-    <!-- Stats Section -->
-    <div class="stats-grid" *ngIf="!isLoading">
-        <div class="stat-card total">
-            <div class="stat-icon"><i class="fa-solid fa-file-contract"></i></div>
-            <div class="stat-info">
-                <span class="stat-label">Tổng hợp đồng</span>
-                <span class="stat-value">{{ stats.totalContracts }}</span>
-            </div>
-        </div>
-        <div class="stat-card limit">
-            <div class="stat-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div>
-            <div class="stat-info">
-                <span class="stat-label">Tổng hạn mức (GHTD)</span>
-                <span class="stat-value">{{ stats.totalLimit | number }} ₫</span>
-            </div>
-        </div>
-        <div class="stat-card used">
-            <div class="stat-icon"><i class="fa-solid fa-receipt"></i></div>
-            <div class="stat-info">
-                <span class="stat-label">Đã sử dụng</span>
-                <span class="stat-value text-teal">{{ stats.totalUsed | number }} ₫</span>
-            </div>
-        </div>
-        <div class="stat-card remaining">
-            <div class="stat-icon"><i class="fa-solid fa-vault"></i></div>
-            <div class="stat-info">
-                <span class="stat-label">Hạn mức còn lại</span>
-                <span class="stat-value text-green">{{ stats.totalRemaining | number }} ₫</span>
-            </div>
-        </div>
+  <!-- Stats Section -->
+  <div class="stats-grid" *ngIf="!isLoading">
+    <div class="stat-card total">
+      <div class="stat-icon"><i class="fa-solid fa-file-contract"></i></div>
+      <div class="stat-info">
+        <span class="stat-label">Tổng hợp đồng</span>
+        <span class="stat-value">{{ stats.totalContracts }}</span>
+      </div>
     </div>
-
-    <!-- Toolbar Section -->
-    <div class="toolbar-section" *ngIf="!isLoading">
-        <div class="search-wrap">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Tìm kiếm theo số hợp đồng..." (input)="onSearch($event)"
-                [(ngModel)]="searchTerm">
-        </div>
-        <div class="filter-wrap">
-            <select (change)="onStatusFilterChange($event)" [(ngModel)]="statusFilter">
-                <option value="">Tất cả trạng thái</option>
-                <option value="ACTIVE">Đang hoạt động</option>
-                <option value="EXPIRED">Hết hạn</option>
-            </select>
-            <i class="fa-solid fa-filter"></i>
-        </div>
+    <div class="stat-card limit">
+      <div class="stat-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+      <div class="stat-info">
+        <span class="stat-label">Tổng hạn mức (GHTD)</span>
+        <span class="stat-value">{{ stats.totalLimit | number }} ₫</span>
+      </div>
     </div>
-
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="loading-overlay">
-        <div class="spinner"></div>
-        <p>Đang tải dữ liệu Hợp đồng...</p>
+    <div class="stat-card used">
+      <div class="stat-icon"><i class="fa-solid fa-receipt"></i></div>
+      <div class="stat-info">
+        <span class="stat-label">Đã sử dụng</span>
+        <span class="stat-value text-teal">{{ stats.totalUsed | number }} ₫</span>
+      </div>
     </div>
-
-    <!-- Table Section -->
-    <div class="table-container" *ngIf="!isLoading">
-        <table class="modern-table" *ngIf="filteredContracts.length > 0">
-            <thead>
-                <tr>
-                    <th>Số Hợp đồng</th>
-                    <th>Ngày ký</th>
-                    <th>Tổng Hạn mức</th>
-                    <th>Đã sử dụng</th>
-                    <th>Dư bảo lãnh</th>
-                    <th>Dư vay xe</th>
-                    <th>Trạng thái</th>
-                    <th class="text-center">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let contract of filteredContracts" [class.row-expired]="contract.status === 'EXPIRED'">
-                    <td class="font-bold contract-num">{{ contract.contractNumber }}</td>
-                    <td><span class="date-badge">{{ formatDate(contract.contractDate) }}</span></td>
-                    <td class="text-right font-bold">{{ contract.creditLimit | number }} ₫</td>
-                    <td class="text-right text-teal">{{ contract.usedLimit | number }} ₫</td>
-                    <td class="text-right text-muted">{{ contract.guaranteeBalance | number }} ₫</td>
-                    <td class="text-right text-muted">{{ contract.vehicleLoanBalance | number }} ₫</td>
-                    <td>
-                        <span [class]="'status-pill ' + getStatusBadgeClass(contract.status)">
-                            <i class="fa-solid fa-circle"></i>
-                            {{ getStatusLabel(contract.status) }}
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <button class="action-btn edit" title="Chỉnh sửa" (click)="goToEdit(contract.id!)">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <!-- No Data State -->
-        <div class="no-data-wrap" *ngIf="filteredContracts.length === 0">
-            <div class="no-data-icon">
-                <i class="fa-solid fa-folder-open"></i>
-            </div>
-            <h3>Không tìm thấy hợp đồng nào</h3>
-            <p>Vui lòng thử lại với từ khóa khác hoặc thêm mới hợp đồng.</p>
-            <button class="btn-clear" (click)="searchTerm = ''; statusFilter = ''; applyFilter()">Xóa lọc</button>
-        </div>
+    <div class="stat-card remaining">
+      <div class="stat-icon"><i class="fa-solid fa-vault"></i></div>
+      <div class="stat-info">
+        <span class="stat-label">Hạn mức còn lại</span>
+        <span class="stat-value text-green">{{ stats.totalRemaining | number }} ₫</span>
+      </div>
     </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar-section" *ngIf="!isLoading">
+    <div class="search-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Tìm kiếm theo số hợp đồng..." (input)="onSearch($event)" [(ngModel)]="searchTerm">
+    </div>
+    <div class="filter-wrap">
+      <select (change)="onStatusFilterChange($event)" [(ngModel)]="statusFilter">
+        <option value="">Tất cả trạng thái</option>
+        <option value="ACTIVE">Đang hoạt động</option>
+        <option value="EXPIRED">Hết hạn</option>
+      </select>
+      <i class="fa-solid fa-filter"></i>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Đang tải dữ liệu Hợp đồng...</p>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-container" *ngIf="!isLoading">
+    <table class="modern-table" *ngIf="filteredContracts.length > 0">
+      <thead>
+        <tr>
+          <th>Số Hợp đồng</th>
+          <th>Đã sử dụng</th>
+          <th>Còn lại</th>
+          <th>Dư bảo lãnh</th>
+          <th>Dư vay xe</th>
+          <th>Dư vay BDS</th>
+          <th>Trạng thái</th>
+          <th class="text-center">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let contract of filteredContracts" [class.row-expired]="contract.status === 'EXPIRED'">
+          <td class="font-bold contract-num">{{ contract.contractNumber }}</td>
+          <td class="text-right font-bold">{{ contract.usedLimit| number }} ₫</td>
+          <td class="text-right text-teal">{{ contract.remainingLimit | number }} ₫</td>
+          <td class="text-right text-teal">{{ contract.issuedGuaranteeBalance | number }} ₫</td>
+          <td class="text-right text-muted">{{ contract.vehicleLoanBalance | number }} ₫</td>
+          <td class="text-right text-muted">{{ contract.realEstateLoanBalance | number }} ₫</td>
+          <td class="text-right text-muted">{{ contract.realEstateLoanBalance| number }} ₫</td>
+          <td>
+            <span [class]="'status-pill ' + getStatusBadgeClass(contract.status)">
+              <i class="fa-solid fa-circle"></i>
+              {{ getStatusLabel(contract.status) }}
+            </span>
+          </td>
+          <td class="text-center">
+            <button class="action-btn edit" title="Chỉnh sửa" (click)="goToEdit(contract.id!)">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- No Data State -->
+    <div class="no-data-wrap" *ngIf="filteredContracts.length === 0">
+      <div class="no-data-icon">
+        <i class="fa-solid fa-folder-open"></i>
+      </div>
+      <h3>Không tìm thấy hợp đồng nào</h3>
+      <p>Vui lòng thử lại với từ khóa khác hoặc thêm mới hợp đồng.</p>
+      <button class="btn-clear" (click)="searchTerm = ''; statusFilter = ''; applyFilter()">Xóa lọc</button>
+    </div>
+  </div>
 </div>

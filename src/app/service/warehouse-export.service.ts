@@ -9,7 +9,7 @@ import { WarehouseExportDTO } from '../models/warehouseExport.model';
 export class WarehouseExportService {
     private baseUrl = 'http://localhost:8080/officer/warehouse-export';
     private vehicleUrl = 'http://localhost:8080/officer/vehicles/warehouse-export';
-    private customerUrl = 'http://localhost:8080/customer/vehicles/available-for-export';
+    private customerUrl = 'http://localhost:8080/customer';
 
     constructor(private http: HttpClient) { }
 
@@ -20,13 +20,16 @@ export class WarehouseExportService {
     getVehiclesByExportId(exportId: number): Observable<any[]> {
         return this.http.get<any[]>(`${this.vehicleUrl}/${exportId}`);
     }
+    getVehiclesByExportIdForCustomer(exportId: number): Observable<any[]> {
+        return this.http.get<any[]>(`${this.customerUrl}/vehicles/warehouse-export/${exportId}`);
+    }
 
     rejectRequest(id: number): Observable<any> {
         return this.http.post(`${this.baseUrl}/reject/${id}`, {});
     }
 
     getAvailableForExport(status: string): Observable<any[]> {
-        return this.http.get<any[]>(`${this.customerUrl}/${status}`);
+        return this.http.get<any[]>(`${this.customerUrl}/vehicles/available-for-export/${status}`);
     }
     approveExport(dto: WarehouseExportDTO) {
         return this.http.post<WarehouseExportDTO>(
@@ -42,4 +45,5 @@ export class WarehouseExportService {
             { responseType: 'blob' }
         );
     }
+    
 }
