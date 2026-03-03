@@ -14,7 +14,7 @@ export class CustomerGuaranteeService {
     constructor(private http: HttpClient) { }
 
     /**
-     * Lấy danh sách đơn hàng bảo lãnh của khách hàng hiện tại
+     * Lấy danh sách đơn bảo lãnh của khách hàng hiện tại
      */
     getDonHangBaoLanh(
         manufacturerCode?: string,
@@ -34,7 +34,7 @@ export class CustomerGuaranteeService {
     }
 
     /**
-     * Lấy tất cả đơn hàng (không phân trang) để tính tổng
+     * Lấy tất cả đơn bảo lãnh (không phân trang) để tính tổng
      */
     getAllDonHangBaoLanh(): Observable<GuaranteeLetter[]> {
         return this.http.get<GuaranteeLetter[]>(

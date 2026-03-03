@@ -63,6 +63,7 @@
         <thead>
           <tr>
             <th class="text-center" style="width:56px">STT</th>
+            <th>Khách hàng</th>
             <th>Số HĐTD chi tiết</th>
             <th>Ngày giải ngân</th>
             <th class="text-center">Số lượng xe</th>
@@ -76,6 +77,12 @@
         <tbody>
           <tr *ngFor="let item of disbursements; let i = index">
             <td class="text-center stt-cell">{{ i + 1 + page * size }}</td>
+            <td>
+              <div class="customer-name" [title]="item.mortgageContractDTO?.customerDTO?.customerName || '—'">
+                {{ item.mortgageContractDTO?.customerDTO?.customerName || '—' }}
+              </div>
+              <div class="sub-text">{{ item.mortgageContractDTO?.customerDTO?.cif || '' }}</div>
+            </td>
             <td>
               <div class="contract-num font-bold">{{ item.loanContractNumber }}</div>
             </td>
@@ -106,7 +113,7 @@
             </td>
           </tr>
           <tr *ngIf="disbursements.length === 0">
-            <td colspan="9">
+            <td colspan="10">
               <div class="no-data-row">
                 <i class="fa-solid fa-file-circle-exclamation"></i>
                 <p>Không tìm thấy đợt giải ngân nào khớp với tìm kiếm của bạn.</p>

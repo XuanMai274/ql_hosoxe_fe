@@ -130,14 +130,25 @@ export class ChiTietKhoanVayComponent implements OnInit {
   saveLoan() {
     if (this.loanEditForm.invalid || !this.editingLoan?.id) return;
 
-    this.loanService.updateLoan(this.editingLoan.id, this.loanEditForm.value).subscribe({
+    const payload: Partial<LoanDTO> = {
+      accountNumber: this.loanEditForm.value.accountNumber,
+      loanAmount: this.loanEditForm.value.loanAmount,
+      loanDate: this.loanEditForm.value.loanDate,
+      dueDate: this.loanEditForm.value.dueDate,
+      loanTerm: this.loanEditForm.value.loanTerm,
+      docId: this.loanEditForm.value.docId,
+      collateralAndPurpose: this.loanEditForm.value.collateralAndPurpose,
+      loanStatus: this.loanEditForm.value.loanStatus,
+    };
+
+    this.loanService.patchLoan(this.editingLoan.id, payload).subscribe({
       next: () => {
         Swal.fire('Thành công', 'Đã cập nhật khoản vay', 'success');
         this.closeLoanModal();
         this.loadData(); // Reload list
       },
       error: (err) => {
-        Swal.fire('Lỗi', 'Không thể cập nhật khoản vay', 'error');
+        Swal.fire('Lỗi', err?.error?.message || 'Không thể cập nhật khoản vay', 'error');
       }
     });
   }
@@ -162,6 +173,18 @@ export class ChiTietKhoanVayComponent implements OnInit {
       case 'OVERDUE': return 'Quá hạn';
       default: return status || '—';
     }
+  }
+
+  get totalLoanAmount(): number {
+    return (this.disbursement?.loans || []).reduce((s, l) => s + (Number(l.loanAmount) || 0), 0);
+  }
+
+  get totalPaid(): number {
+    return (this.disbursement?.loans || []).reduce((s, l) => s + (Number(l.totalPaidAmount) || 0), 0);
+  }
+
+  get totalRemaining(): number {
+    return this.totalLoanAmount - this.totalPaid;
   }
 
   goBack() {

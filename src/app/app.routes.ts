@@ -34,7 +34,9 @@ import { DanhSachHopDongTDComponent } from './page/QuanLyHopDongTD/danh-sach-hop
 import { FormHopDongTDComponent } from './page/QuanLyHopDongTD/form-hop-dong-td/form-hop-dong-td.component';
 import { RootRedirectComponent } from './page/root-redirect.component';
 import { QuanLyRutHoSoXeComponent } from './page/QuanLyRutHoSoXe/quan-ly-rut-ho-so-xe.component';
-
+import { QuanLyNhapKhoComponent } from './page/QuanLyHoSoXe/quan-ly-nhap-kho/quan-ly-nhap-kho.component';
+import { QuanLyXuatKhoComponent } from './page/QuanLyHoSoXe/quan-ly-xuat-kho/quan-ly-xuat-kho.component';
+import { ThongKeComponent } from './page/thong-ke/thong-ke.component';
 
 export const routes: Routes = [
     {
@@ -51,6 +53,10 @@ export const routes: Routes = [
         component: CanBoComponent,
         canActivate: [AuthGuard], // Bảo vệ toàn bộ cụm manager
         children: [
+            {
+                path: 'thong-ke',
+                component: ThongKeComponent
+            },
             {
                 path: 'home',
                 component: HomeRouterComponent
@@ -78,6 +84,14 @@ export const routes: Routes = [
             {
                 path: 'nhap-kho-xe',
                 component: NhapKhoXeComponent
+            },
+            {
+                path: 'quan-ly-nhap-kho',
+                component: QuanLyNhapKhoComponent
+            },
+            {
+                path: 'quan-ly-xuat-kho',
+                component: QuanLyXuatKhoComponent
             },
             {
                 path: 'them-bao-lanh',

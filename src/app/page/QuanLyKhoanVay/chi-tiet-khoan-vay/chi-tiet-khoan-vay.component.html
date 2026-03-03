@@ -27,40 +27,55 @@
         <div class="header-icon"><i class="fa-solid fa-circle-info"></i></div>
         <h3>Thông tin đợt giải ngân</h3>
         <div class="status-wrap">
-          <span class="status-badge" [ngClass]="getStatusClass(disbursementForm.get('status')?.value)">
-            {{ getStatusLabel(disbursementForm.get('status')?.value) }}
+          <span class="status-badge" [ngClass]="getStatusClass(disbursement.status)">
+            {{ getStatusLabel(disbursement.status) }}
           </span>
         </div>
       </div>
 
-      <form [formGroup]="disbursementForm" class="card-body-grid">
-        <div class="form-section">
-          <div class="form-group">
-            <label class="form-label">Số HĐTD chi tiết</label>
-            <input formControlName="loanContractNumber" class="form-input" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Ngày giải ngân</label>
-            <input type="date" formControlName="disbursementDate" class="form-input" />
-          </div>
+      <div class="info-summary-grid">
+        <!-- Số HĐ chi tiết -->
+        <div class="info-box">
+          <span class="info-label"><i class="fa-solid fa-file-contract"></i> Số HĐTD chi tiết</span>
+          <span class="info-val code-val primary">{{ disbursement.loanContractNumber || '—' }}</span>
         </div>
-        <div class="form-section">
-          <div class="form-group">
-            <label class="form-label">Kỳ hạn vay (ngày)</label>
-            <input type="number" formControlName="loanTerm" class="form-input" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Lãi suất (%)</label>
-            <input type="number" formControlName="interestRate" class="form-input" step="0.1" />
-          </div>
+
+        <!-- Kỳ hạn vay -->
+        <div class="info-box">
+          <span class="info-label"><i class="fa-solid fa-calendar-days"></i> Kỳ hạn vay</span>
+          <span class="info-val">{{ disbursement.loanTerm ? disbursement.loanTerm + ' ngày' : '—' }}</span>
         </div>
-        <div class="form-section full-width text-right">
-          <button class="btn-save" (click)="saveDisbursement()">
-            <i class="fa-solid fa-floppy-disk"></i> Lưu thông tin chung
-          </button>
+
+        <!-- Số tiền vay -->
+        <div class="info-box">
+          <span class="info-label"><i class="fa-solid fa-money-bill-wave"></i> Số tiền vay</span>
+          <span class="info-val amount-text">{{ (disbursement.disbursementAmount || 0) | number:'1.0-0' }} VNĐ</span>
         </div>
-      </form>
+
+        <!-- Đã thanh toán -->
+        <div class="info-box">
+          <span class="info-label"><i class="fa-solid fa-circle-check"></i> Đã thanh toán</span>
+          <span class="info-val success-text">{{ (disbursement.totalAmountPaid || 0) | number:'1.0-0' }} VNĐ</span>
+        </div>
+
+        <!-- Còn lại -->
+        <div class="info-box highlight-box">
+          <span class="info-label"><i class="fa-solid fa-hourglass-half"></i> Số tiền còn lại</span>
+          <span class="info-val warn-text">
+            {{ ((disbursement.disbursementAmount || 0) - (disbursement.totalAmountPaid || 0)) | number:'1.0-0' }} VNĐ
+          </span>
+        </div>
+
+        <!-- Số xe -->
+        <div class="info-box">
+          <span class="info-label"><i class="fa-solid fa-car-side"></i> Số xe</span>
+          <span class="info-val">
+            <span class="count-chip-info">{{ disbursement.vehicleCount || 0 }} xe</span>
+          </span>
+        </div>
+      </div>
     </div>
+
 
     <!-- ===== LOANS LIST SECTION ===== -->
     <div class="detail-card">
@@ -77,10 +92,14 @@
         <table class="inner-table">
           <thead>
             <tr>
-              <th>STT</th>
+              <th style="width:46px">STT</th>
               <th>Xe</th>
+              <th>Số HĐ vay</th>
               <th>Số tài khoản</th>
-              <th>Số tiền vay</th>
+              <th class="text-right">Số tiền vay (VNĐ)</th>
+              <th class="text-right">Đã trả (VNĐ)</th>
+              <th class="text-right">Còn lại (VNĐ)</th>
+              <th class="text-center">Kỳ hạn (ngày)</th>
               <th class="text-center">Ngày vay</th>
               <th class="text-center">Đến hạn</th>
               <th class="text-center">Trạng thái</th>
@@ -89,15 +108,27 @@
           </thead>
           <tbody>
             <tr *ngFor="let loan of disbursement.loans; let i = index">
-              <td>{{ i + 1 }}</td>
+              <td class="text-center stt-cell">{{ i + 1 }}</td>
               <td>
-                <div class="font-bold">{{ loan.vehicleDTO?.vehicleName }}</div>
+                <div class="font-bold">{{ loan.vehicleDTO?.vehicleName || 'Ô tô' }}</div>
                 <div class="sub-text">{{ loan.vehicleDTO?.chassisNumber }}</div>
               </td>
+              <td class="code-cell">{{ loan.loanContractNumber || '—' }}</td>
               <td class="code-cell">{{ loan.accountNumber || '—' }}</td>
-              <td class="amount-cell">{{ loan.loanAmount | number }} VNĐ</td>
+              <td class="text-right amount-cell">
+                {{ (loan.loanAmount || 0) | number:'1.0-0' }}
+              </td>
+              <td class="text-right" style="color: #059669; font-weight: 600;">
+                {{ (loan.totalPaidAmount || 0) | number:'1.0-0' }}
+              </td>
+              <td class="text-right" style="color: #d97706; font-weight: 600;">
+                {{ ((loan.loanAmount || 0) - (loan.totalPaidAmount || 0)) | number:'1.0-0' }}
+              </td>
+              <td class="text-center">{{ loan.loanTerm || '—' }}</td>
               <td class="text-center">{{ loan.loanDate | date:'dd/MM/yyyy' }}</td>
-              <td class="text-center">{{ loan.dueDate | date:'dd/MM/yyyy' }}</td>
+              <td class="text-center" [style.color]="loan.loanStatus === 'OVERDUE' ? '#dc2626' : ''">
+                {{ loan.dueDate | date:'dd/MM/yyyy' }}
+              </td>
               <td class="text-center">
                 <span class="status-badge" [ngClass]="getStatusClass(loan.loanStatus)">
                   {{ getStatusLabel(loan.loanStatus) }}
@@ -109,10 +140,34 @@
                 </button>
               </td>
             </tr>
+            <tr *ngIf="!disbursement.loans?.length">
+              <td colspan="12">
+                <div class="no-data-row">
+                  <i class="fa-solid fa-car-burst"></i>
+                  <p>Chưa có khoản vay nào trong đợt giải ngân này.</p>
+                </div>
+              </td>
+            </tr>
           </tbody>
+          <tfoot *ngIf="disbursement.loans?.length">
+            <tr class="total-row">
+              <td colspan="4" class="total-label">Tổng cộng</td>
+              <td class="text-right total-amount">
+                {{ totalLoanAmount | number:'1.0-0' }}
+              </td>
+              <td class="text-right" style="color: #059669; font-weight: 700;">
+                {{ totalPaid | number:'1.0-0' }}
+              </td>
+              <td class="text-right" style="color: #d97706; font-weight: 700;">
+                {{ totalRemaining | number:'1.0-0' }}
+              </td>
+              <td colspan="5"></td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
+
   </div>
 
   <!-- ===== LOAN EDIT MODAL ===== -->

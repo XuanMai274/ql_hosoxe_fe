@@ -62,4 +62,16 @@ export class WarehouseExportService {
         );
     }
 
+
+    getAll(params: any): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}/all`, { params });
+    }
+
+    getById(id: number): Observable<WarehouseExportDTO> {
+        return this.http.get<WarehouseExportDTO>(`${this.baseUrl}/${id}`);
+    }
+
+    update(id: number, dto: any): Observable<WarehouseExportDTO> {
+        return this.http.put<WarehouseExportDTO>(`${this.baseUrl}/${id}`, dto);
+    }
 }

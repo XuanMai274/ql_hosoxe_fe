@@ -44,7 +44,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
 
     // Pagination
     page = 0;
-    size = 20;
+    size = 10;
     totalPages = 1;
 
     // Modal chi tiết

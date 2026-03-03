@@ -1,0 +1,149 @@
+<div class="stats-page-container">
+    <div class="header-section">
+        <div class="title-box">
+            <h1><i class="fa-solid fa-chart-pie"></i> Hệ thống Thống kê &amp; Phân tích Đa chiều</h1>
+            <p>Dữ liệu tổng hợp thời gian thực từ các nghiệp vụ Core</p>
+        </div>
+        <button class="btn-refresh" (click)="loadStatistics()" [disabled]="isLoading">
+            <i class="fa-solid fa-sync" [class.fa-spin]="isLoading"></i> Làm mới dữ liệu
+        </button>
+    </div>
+
+    <div *ngIf="isLoading" class="loader-overlay">
+        <div class="spinner"></div>
+        <p>Đang xử lý dữ liệu từ hệ thống...</p>
+    </div>
+
+    <div *ngIf="!isLoading && stats" class="stats-content animate__animated animate__fadeIn">
+
+        <!-- SECTION 1: THỐNG KÊ XE -->
+        <div class="section-container">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-car-side"></i> Thống kê Hồ sơ Xe Giữ Két</h2>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card teal-card">
+                    <div class="metric-icon"><i class="fa-solid fa-list-ol"></i></div>
+                    <div class="metric-info">
+                        <span class="label">Tổng số xe</span>
+                        <span class="value">{{ stats.totalVehicles | number }}</span>
+                    </div>
+                </div>
+                <div class="metric-card blue-card">
+                    <div class="metric-icon"><i class="fa-solid fa-warehouse"></i></div>
+                    <div class="metric-info">
+                        <span class="label">Đang trong kho</span>
+                        <span class="value">{{ stats.inWarehouseCount | number }}</span>
+                    </div>
+                    <div class="metric-progress">
+                        <div class="progress-bar"
+                            [style.width.%]="getPercentage(stats.inWarehouseCount, stats.totalVehicles)"></div>
+                    </div>
+                </div>
+                <div class="metric-card green-card">
+                    <div class="metric-icon"><i class="fa-solid fa-handshake"></i></div>
+                    <div class="metric-info">
+                        <span class="label">Đã trả khách hàng</span>
+                        <span class="value">{{ stats.returnedToCustomerCount | number }}</span>
+                    </div>
+                    <div class="metric-progress">
+                        <div class="progress-bar"
+                            [style.width.%]="getPercentage(stats.returnedToCustomerCount, stats.totalVehicles)"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: THỐNG KÊ BẢO LÃNH -->
+        <div class="section-container">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-shield-halved"></i> Thống kê Bảo lãnh</h2>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card gold-card">
+                    <div class="metric-info">
+                        <span class="label">Tổng giá trị bảo lãnh phát hành</span>
+                        <span class="value font-big">{{ stats.totalIssuedGuaranteeBalance | number:'1.0-0' }}</span>
+                        <span class="unit">VNĐ</span>
+                    </div>
+                </div>
+                <div class="metric-card purple-card">
+                    <div class="metric-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+                    <div class="metric-info">
+                        <span class="label">Thư bảo lãnh còn hiệu lực</span>
+                        <span class="value">{{ stats.activeGuaranteeLetterCount | number }}</span>
+                    </div>
+                </div>
+                <div class="metric-card orange-card">
+                    <div class="metric-info">
+                        <span class="label">Dư bảo lãnh thực tế</span>
+                        <span class="value font-big">{{ stats.actualGuaranteeBalance | number:'1.0-0' }}</span>
+                        <span class="unit">VNĐ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: THỐNG KÊ KHOẢN VAY -->
+        <div class="section-container">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-money-check-dollar"></i> Thống kê Khoản vay &amp; Giải ngân</h2>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card cyan-card">
+                    <div class="metric-icon"><i class="fa-solid fa-file-contract"></i></div>
+                    <div class="metric-info">
+                        <span class="label">Hợp đồng giải ngân đang hoạt động</span>
+                        <span class="value">{{ stats.activeDisbursementCount | number }}</span>
+                    </div>
+                </div>
+
+                <div class="metric-card info-card dual-value">
+                    <div class="value-item">
+                        <span class="label">Dư nợ vay xe</span>
+                        <span class="value-small">{{ stats.totalVehicleLoanBalance | number:'1.0-0' }}
+                            <small>VNĐ</small></span>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="value-item">
+                        <span class="label">Dư nợ vay bất động sản</span>
+                        <span class="value-small">{{ stats.totalRealEstateLoanBalance | number:'1.0-0' }}
+                            <small>VNĐ</small></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualization Section -->
+        <div class="main-stats-grid">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3>Phân bổ Hãng sản xuất</h3>
+                </div>
+                <div class="manufacturer-grid">
+                    <div class="manu-box" *ngFor="let m of stats.manufacturerStats">
+                        <span class="manu-name">{{ m.name }}</span>
+                        <span class="manu-val">{{ m.count }} xe</span>
+                        <div class="manu-progress">
+                            <div class="bar" [style.width.%]="getPercentage(m.count, stats.totalVehicles)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3>Xu hướng Đề nghị Bảo lãnh</h3>
+                </div>
+                <div class="trend-bars-mini">
+                    <div class="trend-item" *ngFor="let m of stats.monthlyStats">
+                        <div class="bar-wrapper">
+                            <div class="bar" [style.height.px]="m.count * 10"></div>
+                        </div>
+                        <span class="month-label">{{ m.month }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

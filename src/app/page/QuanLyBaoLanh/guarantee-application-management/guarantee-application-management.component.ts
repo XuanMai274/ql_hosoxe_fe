@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { OfficerGuaranteeService } from '../../../service/officer-guarantee.service';
 import { GuaranteeApplication } from '../../../models/guarantee_application.model';
 import { PageResponse } from '../../../models/page-response';
+import { GuaranteeStatistics } from '../../../models/guarantee_statistics.model';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 
@@ -14,11 +15,24 @@ import { Router } from '@angular/router';
     styleUrl: './guarantee-application-management.component.css'
 })
 export class GuaranteeApplicationManagementComponent implements OnInit {
+    get totalPages(): number {
+        return Math.ceil(this.totalElements / this.pageSize);
+    }
     applications: GuaranteeApplication[] = [];
     isLoading = false;
     currentPage = 0;
     pageSize = 10;
     totalElements = 0;
+
+    showDetailModal = false;
+    selectedApp: GuaranteeApplication | null = null;
+    isLoadingDetail = false;
+
+    statistics: GuaranteeStatistics = {
+        totalVehicles: 0,
+        inWarehouseCount: 0,
+        disbursedCount: 0
+    };
 
     constructor(
         private officerGuaranteeService: OfficerGuaranteeService,
@@ -27,6 +41,18 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadApplications();
+        this.fetchStatistics();
+    }
+
+    fetchStatistics(): void {
+        this.officerGuaranteeService.getStatistics().subscribe({
+            next: (res) => {
+                this.statistics = res;
+            },
+            error: (err: any) => {
+                console.error('Error fetching statistics:', err);
+            }
+        });
     }
 
     loadApplications(): void {
@@ -37,12 +63,34 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
                 this.totalElements = response.totalElements;
                 this.isLoading = false;
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error('Error loading applications:', err);
                 this.isLoading = false;
                 Swal.fire('Lỗi', 'Không thể tải danh sách hồ sơ bảo lãnh', 'error');
             }
         });
+    }
+
+    openDetail(item: GuaranteeApplication): void {
+        if (!item.id) return;
+        this.isLoadingDetail = true;
+        this.showDetailModal = true;
+        this.officerGuaranteeService.getApplicationById(item.id).subscribe({
+            next: (res) => {
+                this.selectedApp = res;
+                this.isLoadingDetail = false;
+            },
+            error: (err: any) => {
+                console.error('Error fetching details:', err);
+                this.isLoadingDetail = false;
+                Swal.fire('Lỗi', 'Không thể tải chi tiết hồ sơ', 'error');
+            }
+        });
+    }
+
+    closeDetail(): void {
+        this.showDetailModal = false;
+        this.selectedApp = null;
     }
 
     isPending(status: string | undefined): boolean {
@@ -69,7 +117,7 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
             if (result.isConfirmed) {
                 this.officerGuaranteeService.rejectApplication(app.id!).subscribe({
                     next: () => {
-                        Swal.fire('Đã từ chối', 'Đơn hàng đã được chuyển trạng thái từ chối', 'info');
+                        Swal.fire('Đã từ chối', 'Đơn bảo lãnh đã được chuyển trạng thái từ chối', 'info');
                         this.loadApplications();
                     },
                     error: (err) => {
