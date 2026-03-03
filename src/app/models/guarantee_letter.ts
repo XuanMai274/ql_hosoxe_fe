@@ -53,4 +53,11 @@ export interface GuaranteeLetter {
     // ===== EXPIRY =====
     expiryDate?: string;     // LocalDate
     deadlineLabel?: string;  // FE-only label
+    // ===== CREDIT LIMIT INFO (NEW) =====
+    creditLimit?: number;                // GTTD được sử dụng
+    usedLimit?: number;                  // GTTD đã sử dụng
+    remainingLimit?: number;             // GTTD còn lại
+    issuedGuaranteeBalance?: number;     // Dư bảo lãnh
+    vehicleLoanBalance?: number;         // Dư vay xe
+    realEstateLoanBalance?: number;      // Dư vay BĐS
 }

@@ -31,4 +31,15 @@ export class CreditContractService {
     updateCreditContract(id: number, contract: CreditContract): Observable<any> {
         return this.http.put<any>(`${this.API_URL}/update/${id}`, contract);
     }
+
+    getCreditContractById(id: number): Observable<CreditContract> {
+        return this.http.get<any>(`${this.API_URL}/${id}`).pipe(
+            map(res => {
+                if (res?.success && res.creditContract) {
+                    return res.creditContract as CreditContract;
+                }
+                return res as CreditContract;
+            })
+        );
+    }
 }

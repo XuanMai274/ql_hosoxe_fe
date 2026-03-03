@@ -201,7 +201,7 @@
       <button class="btn-primary" (click)="exportAll()">
         Xuất bộ hồ sơ
       </button>
-      <button class="btn-primary" (click)="finishNhapKho()">
+      <button class="btn-primary" (click)="doneNhapKho()">
         Hoàn tất
       </button>
 
@@ -274,19 +274,22 @@
             <span class="info-value">{{ data.loanContractNumber }}</span>
           </div>
 
-          <div class="info-item">
-            <span class="info-label">Dư bảo lãnh</span>
-            <span class="info-value">{{ data.issuedGuaranteeBalance | number }}</span>
+          <div class="form-group">
+            <label>Dư bảo lãnh</label>
+            <input type="text" class="form-control" [value]="formatMoney(data.issuedGuaranteeBalance)"
+              (input)="onMoneyInput($event, 'issuedGuaranteeBalance'); recalcLimit()" />
           </div>
 
-          <div class="info-item">
-            <span class="info-label">Dư nợ vay xe</span>
-            <span class="info-value">{{ data.vehicleLoanBalance| number }}</span>
+          <div class="form-group">
+            <label>Dư nợ vay xe</label>
+            <input type="text" class="form-control" [value]="formatMoney(data.vehicleLoanBalance)"
+              (input)="onMoneyInput($event, 'vehicleLoanBalance'); recalcLimit()" />
           </div>
 
-          <div class="info-item">
-            <span class="info-label">Dư nợ vay BDS</span>
-            <span class="info-value">{{ data.realEstateLoanBalance| number }}</span>
+          <div class="form-group">
+            <label>Dư nợ vay BĐS</label>
+            <input type="text" class="form-control" [value]="formatMoney(data.realEstateLoanBalance)"
+              (input)="onMoneyInput($event, 'realEstateLoanBalance'); recalcLimit()" />
           </div>
 
           <div class="info-item">
@@ -322,11 +325,11 @@
             <input type="text" class="form-control large" [value]="formatMoney(data.disbursementAmount)"
               (input)="onMoneyInput($event, 'disbursementAmount')" />
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label>Tiền lãi (VNĐ)</label>
             <input type="text" class="form-control" [value]="formatMoney(data.interestAmount)"
               (input)="onMoneyInput($event, 'interestAmount')" />
-          </div>
+          </div> -->
 
 
           <div class="info-item">

@@ -176,4 +176,82 @@
       </div>
     </div>
   </div>
+  <!-- model nhập lãi -->
+  <!-- Interest Modal -->
+  <div class="modal-backdrop" *ngIf="interestModalVisible">
+    <div class="modal-content interest-modal">
+
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3>Nhập lãi các khoản vay cần tất toán</h3>
+          <span class="modal-subtitle">
+            Vui lòng nhập số tiền lãi thực tế trước khi duyệt xuất kho
+          </span>
+        </div>
+        <button class="close-btn" (click)="interestModalVisible = false">&times;</button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="interest-summary">
+          <span class="interest-count">
+            {{ disbursementsNeedInterest.length }} khoản vay cần cập nhật lãi
+          </span>
+        </div>
+
+        <div class="interest-table-wrapper">
+          <table class="interest-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Số hợp đồng</th>
+                <th>Số tiền vay</th>
+                <th>Đã trả</th>
+                <th>Lãi cần nhập</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let d of disbursementsNeedInterest; let i = index">
+                <td>{{ i + 1 }}</td>
+
+                <td>
+                  <span class="loan-number">
+                    {{ d.loanContractNumber }}
+                  </span>
+                </td>
+                <td class="text-right">
+                  <span class="price-text">
+                    {{ formatCurrency(d.disbursementAmount) }}
+                  </span>
+                </td>
+                <td class="text-right">
+                  <span class="price-text">
+                    {{ formatCurrency(d.totalAmountPaid) }}
+                  </span>
+                </td>
+                <td>
+                  <input type="text" class="value-input interest-input"
+                    [ngModel]="formatNumber(interestFormData[i].interestAmount)"
+                    (ngModelChange)="onInterestChange($event, i)" placeholder="Nhập tiền lãi..." />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="interestModalVisible = false">
+          Hủy
+        </button>
+
+        <button class="btn btn-approve" (click)="confirmInterestAndApprove()">
+          <i class="fa-solid fa-check-circle"></i>
+          Xác nhận & Duyệt
+        </button>
+      </div>
+
+    </div>
+  </div>
 </div>

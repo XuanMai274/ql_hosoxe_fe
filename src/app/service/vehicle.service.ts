@@ -84,6 +84,13 @@ export class VehicleService {
     getVehicleByStatus(status: string): Observable<Vehicle[]> {
         return this.http.get<Vehicle[]>(`${this.apiUrl}/status/${status}`);
     }
+    exportHoSoNhapKhoZip(request: ExportPNKRequest) {
+        return this.http.post(
+            'http://localhost:8080/officer/vehicles/nhapkho/exportAll',
+            request,
+            { responseType: 'blob' }
+        );
+    }
 
     exportExcel(filters: {
         chassisNumber?: string;

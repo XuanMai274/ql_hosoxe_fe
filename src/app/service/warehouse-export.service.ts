@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { WarehouseExportDTO } from '../models/warehouseExport.model';
+import { DisbursementDTO } from '../models/disbursement.model';
 
 @Injectable({
     providedIn: 'root'
@@ -45,5 +46,20 @@ export class WarehouseExportService {
             { responseType: 'blob' }
         );
     }
-    
+    checkDisbursementNeedInterest(loanIds: number[]) {
+        return this.http.post<DisbursementDTO[]>(
+            `http://localhost:8080/officer/disbursements/check-paidOff`,
+            loanIds
+        );
+    }
+
+    updateInterestForDisbursements(
+        payload: { disbursementId: number; interestAmount: number }[]
+    ) {
+        return this.http.post<void>(
+            `http://localhost:8080/officer/disbursements/update-interest`,
+            payload
+        );
+    }
+
 }

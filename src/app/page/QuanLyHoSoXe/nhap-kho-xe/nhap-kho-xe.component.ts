@@ -17,6 +17,8 @@ import { DisbursementDTO } from '../../../models/disbursement.model';
 import { DisbursementExportRequest } from '../../../models/disbursement-export-request';
 import Swal from 'sweetalert2';
 import { AuthServiceComponent } from '../../../core/service/auth-service.component';
+import { Customer } from '../../../models/customer.model';
+import { CustomerService } from '../../../service/customer.service';
 
 @Component({
   selector: 'app-nhap-kho-xe',
@@ -34,11 +36,12 @@ export class NhapKhoXeComponent {
   loanForms: VehicleLoanForm[] = [];
   vehicleFactor = 0.85;
   realEstateFactor = 0.8;
-
+  selectedCustomer?: Customer;
   //Lưu dữ liệu nhập kho trả về
   warehouseImportResult?: WarehouseImportDTO;
   createdDisbursement?: DisbursementDTO;
   createdLoans: LoanDTO[] = [];
+  customers: Customer[] = [];
   //Lưu vehicleIds sau khi backend trả về
   importedVehicleIds: number[] = [];
 
@@ -67,13 +70,44 @@ export class NhapKhoXeComponent {
     private warehouseService: WarehouseService,
     private disbursementService: DisbursementService,
     private router: Router,
-    private authService: AuthServiceComponent
+    private authService: AuthServiceComponent,
+    private customerService: CustomerService,
   ) { }
 
   ngOnInit(): void {
+    this.loadCustomers();
     this.loadVehicles();
-  }
 
+  }
+  loadCustomers(): void {
+    this.customerService.getCustomers().subscribe({
+      next: (res) => this.customers = res
+    });
+  }
+  private autoDetectCustomer(): void {
+
+    if (this.selectedVehicles.length === 0) {
+      this.selectedCustomer = undefined;
+      return;
+    }
+
+    const firstCustomerId =
+      this.selectedVehicles[0].guaranteeLetterDTO?.customerDTO?.id;
+
+    const sameCustomer = this.selectedVehicles.every(v =>
+      v.guaranteeLetterDTO?.customerDTO?.id === firstCustomerId
+    );
+
+    if (!sameCustomer) {
+      Swal.fire('Lỗi', 'Các xe không cùng một khách hàng', 'error');
+      this.selectedVehicles = [];
+      this.selectedCustomer = undefined;
+      return;
+    }
+
+    this.selectedCustomer =
+      this.customers.find(c => c.id === firstCustomerId);
+  }
   // ===== LOAD DATA =====
   loadVehicles(): void {
 
@@ -124,12 +158,13 @@ export class NhapKhoXeComponent {
     if (!this.isBatchValid()) return;
     this.loading = true;
     this.updateVehicleCount();
-    this.recalculateInterest();
+    // this.recalculateInterest();
     this.disbursementService
       .previewDisbursement()
       .subscribe({
         next: (res) => {
           this.previewData = res;
+          this.recalcLimit();
           this.previewData.startDate = new Date();
           this.previewData.loanTerm = 30; // Mặc định 30 ngày
           this.calculatePreviewDueDate();
@@ -219,20 +254,20 @@ export class NhapKhoXeComponent {
     });
   }
   // hàm tính lãi suất
-  recalculateInterest() {
+  // recalculateInterest() {
 
-    if (!this.previewData) return;
+  //   if (!this.previewData) return;
 
-    const principal = Number(this.previewData.disbursementAmount) || 0;
-    const days = Number(this.previewData.loanTerm) || 0;
+  //   const principal = Number(this.previewData.disbursementAmount) || 0;
+  //   const days = Number(this.previewData.loanTerm) || 0;
 
-    const rateDiff = (this.baseRate - this.fundingRate) / 100;
+  //   const rateDiff = (this.baseRate - this.fundingRate) / 100;
 
-    const interest =
-      principal * rateDiff / 365 * days;
+  //   const interest =
+  //     principal * rateDiff / 365 * days;
 
-    this.previewData.interestAmount = Math.round(interest);
-  }
+  //   this.previewData.interestAmount = Math.round(interest);
+  // }
   calculatePreviewDueDate() {
     if (!this.previewData || !this.previewData.startDate || !this.previewData.loanTerm) return;
 
@@ -241,11 +276,18 @@ export class NhapKhoXeComponent {
     due.setDate(start.getDate() + Number(this.previewData.loanTerm));
     this.previewData.dueDate = due;
 
-    this.recalculateInterest(); // thêm dòng này
+    // this.recalculateInterest(); // thêm dòng này
   }
 
   submitBatchLoans() {
 
+
+    if (!this.selectedCustomer) {
+      Swal.fire('Lỗi', 'Không xác định được khách hàng', 'error');
+      return;
+    }
+
+    const customer = this.selectedCustomer;
     this.buildLoanForms();
 
     if (!this.isBatchValid()) return;
@@ -275,8 +317,8 @@ export class NhapKhoXeComponent {
 
       loanStatus: 'ACTIVE',
       loanType: 'VEHICLE',
+      customerDTO: { id: customer.id },
 
-      customerDTO: { id: this.authService.getUserId() ? Number(this.authService.getUserId()) : null },
       vehicleDTO: { id: f.vehicleId }
 
     } as any));
@@ -290,7 +332,9 @@ export class NhapKhoXeComponent {
           this.loading = false;
           this.currentStep = 3;
           this.closePreviewModal();
-
+          // tự động xuất hồ sơ
+          this.exportHoSoNhapKhoZip();
+          this.exportHoSoGiaiNgan();
           Swal.fire({
             title: 'Thành công!',
             text: 'Đã tạo giải ngân, nhập kho và khoản vay thành công.',
@@ -441,6 +485,7 @@ export class NhapKhoXeComponent {
       this.selectedVehicles =
         this.selectedVehicles.filter(v => v.id !== vehicle.id);
     }
+    this.autoDetectCustomer();
     // nếu preview đang mở → auto sync lại
     this.syncDisbursementAmount();
   }
@@ -491,6 +536,18 @@ export class NhapKhoXeComponent {
     a.click();
 
     window.URL.revokeObjectURL(url);
+  }
+  exportHoSoNhapKhoZip() {
+
+    const request: ExportPNKRequest = {
+      importNumber: this.importNumber,
+      vehicleIds: this.importedVehicleIds
+    };
+
+    this.vehicleService.exportHoSoNhapKhoZip(request)
+      .subscribe(blob => {
+        this.download(blob, `HO_SO_NHAP_KHO_${this.importNumber}.zip`);
+      });
   }
   exportPNK() {
 
@@ -576,7 +633,7 @@ export class NhapKhoXeComponent {
 
     this.vehicleService.exportDisbursementPackage(request)
       .subscribe(b =>
-        this.download(b, `HO_SO_GIAI_NGAN_${this.importNumber}.zip`)
+        this.download(b, `HO_SO_GIAI_NGAN_${this.createdDisbursement?.loanContractNumber}.zip`)
       );
   }
   finishNhapKho() {
@@ -599,6 +656,24 @@ export class NhapKhoXeComponent {
     return (this.previewData.disbursementAmount || 0)
       > (this.previewData.remainingLimit || 0);
   }
+  recalcLimit() {
+
+    if (!this.previewData) return;
+
+    const guarantee = Number(this.previewData.issuedGuaranteeBalance) || 0;
+    const vehicleLoan = Number(this.previewData.vehicleLoanBalance) || 0;
+    const realEstateLoan = Number(this.previewData.realEstateLoanBalance) || 0;
+
+    // Tổng đã sử dụng
+    const used = guarantee + vehicleLoan + realEstateLoan;
+
+    this.previewData.usedLimit = used;
+
+    // Hạn mức còn lại = hạn mức tổng - đã sử dụng
+    const creditLimit = Number(this.previewData.creditLimit) || 0;
+
+    this.previewData.remainingLimit = creditLimit - used;
+  }
   recalculateValues() {
 
     if (!this.previewData) return;
@@ -620,7 +695,7 @@ export class NhapKhoXeComponent {
 
     this.previewData.disbursementAmount = this.getTotalLoanAmount();
 
-    this.recalculateInterest(); // thêm dòng này
+    //this.recalculateInterest(); // thêm dòng này
     this.updateVehicleCount();
   }
   updateVehicleCount() {
@@ -647,6 +722,65 @@ export class NhapKhoXeComponent {
     this.previewData![field] = numericValue as any;
 
     event.target.value = this.formatMoney(numericValue);
+  }
+  doneNhapKho(): void {
+
+    Swal.fire({
+      title: 'Hoàn tất?',
+      text: 'Hoàn tất quá trình nhập kho?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Xác nhận',
+      cancelButtonText: 'Hủy',
+      confirmButtonColor: '#028B89'
+    }).then(result => {
+
+      if (!result.isConfirmed) return;
+
+      // Reset toàn bộ state
+      this.resetAllState();
+
+      // Reload danh sách xe
+      this.loadVehicles();
+
+      Swal.fire({
+        title: 'Thành công',
+        text: 'Đã hoàn tất và làm mới dữ liệu.',
+        icon: 'success',
+        confirmButtonColor: '#028B89'
+      });
+
+    });
+  }
+  private resetAllState(): void {
+
+    // Step
+    this.currentStep = 1;
+
+    // Selection
+    this.selectedVehicles = [];
+    this.loanForms = [];
+    this.selectedCustomer = undefined;
+
+    // Preview
+    this.previewData = undefined;
+    this.showPreviewModal = false;
+
+    // Import / Disbursement
+    this.warehouseImportResult = undefined;
+    this.createdDisbursement = undefined;
+    this.createdLoans = [];
+    this.importedVehicleIds = [];
+    this.importNumber = '';
+
+    // Reset filter
+    this.chassisNumber = '';
+    this.status = '';
+    this.manufacturer = '';
+    this.ref = '';
+
+    // Reset paging
+    this.page = 0;
   }
 
 }

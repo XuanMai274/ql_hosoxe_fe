@@ -38,7 +38,7 @@ export class ThemBaoLanhComponent implements OnInit {
   guaranteeForm!: FormGroup;
   exportForm!: FormGroup;
   showAddRepresentativeForm = false;
-
+  private isInitialLoad = true;
   representativeForm!: FormGroup;
   /* ================= DATA ================= */
   brands: Manufacturer[] = [];
@@ -125,7 +125,7 @@ export class ThemBaoLanhComponent implements OnInit {
       creditLimit: [{ value: 0, disabled: true }],
       usedLimit: [{ value: 0, disabled: true }],
       remainingLimit: [{ value: 0, disabled: true }],
-      guaranteeBalance: [0, [Validators.required, Validators.min(0)]],
+      issuedGuaranteeBalance: [0, [Validators.required, Validators.min(0)]],
       vehicleLoanBalance: [0, [Validators.required, Validators.min(0)]],
       realEstateLoanBalance: [0, [Validators.required, Validators.min(0)]],
       guaranteeFee: [0]
@@ -340,30 +340,45 @@ export class ThemBaoLanhComponent implements OnInit {
       saleContract: v.saleContract,
       saleContractAmount: v.saleContractAmount,
       expectedVehicleCount: v.expectedVehicleCount,
-      // Các trường khác như referenceCode, guaranteeNoticeNumber có thể thêm nếu form có
     };
 
-    this.guaranteeService.createGuarantee(payload).subscribe({
-      next: res => {
-        this.currentGuarantee = res;
-        this.selectedCreditContract = res.creditContractDTO;
-        this.fillExportFormFromResponse();
-        this.calculateGuaranteeFee();
-        this.currentStep = 3;
-        this.xuatBoHoSoBaoLanh();
-        // Cập nhật trạng thái đơn hàng (Application) sang APPROVED nếu có applicationId
-        const appId = this.route.snapshot.queryParams['applicationId'];
-        if (appId) {
-          this.officerGuaranteeService.approveApplication(Number(appId)).subscribe({
-            next: () => console.log(`Application ${appId} approved successfully`),
-            error: (err) => console.error(`Failed to approve application ${appId}`, err)
-          });
-        }
+    // Trước khi gọi thêm bảo lãnh, lấy số liệu creditContract mới nhất
+    this.creditContractService.getCreditContractById(Number(v.creditContractId)).subscribe({
+      next: (credit) => {
+        this.selectedCreditContract = credit;
+
+        this.guaranteeService.createGuarantee(payload).subscribe({
+          next: res => {
+            this.currentGuarantee = res;
+            // Gán thông tin creditContract vừa load vào currentGuarantee
+            if (this.currentGuarantee) {
+              this.currentGuarantee.creditContractDTO = credit;
+            }
+
+            this.fillExportFormFromResponse();
+            this.calculateGuaranteeFee();
+            this.currentStep = 3;
+            // Bỏ gọi tự động xuất file: this.xuatBoHoSoBaoLanh();
+
+            // Cập nhật trạng thái đơn hàng (Application) sang APPROVED nếu có applicationId
+            const appId = this.route.snapshot.queryParams['applicationId'];
+            if (appId) {
+              this.officerGuaranteeService.approveApplication(Number(appId)).subscribe({
+                next: () => console.log(`Application ${appId} approved successfully`),
+                error: (err) => console.error(`Failed to approve application ${appId}`, err)
+              });
+            }
+          },
+          error: err => {
+            console.error("Error creating guarantee:", err);
+            const msg = err.error?.message || "Có lỗi xảy ra khi lưu bảo lãnh (Bad Request)";
+            alert("Lỗi: " + msg);
+          }
+        });
       },
-      error: err => {
-        console.error("Error creating guarantee:", err);
-        const msg = err.error?.message || "Có lỗi xảy ra khi lưu bảo lãnh (Bad Request)";
-        alert("Lỗi: " + msg);
+      error: (err) => {
+        console.error("Error fetching credit contract:", err);
+        alert("Không thể lấy thông tin hợp đồng tín dụng");
       }
     });
   }
@@ -372,24 +387,39 @@ export class ThemBaoLanhComponent implements OnInit {
     const contract = this.selectedCreditContract;
     if (!contract) return;
 
+    this.isInitialLoad = true;
+
     this.exportForm.patchValue({
       creditLimit: contract.creditLimit ?? 0,
       usedLimit: contract.usedLimit ?? 0,
       remainingLimit: contract.remainingLimit ?? 0,
-      guaranteeBalance: contract.guaranteeBalance ?? 0,
+      issuedGuaranteeBalance: contract.issuedGuaranteeBalance ?? 0,
       vehicleLoanBalance: contract.vehicleLoanBalance ?? 0,
       realEstateLoanBalance: contract.realEstateLoanBalance ?? 0
     }, { emitEvent: false });
+
+    this.isInitialLoad = false;
   }
 
   /* ================= EXPORT ================= */
 
   private buildGuaranteePayload(): GuaranteeLetter {
     const v = this.exportForm.getRawValue();
+    const payload = { ...this.currentGuarantee! };
+    if (payload.creditContractDTO) {
+      payload.creditContractDTO = {
+        ...payload.creditContractDTO,
+        usedLimit: v.usedLimit,
+        remainingLimit: v.remainingLimit,
+        issuedGuaranteeBalance: v.issuedGuaranteeBalance,
+        vehicleLoanBalance: v.vehicleLoanBalance,
+        realEstateLoanBalance: v.realEstateLoanBalance
+      };
+    }
     return {
-      ...this.currentGuarantee!,
+      ...payload,
       usedAmount: v.usedLimit,
-      totalGuaranteeAmount: v.creditLimit - v.remainingLimit, // Or whatever logic
+      totalGuaranteeAmount: v.creditLimit - v.remainingLimit,
       remainingAmount: v.remainingLimit
     };
   }
@@ -398,8 +428,8 @@ export class ThemBaoLanhComponent implements OnInit {
     const v = this.exportForm.getRawValue();
     return {
       usedAmount: v.usedLimit,
-      guaranteeBalance: v.guaranteeBalance,
-      shortTermLoanBalance: v.vehicleLoanBalance, // Map fields accordingly
+      guaranteeBalance: v.issuedGuaranteeBalance,
+      shortTermLoanBalance: v.vehicleLoanBalance,
       totalGuaranteeAmount: v.usedLimit,
       remainingAmount: v.remainingLimit
     };
@@ -554,18 +584,21 @@ export class ThemBaoLanhComponent implements OnInit {
   }
 
   private listenCalculateRemaining() {
-    this.exportForm.valueChanges.subscribe(val => {
-      const creditLimit = val.creditLimit ?? 0;
-      const vehicle = val.vehicleLoanBalance ?? 0;
-      const guarantee = val.guaranteeBalance ?? 0;
-      const realEstate = val.realEstateLoanBalance ?? 0;
+    this.exportForm.valueChanges.subscribe(() => {
+      if (this.isInitialLoad) return;
+
+      const v = this.exportForm.getRawValue();
+      const creditLimit = v.creditLimit ?? 0;
+      const vehicle = v.vehicleLoanBalance ?? 0;
+      const guarantee = v.issuedGuaranteeBalance ?? 0;
+      const realEstate = v.realEstateLoanBalance ?? 0;
 
       const used = vehicle + guarantee + realEstate;
       const remaining = creditLimit - used;
 
       this.exportForm.patchValue({
         usedLimit: used,
-        remainingLimit: remaining < 0 ? 0 : remaining
+        remainingLimit: remaining
       }, { emitEvent: false });
     });
   }

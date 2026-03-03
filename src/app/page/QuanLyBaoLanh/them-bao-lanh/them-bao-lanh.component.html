@@ -274,8 +274,8 @@
               </div>
               <div class="step3-field">
                 <label>Số dư bảo lãnh</label>
-                <input type="text" [value]="formatMoney(exportForm.get('guaranteeBalance')?.value)"
-                  (input)="onMoneyInput($event, 'guaranteeBalance')" />
+                <input type="text" [value]="formatMoney(exportForm.get('issuedGuaranteeBalance')?.value)"
+                  (input)="onMoneyInput($event, 'issuedGuaranteeBalance')" />
               </div>
               <div class="step3-field">
                 <label>Dư nợ vay BĐS</label>

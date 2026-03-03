@@ -555,3 +555,72 @@
   color: #1a1a1a;
   font-weight: 600;
 }
+/* ============================= */
+/* INTEREST MODAL */
+/* ============================= */
+
+.interest-modal {
+    max-width: 1000px;
+}
+
+.interest-summary {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.interest-count {
+    font-weight: 600;
+    color: #028B89;
+}
+
+.interest-table-wrapper {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow-x: auto;
+    background: #ffffff;
+}
+
+.interest-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.interest-table th {
+    padding: 14px 20px;
+    background: #f8fafc;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.interest-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    color: #334155;
+}
+
+.interest-table tr:hover {
+    background-color: #f8fafc;
+}
+
+.loan-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #1a56db;
+}
+
+.customer-name {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.interest-input {
+    width: 180px;
+    text-align: right;
+}
