@@ -1,7 +1,7 @@
 <div class="page-container">
 
-    <!-- ===== PAGE BANNER ===== -->
-    <!-- <div class="page-banner">
+  <!-- ===== PAGE BANNER ===== -->
+  <!-- <div class="page-banner">
         <div class="banner-left">
             <div class="banner-badge">
                 <i class="fa-solid fa-warehouse"></i> Nghiệp vụ khách hàng
@@ -14,212 +14,216 @@
         </div>
     </div> -->
 
-    <!-- ===== QUICK STATS ===== -->
-    <div class="stats-row" *ngIf="!loading && !error">
-        <div class="stat-pill">
-            <i class="fa-solid fa-file-invoice"></i>
-            <span class="pill-value">{{totalElements}}</span>
-            <span class="pill-label">Tổng phiếu nhập</span>
-        </div>
-        <div class="stat-pill green">
-            <i class="fa-solid fa-car-side"></i>
-            <span class="pill-value">{{ totalVehicles }}</span>
-            <span class="pill-label">Tổng số xe</span>
-        </div>
-        <div class="stat-pill orange">
-            <i class="fa-solid fa-calendar-check"></i>
-            <span class="pill-value">{{ list.length > 0 ? formatDate(list[0].createdAt) : 'N/A' }}</span>
-            <span class="pill-label">Cập nhật gần nhất</span>
-        </div>
+  <!-- ===== QUICK STATS ===== -->
+  <div class="stats-row" *ngIf="!loading && !error">
+    <div class="stat-pill">
+      <i class="fa-solid fa-file-invoice"></i>
+      <span class="pill-value">{{totalElements}}</span>
+      <span class="pill-label">Tổng phiếu nhập</span>
+    </div>
+    <div class="stat-pill green">
+      <i class="fa-solid fa-car-side"></i>
+      <span class="pill-value">{{ totalVehicles }}</span>
+      <span class="pill-label">Tổng số xe</span>
+    </div>
+    <div class="stat-pill orange">
+      <i class="fa-solid fa-calendar-check"></i>
+      <span class="pill-value">{{ list.length > 0 ? formatDate(list[0].createdAt) : 'N/A' }}</span>
+      <span class="pill-label">Cập nhật gần nhất</span>
+    </div>
+  </div>
+
+  <!-- ===== LOADING ===== -->
+  <div class="state-box" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <!-- ===== ERROR ===== -->
+  <div class="state-box error" *ngIf="!loading && error">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <p>{{ error }}</p>
+    <button class="btn-retry" (click)="loadData()">
+      <i class="fa-solid fa-rotate-right"></i> Thử lại
+    </button>
+  </div>
+
+  <!-- ===== EMPTY STATE ===== -->
+  <div class="state-box" *ngIf="!loading && !error && list.length === 0">
+    <i class="fa-solid fa-warehouse empty-icon"></i>
+    <h3>Chưa có phiếu nhập kho</h3>
+    <p>Hiện tại chưa có phiếu nhập kho nào được tạo cho tài khoản của bạn.</p>
+  </div>
+
+  <!-- ===== TABLE ===== -->
+  <div class="table-card" *ngIf="!loading && !error && list.length > 0">
+    <div class="table-header">
+      <div class="table-title">
+        <i class="fa-solid fa-list-ul"></i>
+        Danh sách phiếu nhập kho
+      </div>
+      <span class="record-count">{{ totalElements }} phiếu</span>
+    </div>
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th class="text-center" style="width:56px">STT</th>
+            <th>Số phiếu nhập</th>
+            <th>Hãng xe</th>
+            <th>Số HĐBD</th>
+            <th>Ngày nhập kho</th>
+            <th class="text-center">Số lượng xe</th>
+            <th class="text-center" style="width:130px">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of list; let i = index" (click)="openDetail(item)" class="clickable-row">
+            <td class="text-center stt-cell">{{ page * size + i + 1 }}</td>
+            <td class="code-cell font-bold">{{ item.importNumber || '—' }}</td>
+            <td>
+              <span class="tag-pill" [class]="getManufacturerClass(item)">
+                {{ item.manufacturerDTO?.name || '—' }}
+              </span>
+            </td>
+            <td class="code-cell">{{ item.mortgageContractDTO?.contractNumber || '—' }}</td>
+            <td>{{ formatDate(item.createdAt) }}</td>
+            <td class="text-center">
+              <span class="count-chip">{{ item.vehicleIds.length || 0 }} xe</span>
+            </td>
+            <td class="text-center">
+              <button class="btn-view" (click)="openDetail(item); $event.stopPropagation()">
+                <i class="fa-solid fa-eye"></i> Xem
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <!-- ===== LOADING ===== -->
-    <div class="state-box" *ngIf="loading">
-        <div class="spinner"></div>
-        <p>Đang tải dữ liệu...</p>
-    </div>
-
-    <!-- ===== ERROR ===== -->
-    <div class="state-box error" *ngIf="!loading && error">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <p>{{ error }}</p>
-        <button class="btn-retry" (click)="loadData()">
-            <i class="fa-solid fa-rotate-right"></i> Thử lại
-        </button>
-    </div>
-
-    <!-- ===== EMPTY STATE ===== -->
-    <div class="state-box" *ngIf="!loading && !error && list.length === 0">
-        <i class="fa-solid fa-warehouse empty-icon"></i>
-        <h3>Chưa có phiếu nhập kho</h3>
-        <p>Hiện tại chưa có phiếu nhập kho nào được tạo cho tài khoản của bạn.</p>
-    </div>
-
-    <!-- ===== TABLE ===== -->
-    <div class="table-card" *ngIf="!loading && !error && list.length > 0">
-        <div class="table-header">
-            <div class="table-title">
-                <i class="fa-solid fa-list-ul"></i>
-                Danh sách phiếu nhập kho
-            </div>
-            <span class="record-count">{{ totalElements }} phiếu</span>
-        </div>
-        <div class="table-responsive">
-            <table class="modern-table">
-                <thead>
-                    <tr>
-                        <th class="text-center" style="width:56px">STT</th>
-                        <th>Số phiếu nhập</th>
-                        <th>Hãng xe</th>
-                        <th>Số HĐBD</th>
-                        <th>Ngày nhập kho</th>
-                        <th class="text-center">Số lượng xe</th>
-                        <th class="text-center" style="width:130px">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let item of list; let i = index" (click)="openDetail(item)" class="clickable-row">
-                        <td class="text-center stt-cell">{{ page * size + i + 1 }}</td>
-                        <td class="code-cell font-bold">{{ item.importNumber || '—' }}</td>
-                        <td>
-                            <span class="tag-pill" [class]="getManufacturerClass(item)">
-                                {{ item.manufacturerDTO?.name || '—' }}
-                            </span>
-                        </td>
-                        <td class="code-cell">{{ item.mortgageContractDTO?.contractNumber || '—' }}</td>
-                        <td>{{ formatDate(item.createdAt) }}</td>
-                        <td class="text-center">
-                            <span class="count-chip">{{ item.vehicleIds.length || 0 }} xe</span>
-                        </td>
-                        <td class="text-center">
-                            <button class="btn-view" (click)="openDetail(item); $event.stopPropagation()">
-                                <i class="fa-solid fa-eye"></i> Xem
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- PAGINATION -->
-        <div class="pagination-bar" *ngIf="totalPages > 1">
-            <span class="page-info">Hiển thị {{ page * size + 1 }}–{{ (page * size) + list.length }} / {{ totalElements
+    <!-- PAGINATION -->
+    <div class="pagination-bar" *ngIf="totalPages > 1">
+      <span class="page-info">Hiển thị {{ page * size + 1 }}–{{ (page * size) + list.length }} / {{ totalElements
                 }} phiếu</span>
-            <div class="page-actions">
-                <button class="page-btn" (click)="prev()" [disabled]="page === 0">
-                    <i class="fa-solid fa-chevron-left"></i> Trước
-                </button>
-                <span class="page-tag">{{ page + 1 }} / {{ totalPages }}</span>
-                <button class="page-btn" (click)="next()" [disabled]="page + 1 >= totalPages">
-                    Tiếp <i class="fa-solid fa-chevron-right"></i>
-                </button>
-            </div>
-        </div>
+      <div class="page-actions">
+        <button class="page-btn" (click)="prev()" [disabled]="page === 0">
+          <i class="fa-solid fa-chevron-left"></i> Trước
+        </button>
+        <span class="page-tag">{{ page + 1 }} / {{ totalPages }}</span>
+        <button class="page-btn" (click)="next()" [disabled]="page + 1 >= totalPages">
+          Tiếp <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- ===== MODAL CHI TIẾT ===== -->
 <div class="modal-overlay" *ngIf="showDetail" (click)="closeDetail()">
-    <div class="modal-panel" (click)="$event.stopPropagation()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
 
-        <div class="modal-header">
-            <div class="modal-title-wrap">
-                <div class="modal-icon">
-                    <i class="fa-solid fa-warehouse"></i>
-                </div>
-                <div>
-                    <h2>Chi tiết phiếu nhập kho</h2>
-                    <p class="modal-subtitle">{{ selectedItem?.importNumber }}</p>
-                </div>
-            </div>
-            <button class="btn-close-modal" (click)="closeDetail()">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon">
+          <i class="fa-solid fa-warehouse"></i>
         </div>
-
-        <div class="modal-body" *ngIf="selectedItem">
-
-            <!-- Thông tin cơ bản -->
-            <div class="info-section">
-                <h3 class="section-title">
-                    <i class="fa-solid fa-circle-info"></i> Thông tin đơn nhập kho
-                </h3>
-                <div class="info-grid">
-                    <div class="info-box">
-                        <span class="info-label">Số phiếu nhập</span>
-                        <span class="info-val code-val primary">{{ selectedItem.importNumber }}</span>
-                    </div>
-                    <div class="info-box">
-                        <span class="info-label">Hãng xe</span>
-                        <span class="info-val">
-                            <span class="tag-pill" [class]="getManufacturerClass(selectedItem)">
-                                {{ selectedItem.manufacturerDTO?.name || '—' }}
-                            </span>
-                        </span>
-                    </div>
-                    <div class="info-box">
-                        <span class="info-label">Số HĐBD</span>
-                        <span class="info-val code-val">{{ selectedItem.mortgageContractDTO?.contractNumber || '—'
-                            }}</span>
-                    </div>
-                    <div class="info-box">
-                        <span class="info-label">Ngày nhập kho</span>
-                        <span class="info-val">{{ formatDate(selectedItem.createdAt) }}</span>
-                    </div>
-                    <div class="info-box">
-                        <span class="info-label">Tổng số xe</span>
-                        <span class="info-val success-text">
-                            {{  selectedItem.vehicleIds.length || 0 }} xe
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Danh sách xe -->
-            <div class="vehicles-section"
-                *ngIf="!loadingDetail && selectedItem.vehicles && selectedItem.vehicles.length > 0">
-                <h3 class="section-title">
-                    <i class="fa-solid fa-car-side"></i> Danh sách xe nhập kho
-                    <span class="count-badge">{{ selectedItem.vehicles.length }}</span>
-                </h3>
-                <div class="inner-table-wrap">
-                    <table class="inner-table">
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Tên xe</th>
-                                <th>Số khung</th>
-                                <th>Số máy</th>
-                                <th>Màu sắc</th>
-                                <th>Giá xe</th>
-                                <th>Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let v of selectedItem.vehicles; let i = index">
-                                <td class="text-center">{{ i + 1 }}</td>
-                                <td class="vehicle-name">{{ v.vehicleName }}</td>
-                                <td class="code-cell">{{ v.chassisNumber || '—' }}</td>
-                                <td class="code-cell">{{ v.engineNumber || '—' }}</td>
-                                <td>{{ v.color || '—' }}</td>
-                                <td class="amount-cell">{{ formatCurrency(v.price) }}</td>
-                                <td>
-                                    <span class="status-badge" [class]="getVehicleStatusClass(v.status)">
-                                        {{ v.status || '—' }}
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- No vehicles -->
-            <div class="no-data-box"
-                *ngIf="!loadingDetail && (!selectedItem.vehicles || selectedItem.vehicles.length === 0)">
-                <i class="fa-solid fa-car-side"></i>
-                <p>Không có dữ liệu xe</p>
-            </div>
+        <div>
+          <h2>Chi tiết phiếu nhập kho</h2>
+          <p class="modal-subtitle">{{ selectedItem?.importNumber }}</p>
         </div>
+      </div>
+      <button class="btn-close-modal" (click)="closeDetail()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
+
+    <div class="modal-body" *ngIf="selectedItem">
+
+      <!-- Thông tin cơ bản -->
+      <div class="info-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-circle-info"></i> Thông tin đơn nhập kho
+        </h3>
+        <div class="info-grid">
+          <div class="info-box">
+            <span class="info-label">Số phiếu nhập</span>
+            <span class="info-val code-val primary">{{ selectedItem.importNumber }}</span>
+          </div>
+          <div class="info-box">
+            <span class="info-label">Hãng xe</span>
+            <span class="info-val">
+              <span class="tag-pill" [class]="getManufacturerClass(selectedItem)">
+                {{ selectedItem.manufacturerDTO?.name || '—' }}
+              </span>
+            </span>
+          </div>
+          <div class="info-box">
+            <span class="info-label">Số HĐBD</span>
+            <span class="info-val code-val">{{ selectedItem.mortgageContractDTO?.contractNumber || '—'
+                            }}</span>
+          </div>
+          <div class="info-box">
+            <span class="info-label">Ngày nhập kho</span>
+            <span class="info-val">{{ formatDate(selectedItem.createdAt) }}</span>
+          </div>
+          <div class="info-box">
+            <span class="info-label">Tổng số xe</span>
+            <span class="info-val success-text">
+              {{  selectedItem.vehicleIds.length || 0 }} xe
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danh sách xe -->
+      <div class="vehicles-section" *ngIf="!loadingDetail && selectedItem.vehicles && selectedItem.vehicles.length > 0">
+        <h3 class="section-title">
+          <i class="fa-solid fa-car-side"></i> Danh sách xe nhập kho
+          <span class="count-badge">{{ selectedItem.vehicles.length }}</span>
+        </h3>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Tên xe</th>
+                <th>Số khung</th>
+                <th>Số máy</th>
+                <th>Màu sắc</th>
+                <th>Giá xe</th>
+                <th>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let v of selectedItem.vehicles; let i = index">
+                <td class="text-center">{{ i + 1 }}</td>
+                <td class="vehicle-name">{{ v.vehicleName }}</td>
+                <td class="code-cell">{{ v.chassisNumber || '—' }}</td>
+                <td class="code-cell">{{ v.engineNumber || '—' }}</td>
+                <td>{{ v.color || '—' }}</td>
+                <td class="amount-cell">{{ formatCurrency(v.price) }}</td>
+                <td>
+                  <span class="status-badge" [class]="getVehicleStatusClass(v.status)">
+                    {{ v.status || '—' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- No vehicles -->
+      <div class="no-data-box" *ngIf="!loadingDetail && (!selectedItem.vehicles || selectedItem.vehicles.length === 0)">
+        <i class="fa-solid fa-car-side"></i>
+        <p>Không có dữ liệu xe</p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-export" (click)="exportHoSoXuatKho()" [disabled]="exporting">
+      <i class="fa-solid fa-file-zipper"></i>
+      {{ exporting ? 'Đang xuất...' : 'Xuất hồ sơ xuất kho' }}
+    </button>
+  </div>
 </div>

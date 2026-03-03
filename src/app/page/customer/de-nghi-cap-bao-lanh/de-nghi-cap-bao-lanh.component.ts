@@ -258,7 +258,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
                 this.submitting = false;
                 this.closeForm();
                 this.loadData(0);
-                this.downloadZip(res.id, res.subGuaranteeContractNumber);
+                this.exportAllFiles(res.id, res.subGuaranteeContractNumber);
             },
             error: (err) => {
                 console.error(err);
@@ -353,6 +353,26 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
             },
 
             error: () => {
+                this.submitting = false;
+                alert('Lỗi khi xuất file');
+            }
+        });
+    }
+    exportAllFiles(id: number, contractNumber: string) {
+
+        this.submitting = true;
+
+        this.guaranteeAppService.exportAll(id).subscribe({
+
+            next: (blob: Blob) => {
+
+                saveAs(blob, `${contractNumber}.zip`);
+
+                this.submitting = false;
+            },
+
+            error: (err) => {
+                console.error(err);
                 this.submitting = false;
                 alert('Lỗi khi xuất file');
             }

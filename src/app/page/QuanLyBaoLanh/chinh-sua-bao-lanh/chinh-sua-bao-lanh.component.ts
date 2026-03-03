@@ -299,7 +299,7 @@ export class ChinhSuaBaoLanhComponent {
           this.buildForm(updated);
 
           Swal.fire('Thành công', 'Đã lưu dữ liệu', 'success')
-            .then(() => this.router.navigate(['/guarantee-letters']));
+            .then(() => this.router.navigate(['/manager/danh-sach-bao-lanh']));
         },
         error: () => Swal.fire('Lỗi', 'Không thể cập nhật', 'error')
       });

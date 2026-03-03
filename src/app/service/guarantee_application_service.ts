@@ -46,6 +46,14 @@ export class GuaranteeApplicationService {
       { responseType: 'blob' }
     );
   }
+  exportAll(id: number) {
+    return this.http.get(
+      `http://localhost:8080/customer/guarantee-export/export-all/${id}`,
+      {
+        responseType: 'blob'
+      }
+    );
+  }
 
   /**
    * Xem chi tiết một đề nghị bảo lãnh

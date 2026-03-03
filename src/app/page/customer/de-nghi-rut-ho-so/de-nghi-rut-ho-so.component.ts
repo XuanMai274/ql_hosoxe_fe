@@ -6,6 +6,8 @@ import { Vehicle } from '../../../models/vehicle';
 import { WarehouseExportDTO } from '../../../models/warehouseExport.model';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { switchMap } from 'rxjs';
+import { WarehouseExportService } from '../../../service/warehouse-export.service';
 
 @Component({
     selector: 'app-de-nghi-rut-ho-so',
@@ -20,7 +22,7 @@ export class DeNghiRutHoSoComponent implements OnInit {
     filteredVehicles: Vehicle[] = [];
     vehicles: Vehicle[] = [];
     selectedVehicles: Vehicle[] = [];
-
+    exportResult?: WarehouseExportDTO;
     loading = false;
     currentStep = 1;
     today = new Date();
@@ -38,7 +40,8 @@ export class DeNghiRutHoSoComponent implements OnInit {
 
     constructor(
         private service: CustomerWarehouseService,
-        private router: Router
+        private router: Router,
+        private exportService: WarehouseExportService
     ) { }
 
     get totalGuaranteeAmount(): number {
@@ -73,7 +76,6 @@ export class DeNghiRutHoSoComponent implements OnInit {
             }
         });
     }
-
     // ===== SEARCH =====
     search(): void {
         this.page = 0;
@@ -141,16 +143,55 @@ export class DeNghiRutHoSoComponent implements OnInit {
         if (this.selectedVehicles.length === 0) return;
 
         this.loading = true;
-        const dto: WarehouseExportDTO = {
-            vehicleIds: this.selectedVehicles.map(v => v.id!).filter(id => !!id)
+
+        const vehicleIds = this.selectedVehicles
+            .map(v => v.id!)
+            .filter(id => !!id);
+
+        const requestDto: WarehouseExportDTO = {
+            vehicleIds: vehicleIds
         };
 
-        this.service.requestExport(dto).subscribe({
-            next: (res) => {
+        this.service.requestExport(requestDto).pipe(
+            switchMap((res: WarehouseExportDTO) => {
+
+                this.exportResult = res;
+                // if (res.id) {
+                //     this.exportService.getVehiclesByExportId(res.id).subscribe({
+                //         next: (data) => {
+                //             this.vehicles = data;
+                //         },
+                //         error: (err) => {
+                //             console.error('Error loading vehicles for request:', err);
+                //         }
+                //     });
+                // }
+                console.log("WareHouseEx trả về: ",this.exportResult);
+                const exportDto: WarehouseExportDTO = {
+                    id: res.id,
+                    vehicleIds: vehicleIds   // GIỮ NGUYÊN danh sách ban đầu
+                };
+
+                return this.service.exportSpecific(this.exportResult);
+            })
+        ).subscribe({
+            next: (blob: Blob) => {
+
                 this.loading = false;
+
+                const fileName = `XuatKho_${new Date().getTime()}.zip`;
+                const link = document.createElement('a');
+                const url = window.URL.createObjectURL(blob);
+
+                link.href = url;
+                link.download = fileName;
+                link.click();
+
+                window.URL.revokeObjectURL(url);
+
                 Swal.fire({
                     title: 'Thành công!',
-                    text: 'Yêu cầu rút hồ sơ xe đã được gửi đi.',
+                    text: 'Tạo yêu cầu và xuất file thành công.',
                     icon: 'success',
                     confirmButtonColor: '#028B89'
                 }).then(() => {
@@ -159,12 +200,10 @@ export class DeNghiRutHoSoComponent implements OnInit {
             },
             error: (err) => {
                 this.loading = false;
-                console.error('Lỗi gửi yêu cầu:', err);
-                Swal.fire('Lỗi', err.error || 'Có lỗi xảy ra khi gửi yêu cầu.', 'error');
+                Swal.fire('Lỗi', err.error || 'Tạo yêu cầu thất bại.', 'error');
             }
         });
     }
-
     formatCurrency(amount?: number): string {
         if (!amount) return '—';
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CustomerWarehouseService } from '../../../service/customer-warehouse.service';
 import { WarehouseImportDTO } from '../../../models/warehouseImport.model';
 import { Vehicle } from '../../../models/vehicle';
+import { ExportPNKRequest } from '../../../models/exportPNK-request';
 
 @Component({
   selector: 'app-de-nghi-nhap-kho',
@@ -16,7 +17,7 @@ export class DeNghiNhapKhoComponent implements OnInit {
   list: WarehouseImportDTO[] = [];
   loading = true;
   error = '';
-
+  exporting = false;
   // Phân trang
   page = 0;
   size = 10;
@@ -54,6 +55,44 @@ export class DeNghiNhapKhoComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+  exportHoSoXuatKho(): void {
+
+    if (!this.selectedItem) return;
+
+    const vehicleIds = (this.selectedItem.vehicleIds || [])
+      .filter((id): id is number => id !== undefined);
+
+    if (vehicleIds.length === 0) {
+      alert('Không có phương tiện để xuất.');
+      return;
+    }
+
+    const request: ExportPNKRequest = {
+      importNumber: this.selectedItem.importNumber!, 
+      vehicleIds: vehicleIds
+    };
+
+    this.exporting = true;
+
+    this.service.exportCustomerExportZip(request)
+      .subscribe({
+        next: (blob: Blob) => {
+
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${request.importNumber}.zip`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+
+          this.exporting = false;
+        },
+        error: () => {
+          alert('Xuất hồ sơ thất bại.');
+          this.exporting = false;
+        }
+      });
   }
 
   next() {
