@@ -12,6 +12,7 @@ export interface MortgageContract {
   status?: string;
 
   customerId?: number;
+  customerDTO?: any;
   manufacturerId?: number;
 
   creditContractIds?: number[];

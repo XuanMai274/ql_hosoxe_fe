@@ -17,6 +17,13 @@
       </a>
     </li>
 
+    <li routerLinkActive="active">
+      <a [routerLink]="'/manager/thong-ke'">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Thống kê tổng quan</span>
+      </a>
+    </li>
+
     <!-- NHÓM CHỨC NĂNG NGHIỆP VỤ -->
     <ng-container *ngIf="hasRole(['officer', 'manager', 'manager_1'])">
       <li class="separator"><span>NGHIỆP VỤ</span></li>
@@ -89,6 +96,18 @@
             <a [routerLink]="'/manager/nhap-kho-xe'">
               <i class="fa-solid fa-warehouse"></i>
               <span>Nhập kho xe</span>
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/quan-ly-nhap-kho'">
+              <i class="fa-solid fa-file-invoice"></i>
+              <span>Quản lý nhập kho</span>
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/quan-ly-xuat-kho'">
+              <i class="fa-solid fa-truck-ramp-box"></i>
+              <span>Quản lý xuất kho</span>
             </a>
           </li>
           <li routerLinkActive="active">

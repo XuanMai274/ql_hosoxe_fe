@@ -1,77 +1,262 @@
-<div class="management-container">
-    <div class="header-section">
-        <div class="title-wrap">
-            <h1><i class="fa-solid fa-file-invoice-dollar"></i> Quản lý Đơn hàng Bảo lãnh</h1>
-            <p>Danh sách các yêu cầu bảo lãnh từ khách hàng cần xử lý</p>
+<div class="page-container">
+
+    <!-- ===== HEADER ===== -->
+    <div class="page-header">
+        <div class="header-left">
+            <h1 class="page-title">Duyệt đơn bảo lãnh</h1>
+            <p class="page-subtitle">Xem và xử lý các yêu cầu bảo lãnh từ khách hàng</p>
         </div>
-        <div class="action-wrap">
+        <div class="header-actions">
             <button class="btn-refresh" (click)="loadApplications()" [disabled]="isLoading">
                 <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="isLoading"></i> Làm mới
             </button>
         </div>
     </div>
 
-    <div class="table-card glass-card">
-        <div class="table-responsive">
+    <!-- ===== STATISTICS ===== -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon-box teal-box">
+                <i class="fa-solid fa-car"></i>
+            </div>
+            <div class="stat-text">
+                <span class="stat-label">Tổng số xe</span>
+                <span class="stat-value">{{ statistics.totalVehicles | number }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon-box amber-box">
+                <i class="fa-solid fa-warehouse"></i>
+            </div>
+            <div class="stat-text">
+                <span class="stat-label">Giữ trong kho</span>
+                <span class="stat-value">{{ statistics.inWarehouseCount | number }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon-box green-box">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+            <div class="stat-text">
+                <span class="stat-label">Đã giải ngân</span>
+                <span class="stat-value">{{ statistics.disbursedCount | number }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TABLE CARD ===== -->
+    <div class="table-card">
+        <div class="table-header">
+            <div class="table-title">
+                <i class="fa-solid fa-list-check"></i>
+                Danh sách đơn bảo lãnh
+            </div>
+            <span class="record-count">{{ totalElements }} đơn</span>
+        </div>
+
+        <!-- Loading -->
+        <div class="state-box" *ngIf="isLoading">
+            <div class="spinner"></div>
+            <p>Đang tải dữ liệu...</p>
+        </div>
+
+        <div class="table-responsive" *ngIf="!isLoading">
             <table class="modern-table">
                 <thead>
                     <tr>
-                        <th>STT</th>
+                        <th style="width:56px" class="text-center">STT</th>
                         <th>Khách hàng</th>
                         <th>Hãng sản xuất</th>
-                        <th>Số lượng xe dự kiến</th>
-                        <th>Số tiền dự kiến</th>
+                        <th class="text-center">Số lượng xe</th>
+                        <th class="text-right">Số tiền dự kiến</th>
                         <th>Ngày gửi</th>
                         <th>Trạng thái</th>
-                        <th class="text-center">Thao tác</th>
+                        <th class="text-center" style="width:200px">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let app of applications; let i = index">
-                        <td>{{ currentPage * pageSize + i + 1 }}</td>
+                    <tr *ngFor="let app of applications; let i = index" class="clickable-row">
+                        <td class="text-center stt-cell">{{ currentPage * pageSize + i + 1 }}</td>
                         <td>
-                            <div class="user-info">
-                                <span class="user-name">{{ app.customerDTO?.customerName }}</span>
-                                <span class="user-sub">{{ app.customerDTO?.email }}</span>
+                            <div class="customer-cell">
+                                <span class="customer-name">{{ app.customerDTO?.customerName }}</span>
+                                <span class="customer-email">{{ app.customerDTO?.email }}</span>
                             </div>
                         </td>
-                        <td>{{ app.manufacturerDTO?.name }}</td>
-                        <td>{{ app.totalVehicleCount || 0 }} xe</td>
-                        <td>{{ app.totalGuaranteeAmount | number:'1.0-0' }} VNĐ</td>
-                        <td>{{ app.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td>
+                            <span class="tag-pill">{{ app.manufacturerDTO?.name || '—' }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="count-chip">{{ app.totalVehicleCount || 0 }} xe</span>
+                        </td>
+                        <td class="text-right amount-cell">{{ app.totalGuaranteeAmount | number:'1.0-0' }} đ</td>
+                        <td class="date-cell">{{ app.createdAt | date:'dd/MM/yyyy' }}<br>
+                            <small>{{ app.createdAt | date:'HH:mm' }}</small>
+                        </td>
                         <td>
                             <span class="status-badge" [ngClass]="getStatusClass(app.status)">
                                 {{ getStatusText(app.status) }}
                             </span>
                         </td>
-                        <td>
-                            <div class="action-buttons" *ngIf="isPending(app.status)">
-                                <button class="btn-action btn-approve" (click)="onApprove(app)"
-                                    title="Lập hồ sơ bảo lãnh">
-                                    <i class="fa-solid fa-file-signature"></i> Lập hồ sơ
+                        <td class="text-center">
+                            <div class="action-group">
+                                <button class="btn-view" (click)="openDetail(app)" title="Xem chi tiết">
+                                    <i class="fa-solid fa-eye"></i> Xem
                                 </button>
-                                <button class="btn-action btn-reject" (click)="onReject(app)" title="Từ chối">
-                                    <i class="fa-solid fa-xmark"></i> Từ chối
-                                </button>
-                            </div>
-                            <div class="action-buttons" *ngIf="!isPending(app.status)">
-                                <span class="processed-info">Đã xử lý</span>
+                                <ng-container *ngIf="isPending(app.status)">
+                                    <button class="btn-approve-inline" (click)="onApprove(app)"
+                                        title="Lập hồ sơ bảo lãnh">
+                                        <i class="fa-solid fa-file-signature"></i> Lập hồ sơ
+                                    </button>
+                                    <button class="btn-reject-inline" (click)="onReject(app)" title="Từ chối">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </ng-container>
+                                <span class="processed-label" *ngIf="!isPending(app.status)">Đã xử lý</span>
                             </div>
                         </td>
                     </tr>
                     <tr *ngIf="applications.length === 0 && !isLoading">
-                        <td colspan="8" class="empty-state">
+                        <td colspan="8" class="no-data">
                             <i class="fa-solid fa-folder-open"></i>
-                            <p>Chưa có đơn hàng bảo lãnh nào cần xử lý</p>
+                            <p>Chưa có đơn bảo lãnh nào cần xử lý</p>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- Pagination placeholder -->
-        <div class="pagination-section" *ngIf="totalElements > pageSize">
-            <!-- Thêm logic phân trang nếu cần -->
+        <!-- Pagination -->
+        <div class="pagination-bar" *ngIf="totalElements > pageSize">
+            <span class="page-info">Tổng {{ totalElements }} đơn</span>
+            <div class="page-actions">
+                <button class="page-btn" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0">
+                    <i class="fa-solid fa-chevron-left"></i> Trước
+                </button>
+                <div class="page-numbers">
+                    <span class="page-tag active">{{ currentPage + 1 }}</span>
+                    / {{ totalPages }}
+                </div>
+                <button class="page-btn" (click)="onPageChange(currentPage + 1)"
+                    [disabled]="(currentPage + 1) * pageSize >= totalElements">
+                    Tiếp <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL CHI TIẾT ===== -->
+<div class="modal-overlay" *ngIf="showDetailModal" (click)="closeDetail()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <div class="modal-title-wrap">
+                <div class="modal-icon">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                </div>
+                <div>
+                    <h2>Chi tiết Đơn bảo lãnh</h2>
+                    <p class="modal-subtitle">Mã đơn: <strong>{{ selectedApp?.applicationNumber || '—' }}</strong></p>
+                </div>
+            </div>
+            <button class="btn-close-modal" (click)="closeDetail()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <!-- Loader -->
+            <div class="state-box" *ngIf="isLoadingDetail">
+                <div class="spinner"></div>
+                <p>Đang tải dữ liệu...</p>
+            </div>
+
+            <div *ngIf="!isLoadingDetail && selectedApp">
+                <!-- Info Grid -->
+                <div class="info-grid">
+                    <div class="info-box">
+                        <span class="info-label">Tên khách hàng</span>
+                        <span class="info-val">{{ selectedApp.customerDTO?.customerName || '—' }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Email</span>
+                        <span class="info-val">{{ selectedApp.customerDTO?.email || '—' }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Số điện thoại</span>
+                        <span class="info-val">{{ selectedApp.customerDTO?.phone || '—' }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Hãng sản xuất</span>
+                        <span class="info-val">{{ selectedApp.manufacturerDTO?.name || '—' }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Thời hạn bảo lãnh</span>
+                        <span class="info-val">{{ selectedApp.guaranteeTermDays }} ngày</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Ngày gửi</span>
+                        <span class="info-val">{{ selectedApp.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Số lượng xe</span>
+                        <span class="info-val success-text">{{ selectedApp.totalVehicleCount }} xe</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Tổng tiền bảo lãnh</span>
+                        <span class="info-val teal-text font-semibold">{{ selectedApp.totalGuaranteeAmount |
+                            number:'1.0-0' }} VNĐ</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Trạng thái</span>
+                        <span class="status-badge" [ngClass]="getStatusClass(selectedApp.status)">
+                            {{ getStatusText(selectedApp.status) }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Vehicles List -->
+                <div class="vehicles-section">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-car-side"></i> Danh sách xe chi tiết
+                        <span class="count-badge">{{ selectedApp.vehicles?.length || 0 }}</span>
+                    </h3>
+                    <div class="inner-table-wrap">
+                        <table class="inner-table">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tên xe</th>
+                                    <th>Loại xe</th>
+                                    <th>Số khung</th>
+                                    <th>Số hóa đơn</th>
+                                    <th class="text-right">Giá bán</th>
+                                    <th class="text-right">Số tiền BL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let v of selectedApp.vehicles; let j = index">
+                                    <td class="text-center">{{ j + 1 }}</td>
+                                    <td class="vehicle-name">{{ v.vehicleName }}</td>
+                                    <td>{{ v.vehicleType }}</td>
+                                    <td class="code-cell">{{ v.chassisNumber || '—' }}</td>
+                                    <td class="code-cell">{{ v.invoiceNumber || '—' }}</td>
+                                    <td class="amount-cell">{{ v.vehiclePrice | number:'1.0-0' }}</td>
+                                    <td class="amount-cell teal-text">{{ v.guaranteeAmount | number:'1.0-0' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="closeDetail()">Đóng</button>
+            <button *ngIf="isPending(selectedApp?.status)" class="btn-save" (click)="onApprove(selectedApp!)">
+                <i class="fa-solid fa-file-signature"></i> Tiếp tục lập hồ sơ
+            </button>
         </div>
     </div>
 </div>

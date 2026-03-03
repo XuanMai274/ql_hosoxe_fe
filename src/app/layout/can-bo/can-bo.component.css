@@ -4,18 +4,17 @@
   height: 100vh;
   overflow: hidden;
   background-color: #f8fafc;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
 .sidebar-container {
   flex-shrink: 0;
   width: 280px;
   height: 100vh;
-  z-index: 1050;
-  /* Đảm bảo cao hơn tất cả */
+  z-index: 10;
+  /* Lower z-index for layout elements */
   position: relative;
   background-color: #006b68;
-  /* Màu nền dự phòng */
 }
 
 .main-content {
@@ -25,8 +24,7 @@
   min-width: 0;
   height: 100vh;
   position: relative;
-  z-index: 1;
-  /* Thấp hơn sidebar */
+  /* Remove z-index: 1 to avoid trapping modals in this stacking context */
 }
 
 .page-content {

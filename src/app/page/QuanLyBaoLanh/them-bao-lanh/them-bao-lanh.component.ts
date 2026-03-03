@@ -351,7 +351,7 @@ export class ThemBaoLanhComponent implements OnInit {
         this.calculateGuaranteeFee();
         this.currentStep = 3;
 
-        // Cập nhật trạng thái đơn hàng (Application) sang APPROVED nếu có applicationId
+        // Cập nhật trạng thái đơn bảo lãnh (Application) sang APPROVED nếu có applicationId
         const appId = this.route.snapshot.queryParams['applicationId'];
         if (appId) {
           this.officerGuaranteeService.approveApplication(Number(appId)).subscribe({

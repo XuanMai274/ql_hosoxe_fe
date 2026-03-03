@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PageResponse } from '../models/page-response';
 import { GuaranteeApplication } from '../models/guarantee_application.model';
+import { GuaranteeStatistics } from '../models/guarantee_statistics.model';
 
 @Injectable({
     providedIn: 'root'
@@ -41,6 +42,13 @@ export class OfficerGuaranteeService {
      */
     getApplicationById(id: number): Observable<GuaranteeApplication> {
         return this.http.get<GuaranteeApplication>(`${this.BASE_URL}/${id}`);
+    }
+
+    /**
+     * Lấy thống kê tổng quan
+     */
+    getStatistics(): Observable<GuaranteeStatistics> {
+        return this.http.get<GuaranteeStatistics>(`${this.BASE_URL}/statistics`);
     }
 }
 

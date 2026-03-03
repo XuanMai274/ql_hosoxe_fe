@@ -1,0 +1,241 @@
+<div class="page-container">
+
+    <div class="page-header">
+        <div class="header-left">
+            <h1 class="page-title">Quản lý hồ sơ xuất kho</h1>
+            <p class="page-subtitle">Xem và điều chỉnh danh sách các phiếu xuất kho phương tiện</p>
+        </div>
+        <div class="header-actions">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" [(ngModel)]="exportNumber" (keyup.enter)="search()"
+                    placeholder="Tìm theo số phiếu xuất...">
+                <button class="btn-search" (click)="search()">Tìm kiếm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== LOADING ===== -->
+    <div class="state-box" *ngIf="loading">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- ===== ERROR ===== -->
+    <div class="state-box error" *ngIf="!loading && error">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p>{{ error }}</p>
+        <button class="btn-retry" (click)="loadData()">
+            <i class="fa-solid fa-rotate-right"></i> Thử lại
+        </button>
+    </div>
+
+    <!-- ===== TABLE ===== -->
+    <div class="table-card" *ngIf="!loading && !error">
+        <div class="table-header">
+            <div class="table-title">
+                <i class="fa-solid fa-file-export"></i>
+                Danh sách phiếu xuất kho
+            </div>
+            <span class="record-count">{{ totalElements }} phiếu</span>
+        </div>
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width:56px">STT</th>
+                        <th>Số phiếu xuất</th>
+                        <th>Ngày yêu cầu</th>
+                        <th>Ngày xuất kho</th>
+                        <th>Trạng thái</th>
+                        <th class="text-right">Tổng thu nợ</th>
+                        <th class="text-center">Số lượng xe</th>
+                        <th class="text-center" style="width:160px">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of list; let i = index" class="clickable-row">
+                        <td class="text-center stt-cell">{{ page * size + i + 1 }}</td>
+                        <td class="code-cell font-bold text-teal">{{ item.exportNumber || '—' }}</td>
+                        <td>{{ formatDate(item.requestDate) }}</td>
+                        <td>{{ formatDate(item.exportDate) }}</td>
+                        <td class="text-center">
+                            <span class="status-badge" [class]="getStatusClass(item.status)">
+                                {{ item.status }}
+                            </span>
+                        </td>
+                        <td class="text-right amount-cell">{{ formatCurrency(item.totalDebtCollection) }}</td>
+                        <td class="text-center">
+                            <span class="count-chip">{{ item.vehicles?.length || 0 }} xe</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="action-group">
+                                <button class="btn-view" (click)="openDetail(item)">
+                                    <i class="fa-solid fa-eye"></i> Xem
+                                </button>
+                                <button class="btn-edit-inline" (click)="openDetail(item); toggleEdit()">
+                                    <i class="fa-solid fa-pen-to-square"></i> Sửa
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="list.length === 0">
+                        <td colspan="8" class="text-center py-5 no-data">
+                            <i class="fa-solid fa-folder-open d-block mb-2 fs-2 text-muted"></i>
+                            Không tìm thấy dữ liệu phù hợp
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination-bar" *ngIf="totalPages > 1">
+            <span class="page-info">Hiển thị {{ page * size + 1 }}–{{ (page * size) + list.length }} / {{ totalElements
+                }} phiếu</span>
+            <div class="page-actions">
+                <button class="page-btn" (click)="prev()" [disabled]="page === 0">
+                    <i class="fa-solid fa-chevron-left"></i> Trước
+                </button>
+                <div class="page-numbers">
+                    <span class="page-tag active">{{ page + 1 }}</span> / {{ totalPages }}
+                </div>
+                <button class="page-btn" (click)="next()" [disabled]="page + 1 >= totalPages">
+                    Tiếp <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL CHI TIẾT & SỬA ===== -->
+<div class="modal-overlay" *ngIf="showDetail" (click)="closeDetail()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <div class="modal-title-wrap">
+                <div class="modal-icon export-icon">
+                    <i class="fa-solid fa-file-export"></i>
+                </div>
+                <div>
+                    <h2>{{ isEditMode ? 'Chỉnh sửa phiếu xuất kho' : 'Chi tiết phiếu xuất kho' }}</h2>
+                    <p class="modal-subtitle">{{ selectedItem?.exportNumber }}</p>
+                </div>
+            </div>
+            <button class="btn-close-modal" (click)="closeDetail()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body" *ngIf="selectedItem">
+
+            <!-- Thông tin cơ bản -->
+            <div class="info-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-circle-info"></i> Thông tin tổng quan
+                    </h3>
+                    <button *ngIf="!isEditMode && selectedItem.status === 'PENDING'" class="btn-edit-toggle"
+                        (click)="toggleEdit()">
+                        <i class="fa-solid fa-pen"></i> Chỉnh sửa thông tin
+                    </button>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-box">
+                        <span class="info-label">Số phiếu xuất</span>
+                        <input *ngIf="isEditMode" type="text" class="form-control"
+                            [(ngModel)]="selectedItem.exportNumber">
+                        <span *ngIf="!isEditMode" class="info-val code-val primary">{{ selectedItem.exportNumber
+                            || '—' }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Trạng thái</span>
+                        <span class="info-val">
+                            <span class="status-badge" [class]="getStatusClass(selectedItem.status)">
+                                {{ selectedItem.status }}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Ngày yêu cầu</span>
+                        <span class="info-val">{{ formatDate(selectedItem.requestDate) }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Ngày xuất kho</span>
+                        <span class="info-val">{{ formatDate(selectedItem.exportDate) }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Tổng thu nợ</span>
+                        <span class="info-val amount-val">{{ formatCurrency(selectedItem.totalDebtCollection) }}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Số lượng xe</span>
+                        <span class="info-val success-text">
+                            {{ selectedItem.vehicles?.length || 0 }} xe
+                        </span>
+                    </div>
+                </div>
+
+                <div class="info-box full-width mt-3">
+                    <span class="info-label">Mô tả / Ghi chú</span>
+                    <textarea *ngIf="isEditMode" class="form-control" rows="2"
+                        [(ngModel)]="selectedItem.description"></textarea>
+                    <p *ngIf="!isEditMode" class="info-val description-text">{{ selectedItem.description || 'Không có mô
+                        tả' }}</p>
+                </div>
+            </div>
+
+            <!-- Danh sách xe -->
+            <div class="vehicles-section" *ngIf="selectedItem.vehicles && selectedItem.vehicles.length > 0">
+                <h3 class="section-title">
+                    <i class="fa-solid fa-car-side"></i> Danh sách xe trong lô xuất
+                    <span class="count-badge">{{ selectedItem.vehicles.length }}</span>
+                </h3>
+                <div class="inner-table-wrap">
+                    <table class="inner-table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên xe</th>
+                                <th>Số khung</th>
+                                <th>Số máy</th>
+                                <th>Màu sắc</th>
+                                <th class="text-right">Số tiền BL</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let v of selectedItem.vehicles; let i = index">
+                                <td class="text-center">{{ i + 1 }}</td>
+                                <td class="vehicle-name">{{ v.vehicleName }}</td>
+                                <td class="code-cell">{{ v.chassisNumber || '—' }}</td>
+                                <td class="code-cell">{{ v.engineNumber || '—' }}</td>
+                                <td>{{ v.color || '—' }}</td>
+                                <td class="amount-cell text-right">{{ formatCurrency(v.guaranteeAmount) }}</td>
+                                <td>
+                                    <span class="status-badge" [class]="getVehicleStatusClass(v.status)">
+                                        {{ v.status || '—' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- No vehicles -->
+            <div class="no-data-box" *ngIf="!selectedItem.vehicles || selectedItem.vehicles.length === 0">
+                <i class="fa-solid fa-car-side"></i>
+                <p>Không có dữ liệu xe trong phiếu xuất này</p>
+            </div>
+        </div>
+
+        <div class="modal-footer" *ngIf="isEditMode">
+            <button class="btn-cancel" (click)="toggleEdit()">Hủy bỏ</button>
+            <button class="btn-save" (click)="saveEdit()">
+                <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
+            </button>
+        </div>
+    </div>
+</div>

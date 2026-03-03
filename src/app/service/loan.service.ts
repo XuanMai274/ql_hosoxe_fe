@@ -71,4 +71,9 @@ export class LoanService {
   updateLoan(id: number, dto: LoanDTO): Observable<LoanDTO> {
     return this.http.put<LoanDTO>(`${this.apiUrl}/${id}`, dto);
   }
+
+  /** PATCH - Chỉ cập nhật trường cơ bản, không tính lại balance */
+  patchLoan(id: number, dto: Partial<LoanDTO>): Observable<LoanDTO> {
+    return this.http.patch<LoanDTO>(`${this.apiUrl}/${id}`, dto);
+  }
 }
