@@ -19,27 +19,22 @@
         <div class="filter-inner">
             <div class="filter-group">
                 <label class="filter-label"><i class="fa-solid fa-file-signature"></i> Số hợp đồng vay</label>
-                <input type="text" placeholder="Tìm theo số HĐ..." [(ngModel)]="contractNumber" (keyup.enter)="search()"
-                    class="filter-input" />
+                <input type="text" placeholder="Tìm theo số HĐ..." [ngModel]="contractNumber"
+                    (ngModelChange)="contractNumber = $event; onSearch()" class="filter-input" />
             </div>
             <div class="filter-group">
                 <label class="filter-label"><i class="fa-solid fa-car"></i> Số khung xe</label>
-                <input type="text" placeholder="Tìm theo số khung..." [(ngModel)]="chassisNumber"
-                    (keyup.enter)="search()" class="filter-input" />
+                <input type="text" placeholder="Tìm theo số khung..." [ngModel]="chassisNumber"
+                    (ngModelChange)="chassisNumber = $event; onSearch()" class="filter-input" />
             </div>
             <div class="filter-group">
                 <label class="filter-label"><i class="fa-solid fa-circle-info"></i> Trạng thái</label>
-                <select [(ngModel)]="loanStatus" (change)="search()" class="filter-select">
+                <select [ngModel]="loanStatus" (ngModelChange)="loanStatus = $event; onSearch()" class="filter-select">
                     <option value="">-- Tất cả trạng thái --</option>
                     <option value="ACTIVE">Đang hiệu lực</option>
                     <option value="CLOSED">Đã tất toán</option>
                     <option value="OVERDUE">Quá hạn</option>
                 </select>
-            </div>
-            <div class="filter-actions">
-                <button class="btn-search" (click)="search()">
-                    <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
-                </button>
             </div>
         </div>
     </div>

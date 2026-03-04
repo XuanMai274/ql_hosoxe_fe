@@ -1,42 +1,38 @@
 export interface Employee {
     id: number;
+    employeeCode: string;
+    fullName: string;
+    position?: string;
+    email: string;
+    phone?: string;
+    status: string;      // 'ACTIVE' | 'INACTIVE'
+
+    userAccountId?: number;
+    username?: string;
+    role?: string;       // Role code/name for display
+    roleId?: number;
+    createdAt?: string;
+}
+
+export interface CreateEmployeeWithAccountRequest {
+    employee: {
+        employeeCode: string;
+        fullName: string;
+        email: string;
+        phone?: string;
+        position?: string;
+    };
+    username: string;
+    password: string;
+    roleId: number;
+}
+
+export interface UpdateEmployeeRequest {
     employeeCode?: string;
     fullName?: string;
     email?: string;
     phone?: string;
-    department?: string;
-    position?: string;
-    status?: string;         // 'ACTIVE' | 'INACTIVE'
-    createdAt?: string;
-    updatedAt?: string;
-
-    // Thông tin tài khoản
-    userAccountId?: number;
-    username?: string;
-    role?: string;
-}
-
-export interface CreateEmployeeWithAccountRequest {
-    // Thông tin nhân viên
-    employeeCode: string;
-    fullName: string;
-    email: string;
-    phone?: string;
-    department?: string;
-    position?: string;
-
-    // Thông tin tài khoản
-    username: string;
-    password: string;
-    role: string;
-}
-
-export interface UpdateEmployeeRequest {
-    fullName?: string;
-    email?: string;
-    phone?: string;
-    department?: string;
     position?: string;
     status?: string;
-    role?: string;
+    roleId?: number;
 }

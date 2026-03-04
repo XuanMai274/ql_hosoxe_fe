@@ -28,14 +28,14 @@
         <div class="stat-pill purple">
             <i class="fa-solid fa-building"></i>
             <div>
-                <span class="pill-value">{{ getCountByType('ENTERPRISE') }}</span>
+                <span class="pill-value">{{ getCountByType('DOANH_NGHIEP') }}</span>
                 <span class="pill-label">Doanh nghiệp</span>
             </div>
         </div>
         <div class="stat-pill green">
             <i class="fa-solid fa-user-tag"></i>
             <div>
-                <span class="pill-value">{{ getCountByType('INDIVIDUAL') }}</span>
+                <span class="pill-value">{{ getCountByType('CA_NHAN') }}</span>
                 <span class="pill-label">Cá nhân</span>
             </div>
         </div>
@@ -54,13 +54,12 @@
             <div class="filter-group search-group">
                 <label class="filter-label"><i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm khách hàng</label>
                 <div class="search-input-wrapper">
-                    <input type="text" placeholder="Tìm theo tên, CIF, email, mã số thuế..." [(ngModel)]="searchKeyword"
-                        (keyup.enter)="onSearch()" class="filter-input" />
-                    <button class="btn-inline-search" (click)="onSearch()">Tìm kiếm</button>
+                    <input type="text" placeholder="Tìm theo tên, CIF, email, mã số thuế..." [ngModel]="searchKeyword"
+                        (ngModelChange)="onSearch($event)" class="filter-input" />
                 </div>
             </div>
             <div class="filter-actions">
-                <button class="btn-reset" (click)="searchKeyword=''; onSearch()">
+                <button class="btn-reset" (click)="searchKeyword=''; onSearch('')">
                     <i class="fa-solid fa-rotate-left"></i> Làm mới
                 </button>
             </div>
@@ -101,9 +100,9 @@
                         <td class="text-center stt-cell">{{ i + 1 + page * size }}</td>
                         <td>
                             <div class="user-info">
-                                <div class="avatar-circle" [class.enterprise]="c.customerType === 'ENTERPRISE'">
-                                    <i class="fa-solid" [class.fa-building]="c.customerType === 'ENTERPRISE'"
-                                        [class.fa-user]="c.customerType !== 'ENTERPRISE'"></i>
+                                <div class="avatar-circle" [class.enterprise]="c.customerType === 'DOANH_NGHIEP'">
+                                    <i class="fa-solid" [class.fa-building]="c.customerType === 'DOANH_NGHIEP'"
+                                        [class.fa-user]="c.customerType !== 'DOANH_NGHIEP'"></i>
                                 </div>
                                 <div>
                                     <div class="font-bold">{{ c.customerName || '—' }}</div>
@@ -255,6 +254,20 @@
                     <label class="form-label">Tên ngân hàng</label>
                     <input type="text" formControlName="bankName" class="form-input"
                         placeholder="VD: BIDV - CN Đông Hà Nội" />
+                </div>
+            </div>
+
+            <!-- ===== TÀI KHOẢN & PHÂN QUYỀN ===== -->
+            <div class="form-section-title mt-4">Tài khoản & Phân quyền</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Tên đăng nhập <span class="required">*</span></label>
+                    <input type="text" formControlName="username" class="form-input" placeholder="user.name" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu <span class="required" *ngIf="!isEditing">*</span></label>
+                    <input type="password" formControlName="password" class="form-input"
+                        placeholder="{{ isEditing ? '********' : 'Tối thiểu 6 ký tự' }}" />
                 </div>
             </div>
 

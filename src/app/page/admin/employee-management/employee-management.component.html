@@ -7,7 +7,7 @@
         <i class="fa-solid fa-users-gear"></i> Quản trị hệ thống
       </div>
       <h1 class="page-title">Quản lý Nhân viên</h1>
-      <p class="page-subtitle">Quản lý thông tin cán bộ, phòng ban và phân quyền truy cập hệ thống</p>
+      <p class="page-subtitle">Quản lý thông tin cán bộ và phân quyền truy cập hệ thống</p>
     </div>
     <div class="banner-right">
       <button class="btn-create" (click)="openCreateModal()">
@@ -54,13 +54,12 @@
       <div class="filter-group search-group">
         <label class="filter-label"><i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm nhân viên</label>
         <div class="search-input-wrapper">
-          <input type="text" placeholder="Tìm theo tên, mã NV, email, phòng ban..." [(ngModel)]="searchKeyword"
-            (keyup.enter)="onSearch()" class="filter-input" />
-          <button class="btn-inline-search" (click)="onSearch()">Tìm</button>
+          <input type="text" placeholder="Tìm theo tên, mã NV, email..." [ngModel]="searchKeyword"
+            (ngModelChange)="onSearch($event)" class="filter-input" />
         </div>
       </div>
       <div class="filter-actions">
-        <button class="btn-reset" (click)="searchKeyword=''; onSearch()">
+        <button class="btn-reset" (click)="searchKeyword=''; onSearch('')">
           <i class="fa-solid fa-rotate-left"></i> Làm mới
         </button>
       </div>
@@ -90,7 +89,6 @@
             <th>Mã NV</th>
             <th>Họ và Tên</th>
             <th>Email / SĐT</th>
-            <th>Phòng ban</th>
             <th>Tài khoản</th>
             <th>Vai trò</th>
             <th class="text-center">Trạng thái</th>
@@ -103,7 +101,7 @@
             <td><span class="code-badge">{{ emp.employeeCode || '—' }}</span></td>
             <td>
               <div class="user-info">
-                <div class="avatar-circle">{{ emp.fullName?.charAt(0) || '?' }}</div>
+                <div class="avatar-circle">{{ (emp.fullName || '?')[0] }}</div>
                 <div>
                   <div class="font-bold">{{ emp.fullName || '—' }}</div>
                   <small class="text-muted">{{ emp.position || 'Cán bộ' }}</small>
@@ -116,7 +114,6 @@
                 <div class="text-muted"><i class="fa-solid fa-phone-flip"></i> {{ emp.phone || '—' }}</div>
               </div>
             </td>
-            <td>{{ emp.department || '—' }}</td>
             <td>
               <span class="username-chip">
                 <i class="fa-solid fa-at"></i> {{ emp.username || '—' }}
@@ -217,13 +214,6 @@
           <input type="text" formControlName="phone" class="form-input" placeholder="Nhập số điện thoại" />
         </div>
         <div class="form-group">
-          <label class="form-label">Phòng ban</label>
-          <select formControlName="department" class="form-select">
-            <option value="">-- Chọn phòng ban --</option>
-            <option *ngFor="let d of DEPARTMENTS" [value]="d">{{ d }}</option>
-          </select>
-        </div>
-        <div class="form-group">
           <label class="form-label">Chức vụ</label>
           <input type="text" formControlName="position" class="form-input" placeholder="VD: Cán bộ QHKH" />
         </div>
@@ -244,9 +234,9 @@
           <label class="form-label">Vai trò hệ thống <span class="required">*</span></label>
           <div class="role-selector-grid" *ngIf="availableRoles.length > 0">
             <label class="role-option" *ngFor="let r of availableRoles">
-              <input type="radio" formControlName="role" [value]="r.roleCode" />
+              <input type="radio" formControlName="roleId" [value]="r.id" />
               <div class="role-box">
-                <span class="role-name">{{ r.roleName || r.roleCode }}</span>
+                <span class="role-name">{{ $any(r).name || $any(r).code }}</span>
               </div>
             </label>
           </div>
@@ -258,7 +248,7 @@
 
       <div class="modal-footer-actions">
         <button type="button" class="btn-modal-cancel" (click)="closeModal()">Hủy bỏ</button>
-        <button type="submit" class="btn-modal-submit" [disabled]="employeeForm.invalid">
+        <button type="submit" class="btn-modal-submit">
           <i class="fa-solid fa-floppy-disk"></i> {{ isEditing ? 'Lưu thay đổi' : 'Tạo nhân viên' }}
         </button>
       </div>

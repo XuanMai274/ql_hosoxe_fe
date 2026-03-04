@@ -9,6 +9,7 @@ import { forkJoin } from 'rxjs';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { AuthServiceComponent } from '../../../core/service/auth-service.component';
+import { Subject, debounceTime } from 'rxjs';
 
 @Component({
     selector: 'app-de-nghi-cap-bao-lanh',
@@ -28,15 +29,16 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     fromDate = '';
     toDate = '';
     statusSearch = '';
+    private searchSubject = new Subject<void>();
 
     manufacturers: Manufacturer[] = [];
 
     loadManufacturers(): void {
         this.manufacturerService.getManufactureCustomer().subscribe({
-            next: (data) => {
+            next: (data: Manufacturer[]) => {
                 this.manufacturers = data;
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error('Lỗi load manufacturer', err);
             }
         });
@@ -76,6 +78,12 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
             manufacturerCode: ['', Validators.required],
             vehicles: this.fb.array([this.createVehicleRow()])
         });
+
+        this.searchSubject.pipe(
+            debounceTime(500)
+        ).subscribe(() => {
+            this.loadData(0);
+        });
     }
 
     ngOnInit(): void {
@@ -110,7 +118,15 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
         });
     }
 
-    applyFilter() { this.loadData(0); }
+    onSearch(): void {
+        if (!this.selectedManufacturerId && !this.statusSearch && !this.fromDate && !this.toDate) {
+            this.loadData(0);
+        } else {
+            this.searchSubject.next();
+        }
+    }
+
+    applyFilter() { this.onSearch(); }
 
     resetFilter() {
         this.selectedManufacturerId = '';
@@ -318,7 +334,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     countStatus(status: string): number {
         return this.donHangList.filter(item => {
             const s = item.status?.toUpperCase();
-            if (status === 'ACTIVE') return s === 'ACTIVE' || s === 'APPROVED';
+            if (status === 'APPROVED') return s === 'ACTIVE' || s === 'APPROVED';
             return s === status.toUpperCase();
         }).length;
     }

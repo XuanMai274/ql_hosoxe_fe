@@ -1,19 +1,19 @@
 export interface Role {
     id: number;
-    roleName: string;     // Tên hiển thị
-    roleCode?: string;    // Mã vai trò (ADMIN, OFFICER, ...)
+    name: string;
+    code?: string;
     description?: string;
     createdAt?: string;
     updatedAt?: string;
 }
 
 export interface CreateRoleRequest {
-    roleName: string;
-    roleCode: string;
+    name: string;
+    code: string;
     description?: string;
 }
 
 export interface UpdateRoleRequest {
-    roleName?: string;
+    name?: string;
     description?: string;
 }

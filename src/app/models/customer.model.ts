@@ -33,3 +33,10 @@ export interface Customer {
     // ===== Quan hệ =====
     userAccountId?: number;
 }
+
+export interface CreateCustomerWithAccountRequest {
+    customer: Partial<Customer>;
+    username: string;
+    password: string;
+    roleId: number;
+}

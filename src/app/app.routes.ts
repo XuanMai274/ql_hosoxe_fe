@@ -38,6 +38,11 @@ import { QuanLyNhapKhoComponent } from './page/QuanLyHoSoXe/quan-ly-nhap-kho/qua
 import { QuanLyXuatKhoComponent } from './page/QuanLyHoSoXe/quan-ly-xuat-kho/quan-ly-xuat-kho.component';
 import { ThongKeComponent } from './page/thong-ke/thong-ke.component';
 import { NhapKhoVinfastComponent } from './page/QuanLyHoSoXe/nhap-kho-vinfast/nhap-kho-vinfast.component';
+import { DanhSachMortgageContractComponent } from './page/QuanLyMortgageContract/danh-sach-mortgage-contract/danh-sach-mortgage-contract.component';
+import { FormMortgageContractComponent } from './page/QuanLyMortgageContract/form-mortgage-contract/form-mortgage-contract.component';
+import { ThongKeBaoLanhComponent } from './page/QuanLyBaoLanh/thong-ke-bao-lanh/thong-ke-bao-lanh.component';
+import { DanhSachLoaiXeComponent } from './page/QuanLyLoaiXe/danh-sach-loai-xe/danh-sach-loai-xe.component';
+import { FormLoaiXeComponent } from './page/QuanLyLoaiXe/form-loai-xe/form-loai-xe.component';
 
 export const routes: Routes = [
     {
@@ -50,6 +55,10 @@ export const routes: Routes = [
         component: LoginComponent
     },
     {
+        path: 'test-baolanh',
+        component: ThongKeBaoLanhComponent
+    },
+    {
         path: 'manager',
         component: CanBoComponent,
         canActivate: [AuthGuard], // Bảo vệ toàn bộ cụm manager
@@ -57,6 +66,10 @@ export const routes: Routes = [
             {
                 path: 'thong-ke',
                 component: ThongKeComponent
+            },
+            {
+                path: 'thong-ke-bao-lanh',
+                component: ThongKeBaoLanhComponent
             },
             {
                 path: 'home',
@@ -129,6 +142,30 @@ export const routes: Routes = [
             {
                 path: 'credit-contract/edit/:id',
                 component: FormHopDongTDComponent
+            },
+            {
+                path: 'mortgage-contract',
+                component: DanhSachMortgageContractComponent
+            },
+            {
+                path: 'mortgage-contract/add',
+                component: FormMortgageContractComponent
+            },
+            {
+                path: 'mortgage-contract/edit/:id',
+                component: FormMortgageContractComponent
+            },
+            {
+                path: 'loai-xe',
+                component: DanhSachLoaiXeComponent
+            },
+            {
+                path: 'loai-xe/add',
+                component: FormLoaiXeComponent
+            },
+            {
+                path: 'loai-xe/edit/:id',
+                component: FormLoaiXeComponent
             },
             {
                 path: 'quan-ly-rut-ho-so-xe',

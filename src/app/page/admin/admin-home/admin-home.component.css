@@ -17,7 +17,7 @@
 
 /* Welcome Banner */
 .welcome-banner {
-    background: linear-gradient(135deg, #006b68, #00a99d);
+    background: #017c7a;
     border-radius: 20px;
     padding: 40px;
     display: flex;

@@ -3,7 +3,8 @@ export interface CreditContract {
 
   // ===== Thông tin hợp đồng =====
   contractNumber?: string;
-  contractDate?: string;      // yyyy-MM-dd (khuyên dùng ISO để tránh lỗi timezone)
+  contractDate?: string;      // yyyy-MM-dd
+  expiryDate?: string;
 
   // ===== Hạn mức tín dụng =====
   creditLimit?: number;           // GHTD

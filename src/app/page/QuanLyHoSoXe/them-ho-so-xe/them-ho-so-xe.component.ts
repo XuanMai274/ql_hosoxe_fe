@@ -73,7 +73,7 @@ export class ThemHoSoXeComponent {
 
   loadBrands(): void {
     this.manufacturerService.getManufacture().subscribe({
-      next: res => this.brands = res,
+      next: (res: Manufacturer[]) => this.brands = res,
       error: () => this.brands = []
     });
   }

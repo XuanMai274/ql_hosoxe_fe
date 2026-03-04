@@ -4,6 +4,7 @@ import { DisbursementService } from '../../../service/disbursement.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Subject, debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-danh-sach-khoan-vay',
@@ -24,7 +25,16 @@ export class DanhSachKhoanVayComponent {
   toDate: string = '';
   loading = false;
 
-  constructor(private disbursementService: DisbursementService) { }
+  private searchSubject = new Subject<void>();
+
+  constructor(private disbursementService: DisbursementService) {
+    this.searchSubject.pipe(
+      debounceTime(500)
+    ).subscribe(() => {
+      this.page = 0;
+      this.loadData();
+    });
+  }
 
   ngOnInit(): void {
     this.loadData();
@@ -56,9 +66,13 @@ export class DanhSachKhoanVayComponent {
       });
   }
 
-  search(): void {
-    this.page = 0;
-    this.loadData();
+  onSearch(): void {
+    if (!this.contractNumber && !this.fromDate && !this.toDate) {
+      this.page = 0;
+      this.loadData();
+    } else {
+      this.searchSubject.next();
+    }
   }
 
   changePage(newPage: number): void {

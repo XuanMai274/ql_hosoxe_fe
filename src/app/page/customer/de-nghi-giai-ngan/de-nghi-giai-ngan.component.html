@@ -86,9 +86,15 @@
             </td>
             <td class="text-right amount-cell">{{ formatCurrency(item.disbursementAmount) }}</td>
             <td class="text-center">
-              <button class="btn-view" (click)="openDetail(item); $event.stopPropagation()">
-                <i class="fa-solid fa-eye"></i> Xem
-              </button>
+              <div class="action-btns">
+                <button class="btn-view" (click)="openDetail(item); $event.stopPropagation()">
+                  <i class="fa-solid fa-eye"></i> Xem
+                </button>
+                <button class="btn-export-list" (click)="exportFile(item); $event.stopPropagation()"
+                  [disabled]="exporting">
+                  <i class="fa-solid fa-file-zipper"></i> Xuất file
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -98,7 +104,7 @@
     <!-- PAGINATION -->
     <div class="pagination-bar" *ngIf="totalPages > 1">
       <span class="page-info">Hiển thị {{ page * size + 1 }}–{{ (page * size) + list.length }} / {{ totalElements
-                }}</span>
+        }}</span>
       <div class="page-actions">
         <button class="page-btn" (click)="prev()" [disabled]="page === 0">
           <i class="fa-solid fa-chevron-left"></i> Trước
@@ -200,7 +206,7 @@
               <tr class="total-row">
                 <td colspan="5" class="total-label">Tổng cộng</td>
                 <td class="amount-cell total-amount">{{ formatCurrency(selectedItem.disbursementAmount)
-                                    }}</td>
+                  }}</td>
                 <td colspan="2"></td>
               </tr>
             </tfoot>
@@ -208,12 +214,5 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="modal-actions">
-    <button class="btn-export" (click)="exportFile()" [disabled]="exporting">
-      <i class="fa-solid fa-file-zipper"></i>
-      <span *ngIf="!exporting">Xuất file</span>
-      <span *ngIf="exporting">Đang xuất...</span>
-    </button>
   </div>
 </div>

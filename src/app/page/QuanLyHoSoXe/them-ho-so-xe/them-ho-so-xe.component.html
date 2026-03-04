@@ -21,7 +21,9 @@
       <div class="brand-grid">
         <div class="brand-card" *ngFor="let brand of brands" (click)="selectBrand(brand)"
           [class.selected]="selectedBrand?.id === brand.id">
-          <img src="assets/public/img/{{ brand.logo }}" class="brand-logo" />
+          <img
+            [src]="brand.logo?.startsWith('/uploads/') ? 'http://localhost:8080' + brand.logo : 'http://localhost:8080/uploads/' + brand.logo"
+            class="brand-logo" />
           <h4>{{ brand.name }}</h4>
           <p class="desc">{{ brand.description }}</p>
         </div>
@@ -45,7 +47,8 @@
 
           <!-- DÒNG 2 -->
           <div class="brand-info-line">
-            <img src="assets/public/img/{{ selectedBrand?.logo }}" />
+            <img
+              [src]="selectedBrand?.logo?.startsWith('/uploads/') ? 'http://localhost:8080' + selectedBrand?.logo : 'http://localhost:8080/uploads/' + selectedBrand?.logo" />
 
             <div class="brand-text">
               <h3>{{ selectedBrand?.name }}</h3>

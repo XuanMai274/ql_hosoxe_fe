@@ -23,7 +23,7 @@
         <div class="brand-card" *ngFor="let brand of brands" (click)="selectBrand(brand)"
           [class.selected]="selectedBrand?.id === brand.id">
 
-          <img src="assets/public/img/{{ brand.logo }}" class="brand-logo" />
+          <img [src]="getLogoUrl(brand.logo)" class="brand-logo" />
           <h4>{{ brand.name }}</h4>
           <p class="desc">{{ brand.description }}</p>
         </div>

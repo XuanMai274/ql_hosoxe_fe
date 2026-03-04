@@ -1,0 +1,102 @@
+<div class="page-container">
+    <div class="form-banner">
+        <div class="banner-badge">
+            <i class="fa-solid fa-car-side"></i> {{ isEditMode ? 'CHỈNH SỬA' : 'TẠO MỚI' }} HỆ THỐNG
+        </div>
+        <h1 class="banner-title">{{ isEditMode ? 'Cập nhật' : 'Thêm mới' }} Loại xe</h1>
+        <p class="banner-subtitle">Điền thông tin chi tiết về nhà sản xuất và cấu hình nghiệp vụ</p>
+    </div>
+
+    <div class="form-card card-glow" *ngIf="!isLoading; else loadingTemplate">
+        <form [formGroup]="manufacturerForm" (ngSubmit)="onSubmit()" class="premium-form">
+            <div class="form-grid">
+                <!-- Mã Hệ thống -->
+                <div class="form-group box-1">
+                    <label>Mã Hệ thống <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-key"></i>
+                        <input type="text" formControlName="code" placeholder="Ví dụ: VINFAST, HYUNDAI..."
+                            [readonly]="isEditMode">
+                    </div>
+                    <p class="error-msg"
+                        *ngIf="manufacturerForm.get('code')?.touched && manufacturerForm.get('code')?.errors?.['required']">
+                        Mã hệ thống không được để trống
+                    </p>
+                </div>
+
+                <!-- Tên Loại xe -->
+                <div class="form-group box-2">
+                    <label>Tên Loại xe <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-tag"></i>
+                        <input type="text" formControlName="name" placeholder="Tên hãng xe">
+                    </div>
+                    <p class="error-msg"
+                        *ngIf="manufacturerForm.get('name')?.touched && manufacturerForm.get('name')?.errors?.['required']">
+                        Tên loại xe không được để trống
+                    </p>
+                </div>
+
+                <!-- Tỷ lệ bảo lãnh -->
+                <div class="form-group box-3">
+                    <label>Tỷ lệ bảo lãnh (0 - 1) <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-percent"></i>
+                        <input type="number" formControlName="guaranteeRate" step="0.01" min="0" max="1">
+                    </div>
+                    <p class="hint">Ví dụ: 0.75 hoặc 0.85</p>
+                </div>
+
+                <!-- File Logo -->
+                <div class="form-group box-1">
+                    <label>Logo / Hình ảnh <span class="required">*</span></label>
+                    <div class="file-upload-wrapper">
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input">
+                            <div class="file-placeholder">
+                                {{ selectedFile ? selectedFile.name : (manufacturerForm.get('logo')?.value || 'Chọn ảnh
+                                logo...') }}
+                            </div>
+                        </div>
+                    </div>
+                    <p class="hint">Ảnh sẽ được lưu vào hệ thống tự động</p>
+                </div>
+
+                <!-- Mã mẫu biểu -->
+                <div class="form-group box-2">
+                    <label>Mã mẫu biểu thư bảo lãnh <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <input type="text" formControlName="templateCode" placeholder="Ví dụ: VINFAST_V1">
+                    </div>
+                </div>
+
+                <!-- Mô tả -->
+                <div class="form-group full-width">
+                    <label>Mô tả chi tiết</label>
+                    <textarea formControlName="description" rows="4"
+                        placeholder="Nhập ghi chú hoặc mô tả về hãng xe..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" routerLink="/manager/loai-xe">
+                    <i class="fa-solid fa-xmark"></i> Hủy bỏ
+                </button>
+                <button type="submit" class="btn-primary" [disabled]="isSaving">
+                    <i class="fa-solid fa-check" *ngIf="!isSaving"></i>
+                    <span class="spinner-small" *ngIf="isSaving"></span>
+                    {{ isEditMode ? 'Cập nhật ngay' : 'Thêm Loại xe' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<ng-template #loadingTemplate>
+    <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Đang tải thông tin...</p>
+    </div>
+</ng-template>

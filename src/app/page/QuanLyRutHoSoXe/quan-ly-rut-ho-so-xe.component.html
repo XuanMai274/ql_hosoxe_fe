@@ -1,15 +1,14 @@
 <div class="page-container">
-  <header class="page-header">
-    <div class="header-content">
-      <h2 class="title">Quản lý Rút Hồ Sơ Xe</h2>
-      <p class="subtitle">Xem và duyệt các đơn yêu cầu rút hồ sơ từ khách hàng</p>
+  <!-- PAGE BANNER -->
+  <div class="page-banner">
+    <div class="banner-left">
+      <div class="banner-badge">
+        <i class="fa-solid fa-file-export"></i> Nghiệp vụ tất toán
+      </div>
+      <h1 class="page-title">Quản lý Rút Hồ Sơ Xe</h1>
+      <p class="page-subtitle">Xem và duyệt các đơn yêu cầu rút hồ sơ phương tiện từ phía khách hàng</p>
     </div>
-    <div class="header-actions">
-      <button class="btn btn-refresh" (click)="loadPendingRequests()">
-        <i class="fa-solid fa-sync"></i> Làm mới
-      </button>
-    </div>
-  </header>
+  </div>
 
   <div class="page-content">
     <div class="table-card">
@@ -22,24 +21,23 @@
         <table class="modern-table">
           <thead>
             <tr>
-              <th width="80">STT</th>
-              <th>Số đơn</th>
-              <th>Số lượng xe</th>
-              <th>Tổng tiền thu nợ</th>
-              <th>Ngày tạo</th>
-              <th class="text-right">Thao tác</th>
+              <th>Số đơn yêu cầu</th>
+              <th class="text-center">Số lượng xe</th>
+              <th class="text-right">Tổng tiền thu nợ</th>
+              <th>Ngày tạo yêu cầu</th>
+              <th class="text-center">Thao tác</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let request of pendingRequests; let i = index">
-              <td>{{ i + 1 }}</td>
               <td><span class="export-number">{{ request.exportNumber || 'REQ-' + request.id }}</span></td>
-              <td><span class="vehicle-count">{{ request.vehicleIds.length || 0 }} xe</span></td>
-              <td><span class="price-text">{{ formatCurrency(request.totalDebtCollection) }}</span></td>
+              <td class="text-center"><span class="vehicle-count">{{ request.vehicleIds.length || 0 }} xe</span></td>
+              <td class="text-right"><span class="price-text">{{ formatCurrency(request.totalDebtCollection) }}</span>
+              </td>
               <td>{{ request.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
-              <td class="text-right">
-                <button class="btn-action btn-view" (click)="viewDetails(request)">
-                  <i class="fa-solid fa-eye"></i> Xem chi tiết
+              <td class="text-center">
+                <button class="btn-view" (click)="viewDetails(request)">
+                  <i class="fa-solid fa-eye"></i> Xem
                 </button>
               </td>
             </tr>
@@ -66,8 +64,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title-group">
-          <h3>Chi tiết đơn yêu cầu: <span
-              class="highlight">{{ selectedRequest.exportNumber || 'REQ-' + selectedRequest.id }}</span></h3>
+          <h3>Chi tiết đơn yêu cầu: <span class="highlight">{{ selectedRequest.exportNumber || 'REQ-' +
+              selectedRequest.id }}</span></h3>
           <span class="modal-subtitle">Danh sách xe trong yêu cầu</span>
         </div>
         <button class="close-btn" (click)="closeDetails()">&times;</button>
@@ -178,7 +176,7 @@
   </div>
   <!-- model nhập lãi -->
   <!-- Interest Modal -->
-  <div class="modal-backdrop" *ngIf="interestModalVisible">
+  <div class="modal-backdrop" *ngIf="$any(this).interestModalVisible">
     <div class="modal-content interest-modal">
 
       <div class="modal-header">
@@ -188,14 +186,14 @@
             Vui lòng nhập số tiền lãi thực tế trước khi duyệt xuất kho
           </span>
         </div>
-        <button class="close-btn" (click)="interestModalVisible = false">&times;</button>
+        <button class="close-btn" (click)="$any(this).interestModalVisible = false">&times;</button>
       </div>
 
       <div class="modal-body">
 
         <div class="interest-summary">
           <span class="interest-count">
-            {{ disbursementsNeedInterest.length }} khoản vay cần cập nhật lãi
+            {{ $any(this).disbursementsNeedInterest.length }} khoản vay cần cập nhật lãi
           </span>
         </div>
 
@@ -211,7 +209,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let d of disbursementsNeedInterest; let i = index">
+              <tr *ngFor="let d of $any(this).disbursementsNeedInterest; let i = index">
                 <td>{{ i + 1 }}</td>
 
                 <td>
@@ -231,8 +229,8 @@
                 </td>
                 <td>
                   <input type="text" class="value-input interest-input"
-                    [ngModel]="formatNumber(interestFormData[i].interestAmount)"
-                    (ngModelChange)="onInterestChange($event, i)" placeholder="Nhập tiền lãi..." />
+                    [ngModel]="formatNumber($any(this).interestFormData[i].interestAmount)"
+                    (ngModelChange)="$any(this).onInterestChange($event, i)" placeholder="Nhập tiền lãi..." />
                 </td>
               </tr>
             </tbody>
@@ -242,11 +240,11 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="interestModalVisible = false">
+        <button class="btn btn-secondary" (click)="$any(this).interestModalVisible = false">
           Hủy
         </button>
 
-        <button class="btn btn-approve" (click)="confirmInterestAndApprove()">
+        <button class="btn btn-approve" (click)="$any(this).confirmInterestAndApprove()">
           <i class="fa-solid fa-check-circle"></i>
           Xác nhận & Duyệt
         </button>

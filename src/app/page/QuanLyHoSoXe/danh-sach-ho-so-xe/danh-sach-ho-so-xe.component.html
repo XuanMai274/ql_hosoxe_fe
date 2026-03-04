@@ -1,75 +1,132 @@
 <div class="page-container">
-  <div class="page-header">
-    <h2>Danh sách phương tiện</h2>
-    <button class="btn-primary" (click)="exportExcel()">Xuất Excel</button>
+  <!-- PAGE BANNER -->
+  <div class="page-banner">
+    <div class="banner-left">
+      <div class="banner-badge">
+        <i class="fa-solid fa-car-side"></i> Hồ sơ phương tiện
+      </div>
+      <h1 class="page-title">Danh sách hồ sơ xe</h1>
+      <p class="page-subtitle">Xem và quản lý thông tin chi tiết tất cả phương tiện trong hệ thống</p>
+    </div>
+    <!-- <div class="banner-right">
+      <button class="btn-create" (click)="exportExcel()">
+        <i class="fa-solid fa-file-excel"></i> Xuất Excel
+      </button>
+    </div> -->
   </div>
 
-  <!-- FILTER -->
-  <div class="filter-bar">
-
-    <select [(ngModel)]="manufacturer">
-      <option value="">Chọn Hãng xe</option>
-      <option value="">Tất cả</option>
-      <option value="VINFAST">VinFast</option>
-      <option value="HYUNDAI">Hyundai</option>
-    </select>
-    <select [(ngModel)]="status">
-      <option value="">Tất cả</option>
-      <option value="Giữ két">Giữ két</option>
-      <option value="Giữ trong kho">Giữ trong kho</option>
-      <option value="Đã trả khách hàng">Đã trả khách hàng</option>
-    </select>
-    <input type="text" placeholder="Tìm theo số khung" [(ngModel)]="chassisNumber" />
-
-
-
-    <input type="text" placeholder="Tìm theo số REF của thư" [(ngModel)]="ref" />
-    <button class="btn-primary" (click)="search()">Tìm kiếm</button>
+  <!-- FILTER CARD -->
+  <div class="filter-card">
+    <div class="filter-inner">
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-industry"></i> Hãng sản xuất</label>
+        <select [ngModel]="manufacturer" (ngModelChange)="manufacturer = $event; onSearch()" class="filter-select">
+          <option value="">Tất cả hãng xe</option>
+          <option value="VINFAST">VinFast</option>
+          <option value="HYUNDAI">Hyundai</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-circle-info"></i> Trạng thái</label>
+        <select [ngModel]="status" (ngModelChange)="status = $event; onSearch()" class="filter-select">
+          <option value="">Tất cả trạng thái</option>
+          <option value="Giữ két">Giữ két</option>
+          <option value="Giữ trong kho">Giữ trong kho</option>
+          <option value="Đã trả khách hàng">Đã trả khách hàng</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-barcode"></i> Số khung</label>
+        <input type="text" placeholder="Nhập số khung..." [ngModel]="chassisNumber"
+          (ngModelChange)="chassisNumber = $event; onSearch()" class="filter-input" />
+      </div>
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-hashtag"></i> REF (Thư BL)</label>
+        <input type="text" placeholder="Số REF..." [ngModel]="ref" (ngModelChange)="ref = $event; onSearch()"
+          class="filter-input" />
+      </div>
+    </div>
   </div>
 
-  <!-- TABLE -->
-  <table class="vehicle-table">
-    <thead>
-      <tr>
-        <!-- <th>STT</th> -->
-        <th>Tên xe</th>
-        <th>Số khung</th>
-        <th>Số máy</th>
-        <th>Giá</th>
-        <th>Trạng thái</th>
-        <th>Số REF</th>
-        <th>Thao tác</th>
-      </tr>
-    </thead>
+  <!-- TABLE CARD -->
+  <div class="table-card">
+    <div class="table-header">
+      <div class="table-title">
+        <i class="fa-solid fa-list"></i> Danh sách phương tiện
+      </div>
+      <span class="record-count">{{ vehicles.length }} bản ghi hiển thị</span>
+    </div>
 
-    <tbody>
-      <tr *ngFor="let v of vehicles">
-        <!-- <td>{{ v.stt }}</td> -->
-        <td>{{ v.vehicleName }}</td>
-        <td>{{ v.chassisNumber }}</td>
-        <td>{{ v.engineNumber }}</td>
-        <td>{{ v.price | number }}</td>
-        <td>{{ v.status }}</td>
-        <td>{{ v.ref }}</td>
-        <td>
-          <button class="btn-link" (click)="viewDetail(v.id)">
-            Xem
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>Tên xe</th>
+            <th>Số khung / Số máy</th>
+            <th class="text-right">Đơn giá</th>
+            <th class="text-center">Trạng thái</th>
+            <th>Thư bảo lãnh (REF)</th>
+            <th class="text-center">Thao tác</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let v of vehicles">
+            <td>
+              <div class="vehicle-info">
+                <span class="v-name">{{ v.vehicleName }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="serial-numbers">
+                <div class="s-row">SK: <strong>{{ v.chassisNumber }}</strong></div>
+                <div class="s-row">SM: <strong>{{ v.engineNumber }}</strong></div>
+              </div>
+            </td>
+            <td class="text-right">
+              <strong>{{ v.price | number:'1.0-0' }}</strong> ₫
+            </td>
+            <td class="text-center">
+              <span class="status-badge" [ngClass]="{
+                  'status-active': v.status === 'Đã trả khách hàng',
+                  'status-pending': v.status === 'Giữ trong kho',
+                  'status-default': v.status === 'Giữ két'
+                }">
+                {{ v.status }}
+              </span>
+            </td>
+            <td>
+              <div class="ref-id">{{ v.ref || '—' }}</div>
+            </td>
+            <td class="text-center">
+              <button class="btn-view" (click)="viewDetail(v.id)">
+                <i class="fa-solid fa-eye"></i> Xem
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="no-data-row" *ngIf="vehicles.length === 0 && !loading">
+      <i class="fa-solid fa-car-burst"></i>
+      <p>Không tìm thấy phương tiện nào phù hợp với bộ lọc.</p>
+    </div>
+  </div>
 
   <!-- PAGINATION -->
-  <div class="pagination">
-    <button (click)="changePage(page - 1)" [disabled]="page === 0">
-      ‹
-    </button>
-
-    <span>Trang {{ page + 1 }} / {{ totalPages }}</span>
-
-    <button (click)="changePage(page + 1)" [disabled]="page + 1 >= totalPages">
-      ›
-    </button>
+  <div class="pagination-footer" *ngIf="totalPages > 0">
+    <div class="page-info">
+      Trang {{ page + 1 }} / {{ totalPages }}
+    </div>
+    <div class="page-controls">
+      <button class="page-btn" [disabled]="page === 0" (click)="changePage(page - 1)">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <div class="active-page">{{ page + 1 }}</div>
+      <button class="page-btn" [disabled]="page + 1 >= totalPages" (click)="changePage(page + 1)">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
   </div>
 </div>

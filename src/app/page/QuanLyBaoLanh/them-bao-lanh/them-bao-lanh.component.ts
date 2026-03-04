@@ -66,6 +66,15 @@ export class ThemBaoLanhComponent implements OnInit {
     private sanitizer: DomSanitizer
   ) { }
 
+  /* ================= HELPERS ================= */
+  getLogoUrl(logo: string | undefined): string {
+    if (!logo) return 'assets/public/img/logo.webp';
+    if (logo.includes('uploads')) {
+      return 'http://localhost:8080' + (logo.startsWith('/') ? '' : '/') + logo;
+    }
+    return 'http://localhost:8080/uploads/' + logo;
+  }
+
   /* ================= INIT ================= */
 
   ngOnInit(): void {
@@ -148,24 +157,24 @@ export class ThemBaoLanhComponent implements OnInit {
   /* ================= LOAD DATA ================= */
 
   loadBrands(): void {
-    this.manufacturerService.getManufacture().subscribe(res => this.brands = res);
+    this.manufacturerService.getManufacture().subscribe((res: Manufacturer[]) => this.brands = res);
   }
 
   loadCreditContracts(): void {
-    this.creditContractService.getCreditContracts().subscribe(res => {
+    this.creditContractService.getCreditContracts().subscribe((res: CreditContract[]) => {
       this.creditContracts = res;
     });
   }
 
   loadCustomers(): void {
-    this.customerService.getCustomers().subscribe(res => {
+    this.customerService.getCustomers().subscribe((res: Customer[]) => {
       this.customers = res;
       console.log("Customers loaded:", this.customers);
     });
   }
 
   loadAuthorizedRepresentatives(selectId?: number) {
-    this.authorizedRepresentativesService.getAuthorizedRepresentatives().subscribe(list => {
+    this.authorizedRepresentativesService.getAuthorizedRepresentatives().subscribe((list: BranchAuthorizedRepresentative[]) => {
       this.authorizedRepresentatives = list;
       if (selectId) {
         this.guaranteeForm.patchValue({ authorizedRepresentativeId: selectId });

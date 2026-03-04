@@ -21,7 +21,8 @@
         <div class="filter-inner">
             <div class="filter-group">
                 <label class="filter-label"><i class="fa-solid fa-industry"></i> Hãng xe</label>
-                <select [(ngModel)]="manufacturer" class="filter-select">
+                <select [ngModel]="manufacturer" (ngModelChange)="manufacturer = $event; onSearch()"
+                    class="filter-select">
                     <option value="">-- Tất cả hãng --</option>
                     <option value="VINFAST">VinFast</option>
                     <option value="HYUNDAI">Hyundai</option>
@@ -30,7 +31,7 @@
 
             <div class="filter-group">
                 <label class="filter-label"><i class="fa-solid fa-circle-info"></i> Trạng thái</label>
-                <select [(ngModel)]="status" class="filter-select">
+                <select [ngModel]="status" (ngModelChange)="status = $event; onSearch()" class="filter-select">
                     <option value="">-- Tất cả trạng thái --</option>
                     <option value="Giữ két">Giữ két</option>
                     <option value="Giữ trong kho">Giữ trong kho</option>
@@ -40,20 +41,17 @@
 
             <div class="filter-group">
                 <label class="filter-label"><i class="fa-solid fa-barcode"></i> Số khung</label>
-                <input type="text" placeholder="Nhập số khung..." [(ngModel)]="chassisNumber" class="filter-input"
-                    (keyup.enter)="search()" />
+                <input type="text" placeholder="Nhập số khung..." [ngModel]="chassisNumber"
+                    (ngModelChange)="chassisNumber = $event; onSearch()" class="filter-input" />
             </div>
 
             <div class="filter-group">
                 <label class="filter-label"><i class="fa-solid fa-file-invoice"></i> Số REF bảo lãnh</label>
-                <input type="text" placeholder="Nhập số REF..." [(ngModel)]="ref" class="filter-input"
-                    (keyup.enter)="search()" />
+                <input type="text" placeholder="Nhập số REF..." [ngModel]="ref"
+                    (ngModelChange)="ref = $event; onSearch()" class="filter-input" />
             </div>
 
             <div class="filter-actions">
-                <button class="btn-search" (click)="search()">
-                    <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
-                </button>
                 <button class="btn-reset" (click)="resetFilter()">
                     <i class="fa-solid fa-rotate-left"></i> Đặt lại
                 </button>
@@ -114,7 +112,7 @@
                         <td>{{ v.ref || '—' }}</td>
                         <td class="text-center">
                             <button class="btn-view" (click)="viewDetail(v.id); $event.stopPropagation()">
-                                <i class="fa-solid fa-eye"></i> Chi tiết
+                                <i class="fa-solid fa-eye"></i> Xem
                             </button>
                         </td>
                     </tr>

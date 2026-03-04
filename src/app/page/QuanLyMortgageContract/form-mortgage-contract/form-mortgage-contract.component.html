@@ -1,0 +1,132 @@
+<div class="page-container">
+    <!-- PAGE HEADER -->
+    <div class="page-banner">
+        <div class="banner-left">
+            <div class="banner-badge">
+                <i class="fa-solid fa-file-signature"></i> {{ isEditMode ? 'Cập nhật hợp đồng' : 'Thêm mới hợp đồng' }}
+            </div>
+            <h1 class="page-title">{{ isEditMode ? 'Chỉnh sửa Hợp đồng' : 'Tạo Hợp đồng Thế chấp' }}</h1>
+            <p class="page-subtitle">Quản lý thông tin tài sản bảo đảm và đăng ký giao dịch</p>
+        </div>
+        <div class="banner-right">
+            <button class="btn-back-main" routerLink="/manager/mortgage-contract">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </button>
+        </div>
+    </div>
+
+    <!-- LOADING STATE -->
+    <div class="state-box" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- FORM CONTENT -->
+    <div class="content-wrapper" *ngIf="!isLoading">
+        <form [formGroup]="contractForm" (ngSubmit)="onSubmit()">
+            <div class="detail-card">
+                <div class="card-header-styled">
+                    <div class="header-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="header-text">
+                        <h3>Thông tin chi tiết hợp đồng thế chấp</h3>
+                        <p>Vui lòng nhập đầy đủ các thông tin bảo đảm tài sản</p>
+                    </div>
+                </div>
+
+                <div class="card-body-grid">
+                    <!-- Cột 1: Thông tin định danh -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">Số Hợp đồng <span class="required">*</span></label>
+                            <input type="text" formControlName="contractNumber" class="form-input"
+                                placeholder="VD: HĐTC/2024/001">
+                            <div class="hint"
+                                *ngIf="contractForm.get('contractNumber')?.touched && contractForm.get('contractNumber')?.invalid">
+                                Số hợp đồng là bắt buộc.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Khách hàng <span class="required">*</span></label>
+                            <select formControlName="customerId" class="form-select">
+                                <option [ngValue]="null">-- Chọn khách hàng --</option>
+                                <option *ngFor="let c of customers" [value]="c.id">{{ c.customerName }} (CIF: {{ c.cif
+                                    }})</option>
+                            </select>
+                            <div class="hint"
+                                *ngIf="contractForm.get('customerId')?.touched && contractForm.get('customerId')?.invalid">
+                                Vui lòng chọn khách hàng.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Hãng xe / Hệ thống xe</label>
+                            <select formControlName="manufacturerId" class="form-select">
+                                <option [ngValue]="null">-- Chọn hệ thống --</option>
+                                <option *ngFor="let m of manufacturers" [value]="m.id">{{ m.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Giá trị và Đăng ký -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">Ngày ký kết <span class="required">*</span></label>
+                            <input type="date" formControlName="contractDate" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ngày hết hạn (Tự động)</label>
+                            <input type="date" formControlName="expiryDate" class="form-input readonly" readonly>
+                            <small class="text-muted italic-text">Mặc định 1 năm kể từ ngày ký</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Số đơn ĐKGD bảo đảm</label>
+                            <input type="text" formControlName="securityRegistrationNumber" class="form-input"
+                                placeholder="Nhập số đơn đăng ký">
+                        </div>
+                    </div>
+
+                    <!-- Cột 3: Giá trị & Trạng thái -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">Tổng giá trị TSBĐ (VNĐ) <span class="required">*</span></label>
+                            <input type="text" [value]="formattedTotalValue" (input)="onValueInput($event)"
+                                class="form-input amount-input" placeholder="0">
+                            <div class="hint"
+                                *ngIf="contractForm.get('totalCollateralValue')?.touched && contractForm.get('totalCollateralValue')?.invalid">
+                                Giá trị phải lớn hơn hoặc bằng 0.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Mã cá nhân (nếu có)</label>
+                            <input type="text" formControlName="personalIdNumber" class="form-input"
+                                placeholder="Nhập mã cá nhân">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái</label>
+                            <select formControlName="status" class="form-select">
+                                <option value="ACTIVE">Đang hoạt động</option>
+                                <option value="EXPIRED">Đã hết hạn</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER ACTIONS -->
+            <div class="page-footer-actions">
+                <button type="button" class="btn-cancel" routerLink="/manager/mortgage-contract">
+                    <i class="fa-solid fa-xmark"></i> Hủy bỏ
+                </button>
+                <button type="submit" class="btn-save" [disabled]="contractForm.invalid || isLoading">
+                    <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+                    {{ isEditMode ? 'Cập nhật thay đổi' : 'Lưu hợp đồng' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

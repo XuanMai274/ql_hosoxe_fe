@@ -51,11 +51,11 @@ export class DeNghiGiaiNganComponent implements OnInit {
       }
     });
   }
-  exportFile(): void {
+  exportFile(item?: DisbursementDTO): void {
+    const target = item || this.selectedItem;
+    if (!target) return;
 
-    if (!this.selectedItem) return;
-
-    const vehicleIds = this.selectedItem.loans
+    const vehicleIds = target.loans
       ?.map(l => l.vehicleDTO?.id!)
       ?.filter(Boolean) as number[] || [];
 
@@ -65,12 +65,12 @@ export class DeNghiGiaiNganComponent implements OnInit {
     }
 
     const request: DisbursementExportRequest = {
-      disbursementDTO: this.selectedItem,
+      disbursementDTO: target,
       vehicleIds: vehicleIds
     };
-    console.log("dữ liệu gửi đi xuất file: " ,request)
-    this.
-      customerWarehouseService.exportSpecificGN(request)
+    console.log("dữ liệu gửi đi xuất file: ", request)
+    this.exporting = true;
+    this.customerWarehouseService.exportSpecificGN(request)
       .subscribe({
         next: (blob) => {
           const url = window.URL.createObjectURL(blob);
