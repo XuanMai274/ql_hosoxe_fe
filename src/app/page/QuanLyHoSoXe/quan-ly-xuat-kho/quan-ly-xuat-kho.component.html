@@ -1,16 +1,19 @@
 <div class="page-container">
 
-    <div class="page-header">
-        <div class="header-left">
-            <h1 class="page-title">Quản lý hồ sơ xuất kho</h1>
+    <!-- PAGE BANNER -->
+    <div class="page-banner">
+        <div class="banner-left">
+            <div class="banner-badge">
+                <i class="fa-solid fa-truck-ramp-box"></i> Quản lý kho
+            </div>
+            <h1 class="page-title">Hồ sơ Xuất kho</h1>
             <p class="page-subtitle">Xem và điều chỉnh danh sách các phiếu xuất kho phương tiện</p>
         </div>
-        <div class="header-actions">
+        <div class="banner-right">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" [(ngModel)]="exportNumber" (keyup.enter)="search()"
+                <input type="text" [ngModel]="exportNumber" (ngModelChange)="onSearch($event)"
                     placeholder="Tìm theo số phiếu xuất...">
-                <button class="btn-search" (click)="search()">Tìm kiếm</button>
             </div>
         </div>
     </div>
@@ -43,7 +46,6 @@
             <table class="modern-table">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width:56px">STT</th>
                         <th>Số phiếu xuất</th>
                         <th>Ngày yêu cầu</th>
                         <th>Ngày xuất kho</th>
@@ -55,7 +57,6 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let item of list; let i = index" class="clickable-row">
-                        <td class="text-center stt-cell">{{ page * size + i + 1 }}</td>
                         <td class="code-cell font-bold text-teal">{{ item.exportNumber || '—' }}</td>
                         <td>{{ formatDate(item.requestDate) }}</td>
                         <td>{{ formatDate(item.exportDate) }}</td>

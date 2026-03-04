@@ -64,12 +64,27 @@
         </ul>
       </li>
 
-      <!-- Hợp đồng tín dụng -->
-      <li routerLinkActive="active">
-        <a [routerLink]="'/manager/credit-contract'">
-          <i class="fa-solid fa-file-contract"></i>
-          <span>Hợp đồng tín dụng</span>
+      <!-- Quản lý Hợp đồng -->
+      <li class="has-submenu" [class.open]="activeSubmenu === 'hopdong'">
+        <a href="javascript:void(0)" (click)="toggleSubmenu('hopdong')" class="submenu-toggle">
+          <i class="fa-solid fa-file-invoice"></i>
+          <span>Quản lý hợp đồng</span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
         </a>
+        <ul class="submenu">
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/credit-contract'">
+              <i class="fa-solid fa-file-contract"></i>
+              <span>Hợp đồng tín dụng</span>
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/mortgage-contract'">
+              <i class="fa-solid fa-file-signature"></i>
+              <span>Hợp đồng thế chấp</span>
+            </a>
+          </li>
+        </ul>
       </li>
 
       <!-- Quản lý hồ sơ xe -->
@@ -121,6 +136,13 @@
             <a [routerLink]="'/manager/danh-sach-ho-so-xe'">
               <i class="fa-solid fa-list-check"></i>
               <span>Xem tất cả</span>
+            </a>
+          </li>
+
+          <li routerLinkActive="active">
+            <a [routerLink]="'/manager/loai-xe'">
+              <i class="fa-solid fa-car-rear"></i>
+              <span>Quản lý Loại xe</span>
             </a>
           </li>
         </ul>
@@ -186,6 +208,7 @@
           </li>
         </ul>
       </li>
+
 
       <!-- Quản lý Vai trò -->
       <li routerLinkActive="active">

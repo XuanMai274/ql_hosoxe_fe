@@ -58,7 +58,7 @@ export class ThemHoSoXeVinfastComponent {
   /* ================= BRAND - CỐ ĐỊNH CHO VINFAST ================= */
   selectedBrand: Manufacturer | null = null;
   readonly VINFAST_BRAND_CODE = 'VINFAST';
-   manufacturer?: Manufacturer;
+  manufacturer?: Manufacturer;
   code: string = 'HYUNDAI';
   /* ================= UPLOAD FILES ================= */
   excelFile: File | null = null;
@@ -108,9 +108,9 @@ export class ThemHoSoXeVinfastComponent {
   }
   loadVinfastBrand(): void {
     this.manufacturerService.getManufacture().subscribe({
-      next: res => {
+      next: (res: Manufacturer[]) => {
         console.log('📦 [VinFast] All Manufacturers from Server:', res);
-        this.selectedBrand = res.find(b => b.code === this.VINFAST_BRAND_CODE) || null;
+        this.selectedBrand = res.find((b: Manufacturer) => b.code === this.VINFAST_BRAND_CODE) || null;
         console.log('🎯 Selected VinFast Brand:', this.selectedBrand);
         if (this.selectedBrand) {
           this.loadAvailableGuarantees();

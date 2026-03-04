@@ -5,6 +5,7 @@ import { AdminService } from '../../../service/admin.service';
 import { Role } from '../../../models/role.model';
 import { Employee, CreateEmployeeWithAccountRequest, UpdateEmployeeRequest } from '../../../models/employee.model';
 import Swal from 'sweetalert2';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-employee-management',
@@ -33,22 +34,29 @@ export class EmployeeManagementComponent implements OnInit {
   employeeForm: FormGroup;
 
   availableRoles: Role[] = [];
-  readonly DEPARTMENTS = ['Phòng Tín dụng', 'Phòng Khách hàng', 'Phòng Kế toán', 'Phòng IT', 'Phòng Hành chính', 'Phòng Kiểm soát'];
+
+  private searchSubject = new Subject<string>();
 
   constructor(private adminService: AdminService, private fb: FormBuilder) {
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.page = 0;
+      this.loadEmployees();
+    });
     this.employeeForm = this.fb.group({
       // Thông tin nhân viên
       employeeCode: ['', Validators.required],
       fullName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
-      department: [''],
       position: [''],
       status: ['ACTIVE'],
       // Thông tin tài khoản
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      role: ['officer', Validators.required],
+      roleId: ['', Validators.required],
     });
   }
 
@@ -60,7 +68,8 @@ export class EmployeeManagementComponent implements OnInit {
   loadRoles(): void {
     this.adminService.getRoles().subscribe({
       next: (data) => {
-        this.availableRoles = data || [];
+        // Chỉ lấy các vai trò dành cho nhân viên (loại trừ CUSTOMER)
+        this.availableRoles = (data || []).filter(r => r.code !== 'CUSTOMER');
       },
       error: (err) => console.error('Không thể tải danh sách vai trò:', err)
     });
@@ -93,9 +102,17 @@ export class EmployeeManagementComponent implements OnInit {
     });
   }
 
-  onSearch(): void {
-    this.page = 0;
-    this.loadEmployees();
+  onSearch(value: string): void {
+    const val = value ? value.trim() : '';
+    this.searchKeyword = val;
+
+    // Nếu xóa trắng, gọi ngay lập tức cho mượt
+    if (!val) {
+      this.page = 0;
+      this.loadEmployees();
+    } else {
+      this.searchSubject.next(val);
+    }
   }
 
   changePage(newPage: number): void {
@@ -108,8 +125,12 @@ export class EmployeeManagementComponent implements OnInit {
   openCreateModal(): void {
     this.isEditing = false;
     this.selectedEmployee = null;
-    this.employeeForm.reset({ status: 'ACTIVE', role: 'OFFICER' });
-    // Enable tất cả fields khi tạo mới
+    this.employeeForm.reset({ status: 'ACTIVE' });
+    // Reset role specifically if needed, using first available role id or default
+    if (this.availableRoles.length > 0) {
+      this.employeeForm.patchValue({ roleId: this.availableRoles[0].id });
+    }
+
     this.employeeForm.get('username')?.enable();
     this.employeeForm.get('password')?.enable();
     this.employeeForm.get('employeeCode')?.enable();
@@ -119,18 +140,16 @@ export class EmployeeManagementComponent implements OnInit {
   openEditModal(emp: Employee): void {
     this.isEditing = true;
     this.selectedEmployee = emp;
-    // Khi edit: không cho đổi username/password/mã NV
     this.employeeForm.patchValue({
       employeeCode: emp.employeeCode,
       fullName: emp.fullName,
       email: emp.email,
       phone: emp.phone,
-      department: emp.department,
       position: emp.position,
       status: emp.status || 'ACTIVE',
       username: emp.username,
       password: '••••••••',
-      role: emp.role || 'OFFICER',
+      roleId: emp.roleId,
     });
     this.employeeForm.get('username')?.disable();
     this.employeeForm.get('password')?.disable();
@@ -145,7 +164,16 @@ export class EmployeeManagementComponent implements OnInit {
 
   onSubmit(): void {
     if (this.employeeForm.invalid) {
+      console.log('Form errors:', this.employeeForm.errors);
+      // Log individual field errors
+      Object.keys(this.employeeForm.controls).forEach(key => {
+        const controlErrors = this.employeeForm.get(key)?.errors;
+        if (controlErrors != null) {
+          console.log('Field: ' + key + ', Errors: ', controlErrors);
+        }
+      });
       this.employeeForm.markAllAsTouched();
+      Swal.fire({ icon: 'warning', title: 'Thông tin chưa hợp lệ', text: 'Vui lòng kiểm tra lại các trường thông tin bắt buộc.', confirmButtonColor: '#006b68' });
       return;
     }
 
@@ -153,13 +181,13 @@ export class EmployeeManagementComponent implements OnInit {
 
     if (this.isEditing && this.selectedEmployee) {
       const payload: UpdateEmployeeRequest = {
+        employeeCode: raw.employeeCode,
         fullName: raw.fullName,
         email: raw.email,
         phone: raw.phone,
-        department: raw.department,
         position: raw.position,
         status: raw.status,
-        role: raw.role,
+        roleId: Number(raw.roleId),
       };
       this.adminService.updateEmployee(this.selectedEmployee.id, payload).subscribe({
         next: () => {
@@ -171,15 +199,16 @@ export class EmployeeManagementComponent implements OnInit {
       });
     } else {
       const payload: CreateEmployeeWithAccountRequest = {
-        employeeCode: raw.employeeCode,
-        fullName: raw.fullName,
-        email: raw.email,
-        phone: raw.phone,
-        department: raw.department,
-        position: raw.position,
+        employee: {
+          employeeCode: raw.employeeCode,
+          fullName: raw.fullName,
+          email: raw.email,
+          phone: raw.phone,
+          position: raw.position,
+        },
         username: raw.username,
         password: raw.password,
-        role: raw.role,
+        roleId: Number(raw.roleId),
       };
       this.adminService.createEmployeeWithAccount(payload).subscribe({
         next: () => {

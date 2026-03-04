@@ -21,7 +21,8 @@
     <div class="filter-inner">
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-industry"></i> Hãng xe</label>
-        <select [(ngModel)]="selectedManufacturerId" class="filter-select" (change)="applyFilter()">
+        <select [ngModel]="selectedManufacturerId" class="filter-select"
+          (ngModelChange)="selectedManufacturerId = $event; applyFilter()">
           <option value="">-- Tất cả hãng --</option>
           <option *ngFor="let m of manufacturers" [value]="m.id">{{ m.name }}</option>
         </select>
@@ -29,17 +30,18 @@
 
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-calendar-days"></i> Từ ngày</label>
-        <input type="date" [(ngModel)]="fromDate" class="filter-input" (change)="applyFilter()" />
+        <input type="date" [ngModel]="fromDate" class="filter-input"
+          (ngModelChange)="fromDate = $event; applyFilter()" />
       </div>
 
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-calendar-check"></i> Đến ngày</label>
-        <input type="date" [(ngModel)]="toDate" class="filter-input" (change)="applyFilter()" />
+        <input type="date" [ngModel]="toDate" class="filter-input" (ngModelChange)="toDate = $event; applyFilter()" />
       </div>
 
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-circle-info"></i> Trạng thái</label>
-        <select [(ngModel)]="statusSearch" class="filter-select" (change)="applyFilter()">
+        <select [ngModel]="statusSearch" class="filter-select" (ngModelChange)="statusSearch = $event; applyFilter()">
           <option value="">-- Tất cả trạng thái --</option>
           <option value="PENDING">Chờ duyệt</option>
           <option value="ACTIVE">Đã duyệt</option>
@@ -49,9 +51,6 @@
       </div>
 
       <div class="filter-actions">
-        <button class="btn-search" (click)="applyFilter()">
-          <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
-        </button>
         <button class="btn-reset" (click)="resetFilter()">
           <i class="fa-solid fa-rotate-left"></i> Đặt lại
         </button>
@@ -68,7 +67,7 @@
     </div>
     <div class="stat-pill green">
       <i class="fa-solid fa-circle-check"></i>
-      <span class="pill-value">{{ countStatus('ACTIVE') }}</span>
+      <span class="pill-value">{{ countStatus('APPROVED') }}</span>
       <span class="pill-label">Đã duyệt</span>
     </div>
     <div class="stat-pill orange">
@@ -341,7 +340,7 @@
               <tr>
                 <th style="width:44px">STT</th>
                 <th>Loại xe <span class="required">*</span></th>
-                <th>Màu xe <span ></span></th>
+                <th>Màu xe <span></span></th>
                 <th>Số khung</th>
                 <th>Số đơn đề nghị</th>
                 <th>NPP xác nhận</th>
@@ -359,8 +358,7 @@
                 <td class="text-center">{{ i + 1 }}</td>
                 <td><input type="text" class="td-input" [class.invalid]="isRowInvalid(i, 'loaiXe')"
                     formControlName="loaiXe" placeholder="VF 3 PLUS" /></td>
-                <td><input type="text" class="td-input" 
-                    formControlName="mauXe" placeholder="TRẮNG" /></td>
+                <td><input type="text" class="td-input" formControlName="mauXe" placeholder="TRẮNG" /></td>
                 <td><input type="text" class="td-input" formControlName="soKhung" placeholder="Số khung" /></td>
                 <td><input type="text" class="td-input" formControlName="soDonHang" placeholder="Số đơn" /></td>
                 <td class="text-center"><span class="fixed-tag tag-lay">LẤY</span></td>

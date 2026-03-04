@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminService } from '../../../service/admin.service';
-import { Customer } from '../../../models/customer.model';
+import { Customer, CreateCustomerWithAccountRequest } from '../../../models/customer.model';
+import { Role } from '../../../models/role.model';
 import Swal from 'sweetalert2';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-customer-management',
@@ -29,19 +31,29 @@ export class CustomerManagementComponent implements OnInit {
   selectedCustomer: Customer | null = null;
 
   customerForm: FormGroup;
+  availableRoles: Role[] = [];
 
   readonly CUSTOMER_TYPES = [
-    { value: 'INDIVIDUAL', label: 'Cá nhân' },
-    { value: 'ENTERPRISE', label: 'Doanh nghiệp' }
+    { value: 'CA_NHAN', label: 'Cá nhân' },
+    { value: 'DOANH_NGHIEP', label: 'Doanh nghiệp' }
   ];
 
+  private searchSubject = new Subject<string>();
+
   constructor(private adminService: AdminService, private fb: FormBuilder) {
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.page = 0;
+      this.loadCustomers();
+    });
     this.customerForm = this.fb.group({
       customerName: ['', Validators.required],
-      customerType: ['INDIVIDUAL', Validators.required],
+      customerType: ['CA_NHAN', Validators.required],
       cif: [''],
       phone: [''],
-      email: ['', Validators.email],
+      email: ['', [Validators.required, Validators.email]],
       address: [''],
       taxCode: [''],
       businessRegistrationNo: [''],
@@ -49,19 +61,39 @@ export class CustomerManagementComponent implements OnInit {
       representativeTitle: [''],
       bankAccountNo: [''],
       bankName: [''],
-      status: ['ACTIVE']
+      status: ['ACTIVE'],
+      // Account fields
+      id: [null],
+      userAccountId: [null],
+      username: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      roleId: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
     this.loadCustomers();
+    this.loadRoles();
+  }
+
+  loadRoles(): void {
+    this.adminService.getRoles().subscribe({
+      next: (data) => {
+        // Khách hàng chỉ được phép có vai trò CUSTOMER
+        this.availableRoles = (data || []).filter(r => r.code === 'CUSTOMER');
+        const customerRole = this.availableRoles.find(r => r.code === 'CUSTOMER');
+        if (customerRole) {
+          this.customerForm.patchValue({ roleId: customerRole.id });
+        }
+      },
+      error: (err) => console.error('Không thể tải danh sách vai trò:', err)
+    });
   }
 
   loadCustomers(): void {
     this.isLoading = true;
     this.adminService.getCustomers(this.page, this.size, this.searchKeyword).subscribe({
       next: (res: any) => {
-        // Hỗ trợ cả PageResponse và mảng trực tiếp
         if (res && res.content) {
           this.customers = res.content;
           this.totalElements = res.totalElements;
@@ -84,9 +116,15 @@ export class CustomerManagementComponent implements OnInit {
     });
   }
 
-  onSearch(): void {
-    this.page = 0;
-    this.loadCustomers();
+  onSearch(value: string): void {
+    const val = value ? value.trim() : '';
+    this.searchKeyword = val;
+    if (!val) {
+      this.page = 0;
+      this.loadCustomers();
+    } else {
+      this.searchSubject.next(val);
+    }
   }
 
   changePage(newPage: number): void {
@@ -100,6 +138,12 @@ export class CustomerManagementComponent implements OnInit {
     this.isEditing = false;
     this.selectedCustomer = null;
     this.customerForm.reset({ customerType: 'INDIVIDUAL', status: 'ACTIVE' });
+    const customerRole = this.availableRoles.find(r => r.code === 'CUSTOMER');
+    if (customerRole) {
+      this.customerForm.patchValue({ roleId: customerRole.id });
+    }
+    this.customerForm.get('username')?.enable();
+    this.customerForm.get('password')?.enable();
     this.showModal = true;
   }
 
@@ -107,6 +151,8 @@ export class CustomerManagementComponent implements OnInit {
     this.isEditing = true;
     this.selectedCustomer = customer;
     this.customerForm.patchValue({ ...customer });
+    this.customerForm.get('username')?.disable();
+    this.customerForm.get('password')?.disable();
     this.showModal = true;
   }
 
@@ -121,9 +167,14 @@ export class CustomerManagementComponent implements OnInit {
       return;
     }
 
-    const payload: Partial<Customer> = this.customerForm.value;
+    const rawValue = this.customerForm.getRawValue();
 
     if (this.isEditing && this.selectedCustomer) {
+      const payload: Partial<Customer> = { ...rawValue };
+      delete (payload as any).username;
+      delete (payload as any).password;
+      delete (payload as any).roleId;
+
       this.adminService.updateCustomer(this.selectedCustomer.id, payload).subscribe({
         next: () => {
           Swal.fire({ icon: 'success', title: 'Cập nhật thành công', timer: 1800, showConfirmButton: false });
@@ -133,6 +184,27 @@ export class CustomerManagementComponent implements OnInit {
         error: (err) => Swal.fire({ icon: 'error', title: 'Lỗi', text: err?.error?.message || 'Cập nhật thất bại', confirmButtonColor: '#006b68' })
       });
     } else {
+      const payload: CreateCustomerWithAccountRequest = {
+        customer: {
+          customerName: rawValue.customerName,
+          customerType: rawValue.customerType,
+          cif: rawValue.cif,
+          phone: rawValue.phone,
+          email: rawValue.email,
+          address: rawValue.address,
+          taxCode: rawValue.taxCode,
+          businessRegistrationNo: rawValue.businessRegistrationNo,
+          representativeName: rawValue.representativeName,
+          representativeTitle: rawValue.representativeTitle,
+          bankAccountNo: rawValue.bankAccountNo,
+          bankName: rawValue.bankName,
+          status: rawValue.status
+        },
+        username: rawValue.username,
+        password: rawValue.password,
+        roleId: Number(rawValue.roleId)
+      };
+
       this.adminService.createCustomer(payload).subscribe({
         next: () => {
           Swal.fire({ icon: 'success', title: 'Thêm khách hàng thành công', timer: 1800, showConfirmButton: false });
@@ -168,7 +240,7 @@ export class CustomerManagementComponent implements OnInit {
   }
 
   getTypeBadge(type?: string): { label: string; cssClass: string } {
-    return type === 'ENTERPRISE'
+    return type === 'DOANH_NGHIEP'
       ? { label: 'Doanh nghiệp', cssClass: 'type-enterprise' }
       : { label: 'Cá nhân', cssClass: 'type-individual' };
   }

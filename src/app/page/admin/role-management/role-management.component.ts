@@ -33,8 +33,8 @@ export class RoleManagementComponent implements OnInit {
 
   constructor(private adminService: AdminService, private fb: FormBuilder) {
     this.roleForm = this.fb.group({
-      roleName: ['', [Validators.required, Validators.minLength(2)]],
-      roleCode: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      code: ['', Validators.required],
       description: ['']
     });
   }
@@ -46,7 +46,7 @@ export class RoleManagementComponent implements OnInit {
   loadRoles(): void {
     this.isLoading = true;
     this.adminService.getRoles().subscribe({
-      next: (data) => { this.roles = data; this.isLoading = false; },
+      next: (data) => { this.roles = data || []; this.isLoading = false; },
       error: (err) => {
         this.isLoading = false;
         Swal.fire({ icon: 'error', title: 'Lỗi', text: err?.error?.message || 'Không thể tải danh sách vai trò', confirmButtonColor: '#006b68' });
@@ -58,7 +58,7 @@ export class RoleManagementComponent implements OnInit {
     this.isEditing = false;
     this.selectedRole = null;
     this.roleForm.reset();
-    this.roleForm.get('roleCode')?.enable();
+    this.roleForm.get('code')?.enable();
     this.showModal = true;
   }
 
@@ -66,12 +66,17 @@ export class RoleManagementComponent implements OnInit {
     this.isEditing = true;
     this.selectedRole = role;
     this.roleForm.patchValue({
-      roleName: role.roleName,
-      roleCode: role.roleCode,
+      name: role.name,
+      code: role.name, // The backend field is 'code'
       description: role.description || ''
     });
-    // Không cho sửa roleCode vì là khóa định danh
-    this.roleForm.get('roleCode')?.disable();
+    // For safety with current fields:
+    this.roleForm.patchValue({
+      name: role.name,
+      code: role.code,
+      description: role.description || ''
+    });
+    this.roleForm.get('code')?.disable();
     this.showModal = true;
   }
 
@@ -89,7 +94,7 @@ export class RoleManagementComponent implements OnInit {
     const raw = this.roleForm.getRawValue();
 
     if (this.isEditing && this.selectedRole) {
-      const payload: UpdateRoleRequest = { roleName: raw.roleName, description: raw.description };
+      const payload: UpdateRoleRequest = { name: raw.name, description: raw.description };
       this.adminService.updateRole(this.selectedRole.id, payload).subscribe({
         next: () => {
           Swal.fire({ icon: 'success', title: 'Cập nhật thành công', timer: 1800, showConfirmButton: false });
@@ -98,7 +103,7 @@ export class RoleManagementComponent implements OnInit {
         error: (err) => Swal.fire({ icon: 'error', title: 'Lỗi', text: err?.error?.message || 'Cập nhật thất bại', confirmButtonColor: '#006b68' })
       });
     } else {
-      const payload: CreateRoleRequest = { roleName: raw.roleName, roleCode: raw.roleCode, description: raw.description };
+      const payload: CreateRoleRequest = { name: raw.name, code: raw.code, description: raw.description };
       this.adminService.createRole(payload).subscribe({
         next: () => {
           Swal.fire({ icon: 'success', title: 'Tạo vai trò thành công', timer: 1800, showConfirmButton: false });
@@ -112,7 +117,7 @@ export class RoleManagementComponent implements OnInit {
   onDelete(role: Role): void {
     Swal.fire({
       title: 'Xác nhận xóa',
-      html: `Bạn có chắc muốn xóa vai trò <strong>${role.roleName}</strong>?<br><small>Hành động này có thể ảnh hưởng đến các tài khoản đang sử dụng vai trò này.</small>`,
+      html: `Bạn có chắc muốn xóa vai trò <strong>${role.name}</strong>?<br><small>Hành động này có thể ảnh hưởng đến các tài khoản đang sử dụng vai trò này.</small>`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',

@@ -37,6 +37,21 @@ export class ManufacturerService {
             );
     }
     getByCode(code: string): Observable<Manufacturer> {
-    return this.http.get<Manufacturer>(`http://localhost:8080/officer/manufacturer/code/${code}`);
-  }
+        return this.http.get<Manufacturer>(`http://localhost:8080/officer/manufacturer/code/${code}`);
+    }
+    getById(id: number): Observable<Manufacturer> {
+        return this.http.get<Manufacturer>(`${this.API_URL}/${id}`);
+    }
+    add(dto: Manufacturer): Observable<Manufacturer> {
+        return this.http.post<Manufacturer>(`${this.API_URL}/add`, dto);
+    }
+    update(id: number, dto: Manufacturer): Observable<Manufacturer> {
+        return this.http.put<Manufacturer>(`${this.API_URL}/${id}`, dto);
+    }
+
+    uploadLogo(file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<any>(`${this.API_URL}/upload-logo`, formData);
+    }
 }

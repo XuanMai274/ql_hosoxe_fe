@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PageResponse } from '../../../models/page-response';
 import { VehicleList } from '../../../models/vehiclelist.model';
+import { Subject, debounceTime } from 'rxjs';
 
 @Component({
     selector: 'app-danh-sach-xe',
@@ -28,10 +29,19 @@ export class DanhSachXeComponent {
     size = 10;
     totalPages = 0;
 
+    private searchSubject = new Subject<void>();
+
     constructor(
         private vehicleService: VehicleService,
         private router: Router
-    ) { }
+    ) {
+        this.searchSubject.pipe(
+            debounceTime(500)
+        ).subscribe(() => {
+            this.page = 0;
+            this.loadVehicles();
+        });
+    }
 
     ngOnInit(): void {
         this.loadVehicles();
@@ -58,9 +68,8 @@ export class DanhSachXeComponent {
         });
     }
 
-    search(): void {
-        this.page = 0;
-        this.loadVehicles();
+    onSearch(): void {
+        this.searchSubject.next();
     }
 
     resetFilter(): void {

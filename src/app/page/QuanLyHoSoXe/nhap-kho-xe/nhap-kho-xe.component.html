@@ -34,24 +34,23 @@
     <!-- FILTER -->
     <div class="filter-bar">
 
-      <select [(ngModel)]="manufacturer">
+      <select [ngModel]="manufacturer" (ngModelChange)="manufacturer = $event; onSearch()">
         <option value="">Tất cả hãng</option>
         <option value="VINFAST">VinFast</option>
         <option value="HYUNDAI">Hyundai</option>
       </select>
 
-      <select [(ngModel)]="status">
+      <select [ngModel]="status" (ngModelChange)="status = $event; onSearch()">
         <option value="">Tất cả hạn</option>
         <option value="Giữ két">Chưa đến hạn</option>
         <option value="Giữ trong kho">Hôm nay</option>
         <option value="Đã trả khách hàng">Quá hạn</option>
       </select>
 
-      <input type="text" placeholder="Tìm theo số khung" [(ngModel)]="chassisNumber" />
+      <input type="text" placeholder="Tìm theo số khung" [ngModel]="chassisNumber"
+        (ngModelChange)="chassisNumber = $event; onSearch()" />
 
-      <input type="text" placeholder="Tìm theo số REF" [(ngModel)]="ref" />
-
-      <button class="btn-primary" (click)="search()">Tìm kiếm</button>
+      <input type="text" placeholder="Tìm theo số REF" [ngModel]="ref" (ngModelChange)="ref = $event; onSearch()" />
     </div>
 
     <!-- TABLE -->

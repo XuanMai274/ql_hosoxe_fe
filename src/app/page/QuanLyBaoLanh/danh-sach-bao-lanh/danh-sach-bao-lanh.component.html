@@ -21,9 +21,10 @@
     </div>
   </form>
   <!-- QUICK SEARCH -->
-  <div class="quick-search"> <input type="text" placeholder="Nhập mã thư bảo lãnh hoặc số tham chiếu..."
-      [(ngModel)]="keyword" (keyup.enter)="searchByKeyword()" /> <button (click)="searchByKeyword()"><i
-        class="fa-solid fa-magnifying-glass"></i></button> </div>
+  <div class="quick-search">
+    <input type="text" placeholder="Nhập mã thư bảo lãnh hoặc số tham chiếu..." [ngModel]="keyword"
+      (ngModelChange)="keyword = $event; onSearch()" />
+  </div>
   <!-- LIST -->
   <div class="card-grid">
     <div class="card" *ngFor="let item of guaranteeLetters">

@@ -13,21 +13,16 @@
     <div class="filter-inner">
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-file-signature"></i> Số HĐTD chi tiết</label>
-        <input type="text" placeholder="Tìm theo số HĐ..." [(ngModel)]="contractNumber" (keyup.enter)="search()"
-          class="filter-input" />
+        <input type="text" placeholder="Tìm theo số HĐ..." [ngModel]="contractNumber"
+          (ngModelChange)="contractNumber = $event; onSearch()" class="filter-input" />
       </div>
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-calendar"></i> Từ ngày</label>
-        <input type="date" [(ngModel)]="fromDate" (change)="search()" class="filter-input" />
+        <input type="date" [ngModel]="fromDate" (ngModelChange)="fromDate = $event; onSearch()" class="filter-input" />
       </div>
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-calendar"></i> Đến ngày</label>
-        <input type="date" [(ngModel)]="toDate" (change)="search()" class="filter-input" />
-      </div>
-      <div class="filter-actions">
-        <button class="btn-search" (click)="search()">
-          <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
-        </button>
+        <input type="date" [ngModel]="toDate" (ngModelChange)="toDate = $event; onSearch()" class="filter-input" />
       </div>
     </div>
   </div>
@@ -108,7 +103,7 @@
             </td>
             <td class="text-center">
               <button class="btn-view" [routerLink]="['/manager/chinh-sua-khoan-vay', item.id]">
-                <i class="fa-solid fa-eye"></i> Chi tiết
+                <i class="fa-solid fa-eye"></i> Xem
               </button>
             </td>
           </tr>

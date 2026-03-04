@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { VehicleList } from '../../../models/vehiclelist.model';
 import { VehicleService } from '../../../service/vehicle.service';
 import { Router } from '@angular/router';
@@ -19,6 +19,7 @@ import Swal from 'sweetalert2';
 import { AuthServiceComponent } from '../../../core/service/auth-service.component';
 import { Customer } from '../../../models/customer.model';
 import { CustomerService } from '../../../service/customer.service';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-nhap-kho-xe',
@@ -26,7 +27,7 @@ import { CustomerService } from '../../../service/customer.service';
   templateUrl: './nhap-kho-xe.component.html',
   styleUrl: './nhap-kho-xe.component.css'
 })
-export class NhapKhoXeComponent {
+export class NhapKhoXeComponent implements OnInit {
   vehicles: Vehicle[] = [];
   vehiclesAll: Vehicle[] = [];
   filteredVehicles: Vehicle[] = [];
@@ -63,6 +64,7 @@ export class NhapKhoXeComponent {
   totalPages = 0;
   baseRate = 7;
   fundingRate = 5.86;
+  private searchSubject = new Subject<void>();
 
   constructor(
     private vehicleService: VehicleService,
@@ -72,7 +74,13 @@ export class NhapKhoXeComponent {
     private router: Router,
     private authService: AuthServiceComponent,
     private customerService: CustomerService,
-  ) { }
+  ) {
+    this.searchSubject.pipe(
+      debounceTime(500)
+    ).subscribe(() => {
+      this.search();
+    });
+  }
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -388,6 +396,15 @@ export class NhapKhoXeComponent {
     return this.selectedVehicles.some(v => v.id === vehicle.id);
   }
   // ===== SEARCH =====
+  onSearch(): void {
+    if (!this.chassisNumber && !this.ref && !this.manufacturer && !this.status) {
+      this.page = 0;
+      this.search();
+    } else {
+      this.searchSubject.next();
+    }
+  }
+
   search(): void {
 
     this.filteredVehicles = this.vehiclesAll.filter(v => {

@@ -1,0 +1,120 @@
+<div class="page-container">
+    <!-- PAGE BANNER -->
+    <div class="page-banner">
+        <div class="banner-left">
+            <div class="banner-badge">
+                <i class="fa-solid fa-file-signature"></i> Hệ thống quản lý TSBĐ
+            </div>
+            <h1 class="page-title">Hợp đồng Thế chấp</h1>
+            <p class="page-subtitle">Quản lý danh sách và theo dõi các hợp đồng bảo đảm, thế chấp tài sản của khách hàng
+            </p>
+        </div>
+        <div class="banner-right">
+            <button class="btn-create" (click)="goToAdd()">
+                <i class="fa-solid fa-plus"></i> Thêm hợp đồng mới
+            </button>
+        </div>
+    </div>
+
+    <!-- FILTER CARD -->
+    <div class="filter-card">
+        <div class="filter-inner">
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-hashtag"></i> Số HĐ / Khách hàng</label>
+                <input type="text" class="filter-input" placeholder="Tìm tên khách, số HĐ..." [(ngModel)]="searchTerm"
+                    (input)="onSearch()">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-filter"></i> Trạng thái</label>
+                <select class="filter-select" [(ngModel)]="statusFilter" (change)="onSearch()">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="ACTIVE">Đang hoạt động</option>
+                    <option value="EXPIRED">Hết hạn</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="stats-row" *ngIf="!isLoading">
+        <div class="stat-pill blue">
+            <i class="fa-solid fa-file-invoice"></i>
+            <div class="pill-content">
+                <span class="pill-value">{{ stats.totalContracts }}</span>
+                <span class="pill-label">Tổng hợp đồng</span>
+            </div>
+        </div>
+        <div class="stat-pill purple">
+            <i class="fa-solid fa-coins"></i>
+            <div class="pill-content">
+                <span class="pill-value">{{ (stats.totalValue || 0) | number:'1.0-0' }} VNĐ</span>
+                <span class="pill-label">Tổng giá trị TSBĐ</span>
+            </div>
+        </div>
+        <div class="stat-pill green">
+            <i class="fa-solid fa-circle-check"></i>
+            <div class="pill-content">
+                <span class="pill-value">{{ stats.activeContracts }}</span>
+                <span class="pill-label">Đang hiệu lực</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING STATE -->
+    <div *ngIf="isLoading" class="state-box">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu hợp đồng thế chấp...</p>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="table-card" *ngIf="!isLoading">
+        <div class="table-header">
+            <div class="table-title">
+                <i class="fa-solid fa-list-ul"></i> Danh sách hợp đồng
+            </div>
+            <span class="record-count">{{ filteredContracts.length }} bản ghi</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Số Hợp đồng</th>
+                        <th>Ngày ký</th>
+                        <th>Ngày hết hạn</th>
+                        <th class="text-right">Giá trị TSBĐ</th>
+                        <th>Đăng ký giao dịch</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let contract of filteredContracts; let i = index">
+                        <td>{{ contract.contractNumber }}</td>
+                        <td>{{ formatDate(contract.contractDate) }}</td>
+                        <td>{{ formatDate($any(contract).expiryDate) }}</td>
+                        <td class="text-right">{{ (contract.totalCollateralValue || 0) | number:'1.0-0' }} VNĐ</td>
+                        <td>{{ contract.securityRegistrationNumber || '—' }}</td>
+                        <td class="text-center">
+                            <span class="status-badge"
+                                [ngClass]="contract.status === 'ACTIVE' ? 'status-active' : 'status-default'">
+                                {{ getStatusLabel(contract.status) }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn-view" (click)="goToEdit(contract.id!)">
+                                <i class="fa-solid fa-eye"></i> Xem
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- NO DATA STATE -->
+        <div class="no-data-row" *ngIf="filteredContracts.length === 0">
+            <i class="fa-solid fa-file-circle-exclamation"></i>
+            <p>Không tìm thấy hợp đồng thế chấp nào khớp với bộ lọc.</p>
+        </div>
+    </div>
+</div>

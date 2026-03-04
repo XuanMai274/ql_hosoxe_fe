@@ -56,11 +56,11 @@ export class DeNghiNhapKhoComponent implements OnInit {
       }
     });
   }
-  exportHoSoXuatKho(): void {
+  exportHoSoXuatKho(item?: WarehouseImportDTO): void {
+    const target = item || this.selectedItem;
+    if (!target) return;
 
-    if (!this.selectedItem) return;
-
-    const vehicleIds = (this.selectedItem.vehicleIds || [])
+    const vehicleIds = (target.vehicleIds || [])
       .filter((id): id is number => id !== undefined);
 
     if (vehicleIds.length === 0) {
@@ -69,7 +69,7 @@ export class DeNghiNhapKhoComponent implements OnInit {
     }
 
     const request: ExportPNKRequest = {
-      importNumber: this.selectedItem.importNumber!, 
+      importNumber: target.importNumber!,
       vehicleIds: vehicleIds
     };
 

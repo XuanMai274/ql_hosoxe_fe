@@ -45,7 +45,7 @@
 
 /* ===== BANNER (teal) ===== */
 .page-banner {
-    background: linear-gradient(135deg, #006b68 0%, #01a59e 60%, #00cec7 100%);
+    background: #017c7a;
     border-radius: 22px;
     padding: 38px 48px;
     margin-bottom: 24px;
@@ -450,6 +450,40 @@
     transform: translateY(-1px);
 }
 
+.action-btns {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.btn-export-list {
+    padding: 7px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #dbeafe;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-export-list:hover:not(:disabled) {
+    background: #1d4ed8;
+    color: white;
+    border-color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.btn-export-list:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* ===== PAGINATION ===== */
 .pagination-bar {
     display: flex;
@@ -682,7 +716,9 @@
 }
 
 /* ===== VEHICLES SECTION ===== */
-.vehicles-section {}
+.vehicles-section {
+    margin-top: 5px;
+}
 
 .inner-table-wrap {
     overflow-x: auto;

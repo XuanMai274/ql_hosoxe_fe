@@ -1,0 +1,71 @@
+<div class="page-container">
+    <!-- PAGE BANNER -->
+    <div class="page-banner">
+        <div class="banner-left">
+            <div class="banner-badge">
+                <i class="fa-solid fa-car-rear"></i> Cấu hình hệ thống
+            </div>
+            <h1 class="page-title">Quản lý Loại xe</h1>
+            <p class="page-subtitle">Quản lý thông tin hãng sản xuất, tỷ lệ bảo lãnh và mẫu biểu báo cáo</p>
+        </div>
+        <div class="banner-right">
+            <button class="btn-create" routerLink="/manager/loai-xe/add">
+                <i class="fa-solid fa-plus"></i> Thêm Loại xe mới
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="table-card">
+        <div class="table-wrapper">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 80px">Logo</th>
+                        <th style="width: 120px">Mã HT</th>
+                        <th>Tên Loại xe</th>
+                        <th class="text-center">Tỷ lệ BL</th>
+                        <th>Mã mẫu biểu</th>
+                        <th>Mô tả</th>
+                        <th class="text-center" style="width: 110px">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of manufacturers; let i = index">
+                        <td class="text-center">
+                            <div class="logo-preview">
+                                <img [src]="getLogoUrl(item.logo)" [alt]="item.name"
+                                    onerror="this.src='assets/public/img/logo.webp'">
+                            </div>
+                        </td>
+                        <td><span class="font-bold">{{ item.code }}</span></td>
+                        <td><span class="font-bold">{{ item.name }}</span></td>
+                        <td class="text-center">
+                            <span class="rate-badge">{{ (item.guaranteeRate * 100) }}%</span>
+                        </td>
+                        <td>
+                            <span class="template-badge">{{ item.templateCode }}</span>
+                        </td>
+                        <td class="description-cell" [title]="item.description">{{ item.description }}</td>
+                        <td class="text-center action-cells">
+                            <button class="btn-action" [routerLink]="['/manager/loai-xe/edit', item.id]"
+                                title="Chỉnh sửa">
+                                <i class="fa-solid fa-pen-to-square"></i> Sửa
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="manufacturers.length === 0 && !isLoading">
+                        <td colspan="8" class="no-data">Không có dữ liệu loại xe nào</td>
+                    </tr>
+
+                    <tr *ngIf="isLoading">
+                        <td colspan="8" class="loading-row">
+                            <div class="spinner"></div> Đang tải dữ liệu...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

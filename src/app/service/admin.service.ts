@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Employee, CreateEmployeeWithAccountRequest, UpdateEmployeeRequest } from '../models/employee.model';
-import { Customer } from '../models/customer.model';
+import { Customer, CreateCustomerWithAccountRequest } from '../models/customer.model';
 import { Role, CreateRoleRequest, UpdateRoleRequest } from '../models/role.model';
 import { PageResponse } from '../models/page-response';
 
@@ -49,7 +49,7 @@ export class AdminService {
         return this.http.get<Customer>(`${this.baseUrl}/admin/customers/${id}`);
     }
 
-    createCustomer(payload: Partial<Customer>): Observable<Customer> {
+    createCustomer(payload: CreateCustomerWithAccountRequest): Observable<Customer> {
         return this.http.post<Customer>(`${this.baseUrl}/admin/customers`, payload);
     }
 

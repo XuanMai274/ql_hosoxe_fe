@@ -1,107 +1,110 @@
-<div class="page-container animate-fade-in">
-    <!-- Breadcrumb -->
-    <div class="breadcrumb">
-        <a [routerLink]="['/manager/home']">Trang chủ</a>
-        <i class="fa-solid fa-chevron-right"></i>
-        <a [routerLink]="['/manager/credit-contract']">Hợp đồng tín dụng</a>
-        <i class="fa-solid fa-chevron-right"></i>
-        <span>{{ isEditMode ? 'Cập nhật hợp đồng' : 'Thêm mới hợp đồng' }}</span>
+<div class="page-container">
+    <!-- PAGE HEADER -->
+    <div class="page-banner">
+        <div class="banner-left">
+            <div class="banner-badge">
+                <i class="fa-solid fa-file-contract"></i> {{ isEditMode ? 'Cập nhật hợp đồng' : 'Thêm mới hợp đồng' }}
+            </div>
+            <h1 class="page-title">{{ isEditMode ? 'Chỉnh sửa Hợp đồng' : 'Tạo Hợp đồng Tín dụng' }}</h1>
+            <p class="page-subtitle">Quản lý thông tin hạn mức và khách hàng cho hợp đồng tín dụng</p>
+        </div>
+        <div class="banner-right">
+            <button class="btn-back-main" routerLink="/manager/credit-contract">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </button>
+        </div>
     </div>
 
-    <!-- Header -->
-    <div class="header-section">
-        <h1 class="page-title">
-            <i class="fa-solid" [ngClass]="isEditMode ? 'fa-file-pen' : 'fa-file-circle-plus'"></i>
-            {{ isEditMode ? 'Cập nhật Hợp đồng Tín dụng' : 'Thêm mới Hợp đồng Tín dụng' }}
-        </h1>
-        <p class="subtitle">Vui lòng kiểm tra kỹ các thông tin định danh và hạn mức của hợp đồng tín dụng.</p>
+    <!-- LOADING STATE -->
+    <div class="state-box" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
     </div>
 
-    <!-- Main Form -->
-    <div class="form-card">
+    <!-- FORM CONTENT -->
+    <div class="content-wrapper" *ngIf="!isLoading">
         <form [formGroup]="contractForm" (ngSubmit)="onSubmit()">
+            <div class="detail-card">
+                <div class="card-header-styled">
+                    <div class="header-icon"><i class="fa-solid fa-circle-info"></i></div>
+                    <div class="header-text">
+                        <h3>Thông tin chi tiết hợp đồng</h3>
+                        <p>Vui lòng nhập đầy đủ các thông tin bắt buộc bên dưới</p>
+                    </div>
+                </div>
 
-            <div class="form-section-title">
-                <i class="fa-solid fa-circle-info"></i> Thông tin cơ bản & Hạn mức
+                <div class="card-body-grid">
+                    <!-- Cột 1: Thông tin định danh -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">Số Hợp đồng <span class="text-danger">*</span></label>
+                            <input type="text" formControlName="contractNumber" class="form-input"
+                                placeholder="VD: HĐTD/2024/001">
+                            <div class="hint"
+                                *ngIf="contractForm.get('contractNumber')?.touched && contractForm.get('contractNumber')?.invalid">
+                                Số hợp đồng là bắt buộc.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Khách hàng <span class="text-danger">*</span></label>
+                            <select formControlName="customerId" class="form-select">
+                                <option [ngValue]="null">-- Chọn khách hàng --</option>
+                                <option *ngFor="let c of customers" [value]="c.id">{{ c.customerName }} (CIF: {{ c.cif
+                                    }})</option>
+                            </select>
+                            <div class="hint"
+                                *ngIf="contractForm.get('customerId')?.touched && contractForm.get('customerId')?.invalid">
+                                Vui lòng chọn khách hàng.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Thời hạn -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">Ngày ký kết <span class="text-danger">*</span></label>
+                            <input type="date" formControlName="contractDate" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ngày hết hạn (Dự kiến)</label>
+                            <div class="input-with-icon">
+                                <input type="date" formControlName="expiryDate" class="form-input read-only">
+                                <i class="fa-solid fa-lock hint-icon" title="Ngày hết hạn tự động tính sau 1 năm"></i>
+                            </div>
+                            <div class="hint">Hệ thống tự động cộng 1 năm kể từ ngày ký.</div>
+                        </div>
+                    </div>
+
+                    <!-- Cột 3: Hạn mức -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">Hạn mức tín dụng (VNĐ) <span class="text-danger">*</span></label>
+                            <input type="text" [value]="formattedCreditLimit" (input)="onCreditLimitInput($event)"
+                                class="form-input amount-input" placeholder="0">
+                            <div class="hint"
+                                *ngIf="contractForm.get('creditLimit')?.touched && contractForm.get('creditLimit')?.invalid">
+                                Hạn mức phải lớn hơn hoặc bằng 0.
+                            </div>
+                        </div>
+
+                        <div class="form-group" *ngIf="isEditMode">
+                            <label class="form-label">Hạn mức đã sử dụng</label>
+                            <input type="text" [value]="((fullContract?.usedLimit || 0) | number:'1.0-0') + ' VNĐ'"
+                                class="form-input read-only" readonly>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-grid">
-                <!-- Contract Number -->
-                <div class="form-group">
-                    <label>Số hợp đồng <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fa-solid fa-hashtag"></i>
-                        <input type="text" formControlName="contractNumber" placeholder="Ví dụ: CC-2024-001">
-                    </div>
-                    <div class="error-msg"
-                        *ngIf="contractForm.get('contractNumber')?.touched && contractForm.get('contractNumber')?.invalid">
-                        <small class="text-danger" *ngIf="contractForm.get('contractNumber')?.errors?.['required']">
-                            Vui lòng nhập số hợp đồng
-                        </small>
-                    </div>
-                </div>
-
-                <!-- Date -->
-                <div class="form-group">
-                    <label>Ngày ký hợp đồng <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fa-solid fa-calendar-day"></i>
-                        <input type="date" formControlName="contractDate">
-                    </div>
-                    <div class="error-msg"
-                        *ngIf="contractForm.get('contractDate')?.touched && contractForm.get('contractDate')?.invalid">
-                        <small class="text-danger" *ngIf="contractForm.get('contractDate')?.errors?.['required']">
-                            Vui lòng chọn ngày ký
-                        </small>
-                    </div>
-                </div>
-
-                <!-- Customer -->
-                <div class="form-group">
-                    <label>Khách hàng <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fa-solid fa-building-user"></i>
-                        <select formControlName="customerId">
-                            <option [ngValue]="null">-- Chọn khách hàng --</option>
-                            <option *ngFor="let c of customers" [value]="c.id">{{ c.customerName }}</option>
-                        </select>
-                    </div>
-                    <div class="error-msg"
-                        *ngIf="contractForm.get('customerId')?.touched && contractForm.get('customerId')?.invalid">
-                        <small class="text-danger" *ngIf="contractForm.get('customerId')?.errors?.['required']">
-                            Vui lòng chọn khách hàng
-                        </small>
-                    </div>
-                </div>
-
-                <!-- Credit Limit -->
-                <div class="form-group">
-                    <label>Hạn mức tín dụng tối đa <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fa-solid fa-money-bill-wave"></i>
-                        <input type="number" formControlName="creditLimit" placeholder="0">
-                        <span class="currency">₫</span>
-                    </div>
-                    <div class="error-msg"
-                        *ngIf="contractForm.get('creditLimit')?.touched && contractForm.get('creditLimit')?.invalid">
-                        <small class="text-danger" *ngIf="contractForm.get('creditLimit')?.errors?.['required']">
-                            Vui lòng nhập hạn mức
-                        </small>
-                        <small class="text-danger" *ngIf="contractForm.get('creditLimit')?.errors?.['min']">
-                            Hạn mức không được âm
-                        </small>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="form-actions">
-                <button type="button" class="btn-cancel" [routerLink]="['/manager/credit-contract']">
-                    Hủy bỏ
+            <!-- FOOTER ACTIONS -->
+            <div class="page-footer-actions">
+                <button type="button" class="btn-cancel" routerLink="/manager/credit-contract">
+                    <i class="fa-solid fa-xmark"></i> Hủy bỏ
                 </button>
-                <button type="submit" class="btn-submit" [disabled]="contractForm.invalid || isLoading">
-                    <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
-                    {{ isEditMode ? 'Cập nhật hợp đồng' : 'Lưu hợp đồng mới' }}
+                <button type="submit" class="btn-save" [disabled]="contractForm.invalid">
+                    <i class="fa-solid fa-check"></i> {{ isEditMode ? 'Cập nhật thay đổi' : 'Lưu hợp đồng' }}
                 </button>
             </div>
         </form>

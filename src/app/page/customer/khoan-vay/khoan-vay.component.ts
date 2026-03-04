@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { LoanDTO } from '../../../models/loan.model';
 import { CustomerLoanService } from '../../../service/customer-loan.service';
+import { Subject, debounceTime } from 'rxjs';
 
 @Component({
     selector: 'app-customer-khoan-vay',
@@ -35,7 +36,15 @@ export class CustomerKhoanVayComponent implements OnInit {
     showDetailModal = false;
     detailLoading = false;
 
-    constructor(private loanService: CustomerLoanService) { }
+    private searchSubject = new Subject<void>();
+
+    constructor(private loanService: CustomerLoanService) {
+        this.searchSubject.pipe(
+            debounceTime(500)
+        ).subscribe(() => {
+            this.loadLoans(0);
+        });
+    }
 
     ngOnInit(): void {
         this.loadLoans();
@@ -72,8 +81,8 @@ export class CustomerKhoanVayComponent implements OnInit {
             });
     }
 
-    search(): void {
-        this.loadLoans(0);
+    onSearch(): void {
+        this.searchSubject.next();
     }
 
     changePage(newPage: number): void {

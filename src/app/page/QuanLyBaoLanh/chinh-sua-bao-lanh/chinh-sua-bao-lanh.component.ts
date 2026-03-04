@@ -44,7 +44,7 @@ export class ChinhSuaBaoLanhComponent {
 
   loadBrands(): void {
     this.manufacturerService.getManufacture().subscribe({
-      next: res => this.brands = res,
+      next: (res: Manufacturer[]) => this.brands = res,
       error: () => console.error('Không tải được hãng xe')
     });
   }

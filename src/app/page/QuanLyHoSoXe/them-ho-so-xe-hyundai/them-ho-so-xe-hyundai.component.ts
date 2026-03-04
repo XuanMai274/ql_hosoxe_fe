@@ -106,9 +106,9 @@ export class ThemHoSoXeHyundaiComponent {
 
   loadHyundaiBrand(): void {
     this.manufacturerService.getManufacture().subscribe({
-      next: res => {
+      next: (res: Manufacturer[]) => {
         console.log('📦 All Manufacturers from Server:', res);
-        this.selectedBrand = res.find(b => b.code === this.HYUNDAI_BRAND_CODE) || null;
+        this.selectedBrand = res.find((b: Manufacturer) => b.code === this.HYUNDAI_BRAND_CODE) || null;
         console.log('🎯 Selected Hyundai Brand:', this.selectedBrand);
         if (this.selectedBrand) {
           this.loadAvailableGuarantees();

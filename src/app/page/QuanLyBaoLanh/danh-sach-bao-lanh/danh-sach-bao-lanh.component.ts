@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { CommonModule } from '@angular/common';
 import { PageResponse } from '../../../models/page-response';
 import { RouterModule } from '@angular/router';
+import { Subject, debounceTime } from 'rxjs';
 import { GuaranteeLetterFile } from '../../../models/guarantee_letter_file';
 
 @Component({
@@ -32,10 +33,18 @@ export class DanhSachBaoLanhComponent implements OnInit {
     { code: 'HYUNDAI', name: 'Hyundai' }
   ];
 
+  private searchSubject = new Subject<void>();
+
   constructor(
     private fb: FormBuilder,
     private service: GuaranteeLetterService
-  ) { }
+  ) {
+    this.searchSubject.pipe(
+      debounceTime(500)
+    ).subscribe(() => {
+      this.search(0);
+    });
+  }
 
   ngOnInit() {
     this.filterForm = this.fb.group({
@@ -43,6 +52,10 @@ export class DanhSachBaoLanhComponent implements OnInit {
       fromDate: [''],
       toDate: [''],
       hasLetterNumber: ['']
+    });
+
+    this.filterForm.valueChanges.subscribe(() => {
+      this.onSearch();
     });
 
     this.search(0);
@@ -102,8 +115,8 @@ export class DanhSachBaoLanhComponent implements OnInit {
     }
   }
 
-  searchByKeyword() {
-    this.search(0);
+  onSearch() {
+    this.searchSubject.next();
   }
 
   // ================= UPLOAD FILE =================

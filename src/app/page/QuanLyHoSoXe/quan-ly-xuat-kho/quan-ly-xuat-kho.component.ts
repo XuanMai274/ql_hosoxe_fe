@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { WarehouseExportService } from '../../../service/warehouse-export.service';
 import { WarehouseExportDTO } from '../../../models/warehouseExport.model';
 import Swal from 'sweetalert2';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
     selector: 'app-quan-ly-xuat-kho',
@@ -31,7 +32,17 @@ export class QuanLyXuatKhoComponent implements OnInit {
     selectedItem: WarehouseExportDTO | null = null;
     isEditMode = false;
 
-    constructor(private warehouseExportService: WarehouseExportService) { }
+    private searchSubject = new Subject<string>();
+
+    constructor(private warehouseExportService: WarehouseExportService) {
+        this.searchSubject.pipe(
+            debounceTime(500),
+            distinctUntilChanged()
+        ).subscribe(() => {
+            this.page = 0;
+            this.loadData();
+        });
+    }
 
     ngOnInit(): void {
         this.loadData();
@@ -41,11 +52,14 @@ export class QuanLyXuatKhoComponent implements OnInit {
         this.loading = true;
         this.error = null;
 
-        const params = {
+        const params: any = {
             page: this.page,
             size: this.size,
-            exportNumber: this.exportNumber || null
         };
+
+        if (this.exportNumber && this.exportNumber.trim() !== '') {
+            params.exportNumber = this.exportNumber;
+        }
 
         this.warehouseExportService.getAll(params).subscribe({
             next: (res: any) => {
@@ -62,9 +76,15 @@ export class QuanLyXuatKhoComponent implements OnInit {
         });
     }
 
-    search(): void {
-        this.page = 0;
-        this.loadData();
+    onSearch(value: string): void {
+        const val = value ? value.trim() : '';
+        this.exportNumber = val;
+        if (!val) {
+            this.page = 0;
+            this.loadData();
+        } else {
+            this.searchSubject.next(val);
+        }
     }
 
     next(): void {
