@@ -67,56 +67,14 @@
 
   <!-- Table Section -->
   <div class="table-container" *ngIf="!isLoading">
-    <table class="modern-table" *ngIf="filteredContracts.length > 0">
-      <thead>
-        <tr>
-          <th>Số Hợp đồng</th>
-          <th>Đã sử dụng</th>
-          <th>Còn lại</th>
-          <th>Dư bảo lãnh</th>
-          <th>Dư vay xe</th>
-          <th>Dư vay BDS</th>
-          <th>Trạng thái</th>
-          <th class="text-center">Thao tác</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let contract of filteredContracts" [class.row-expired]="contract.status === 'EXPIRED'">
-          <td class="font-bold contract-num">{{ contract.contractNumber }}</td>
-          <td class="text-right font-bold">{{ contract.usedLimit| number }} ₫</td>
-          <td class="text-right text-teal">{{ contract.remainingLimit | number }} ₫</td>
-          <td class="text-right text-teal">{{ contract.issuedGuaranteeBalance | number }} ₫</td>
-          <td class="text-right text-muted">{{ contract.vehicleLoanBalance | number }} ₫</td>
-          <td class="text-right text-muted">{{ contract.realEstateLoanBalance| number }} ₫</td>
-          <td>
-            <span [class]="'status-pill ' + getStatusBadgeClass(contract.status)">
-              <i class="fa-solid fa-circle"></i>
-              {{ getStatusLabel(contract.status) }}
-            </span>
-          </td>
-          <td class="text-center">
-            <button class="action-btn edit" title="Chỉnh sửa" (click)="goToEdit(contract.id!)">
-              <i class="fa-solid fa-pen-to-square"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- No Data State -->
-    <div class="no-data-wrap" *ngIf="filteredContracts.length === 0">
-      <div class="no-data-icon">
-        <i class="fa-solid fa-folder-open"></i>
-  <!-- TABLE CARD -->
-  <!-- <div class="table-card" *ngIf="!isLoading">
-    <div class="table-header">
+    <div class="table-header" *ngIf="filteredContracts.length > 0">
       <div class="table-title">
-        <i class="fa-solid fa-list-ul"></i> Danh sách hợp đồng -->
+        <i class="fa-solid fa-list-ul"></i> Danh sách hợp đồng
       </div>
       <span class="record-count">{{ filteredContracts.length }} bản ghi</span>
     </div>
 
-    <div class="table-responsive">
+    <div class="table-responsive" *ngIf="filteredContracts.length > 0">
       <table class="modern-table">
         <thead>
           <tr>
@@ -130,14 +88,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let contract of filteredContracts; let i = index">
-            <td>{{ contract.contractNumber }}</td>
+          <tr *ngFor="let contract of filteredContracts" [class.row-expired]="contract.status === 'EXPIRED'">
+            <td class="font-bold contract-num">{{ contract.contractNumber }}</td>
             <td>{{ formatDate(contract.contractDate) }}</td>
             <td>{{ formatDate(contract.expiryDate) }}</td>
-            <td class="text-right">{{ (contract.usedLimit || 0)| number:'1.0-0' }} VNĐ</td>
-            <td class="text-right">{{ (contract.remainingLimit || 0) | number:'1.0-0' }} VNĐ</td>
+            <td class="text-right font-bold">{{ (contract.usedLimit || 0) | number:'1.0-0' }} ₫</td>
+            <td class="text-right text-teal">{{ (contract.remainingLimit || 0) | number:'1.0-0' }} ₫</td>
             <td class="text-center">
-              <span class="status-badge" [ngClass]="contract.status === 'ACTIVE' ? 'status-active' : 'status-default'">
+              <span [class]="'status-pill ' + getStatusBadgeClass(contract.status)">
+                <i class="fa-solid fa-circle"></i>
                 {{ getStatusLabel(contract.status) }}
               </span>
             </td>
@@ -152,8 +111,10 @@
     </div>
 
     <!-- NO DATA STATE -->
-    <div class="no-data-row" *ngIf="filteredContracts.length === 0">
-      <i class="fa-solid fa-file-circle-exclamation"></i>
+    <div class="no-data-wrap" *ngIf="filteredContracts.length === 0">
+      <div class="no-data-icon">
+        <i class="fa-solid fa-file-circle-exclamation"></i>
+      </div>
       <p>Không tìm thấy hợp đồng nào khớp với bộ lọc.</p>
     </div>
   </div>

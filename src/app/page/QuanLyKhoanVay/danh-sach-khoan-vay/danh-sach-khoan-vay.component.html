@@ -14,22 +14,20 @@
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-file-signature"></i> Số HĐTD chi tiết</label>
         <input type="text" placeholder="Tìm theo số HĐ..." [ngModel]="contractNumber"
-          (ngModelChange)="contractNumber = $event; onSearch()" class="filter-input" />
+          (ngModelChange)="contractNumber = $event; search()" class="filter-input" />
       </div>
-<<<<<<< HEAD
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-calendar"></i> Từ ngày</label>
+        <input type="date" [ngModel]="fromDate" (ngModelChange)="fromDate = $event; search()" class="filter-input" />
+      </div>
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-calendar"></i> Đến ngày</label>
+        <input type="date" [ngModel]="toDate" (ngModelChange)="toDate = $event; search()" class="filter-input" />
+      </div>
       <div class="filter-actions">
         <button class="btn-search" (click)="search()">
           <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
         </button>
-=======
-      <div class="filter-group">
-        <label class="filter-label"><i class="fa-solid fa-calendar"></i> Từ ngày</label>
-        <input type="date" [ngModel]="fromDate" (ngModelChange)="fromDate = $event; onSearch()" class="filter-input" />
-      </div>
-      <div class="filter-group">
-        <label class="filter-label"><i class="fa-solid fa-calendar"></i> Đến ngày</label>
-        <input type="date" [ngModel]="toDate" (ngModelChange)="toDate = $event; onSearch()" class="filter-input" />
->>>>>>> ff9ff30c8600063041b15e0c3d7dfc113a47b832
       </div>
     </div>
   </div>

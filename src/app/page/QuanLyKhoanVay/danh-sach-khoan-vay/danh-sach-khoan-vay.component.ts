@@ -66,7 +66,7 @@ export class DanhSachKhoanVayComponent {
       });
   }
 
-  onSearch(): void {
+  search(): void {
     if (!this.contractNumber && !this.fromDate && !this.toDate) {
       this.page = 0;
       this.loadData();
