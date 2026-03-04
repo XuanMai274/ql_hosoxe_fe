@@ -100,8 +100,7 @@
               <th class="text-right">Đã trả (VNĐ)</th>
               <th class="text-right">Còn lại (VNĐ)</th>
               <th class="text-center">Kỳ hạn (ngày)</th>
-              <th class="text-center">Ngày vay</th>
-              <th class="text-center">Đến hạn</th>
+              <th class="text-center">doc_id</th>
               <th class="text-center">Trạng thái</th>
               <th class="text-center">Thao tác</th>
             </tr>
@@ -126,14 +125,7 @@
               </td>
               <td class="text-center">{{ loan.loanTerm || '—' }}</td>
               <td class="text-center">{{ loan.loanDate | date:'dd/MM/yyyy' }}</td>
-              <td class="text-center" [style.color]="loan.loanStatus === 'OVERDUE' ? '#dc2626' : ''">
-                {{ loan.dueDate | date:'dd/MM/yyyy' }}
-              </td>
-              <td class="text-center">
-                <span class="status-badge" [ngClass]="getStatusClass(loan.loanStatus)">
-                  {{ getStatusLabel(loan.loanStatus) }}
-                </span>
-              </td>
+              <td class="code-cell">{{ loan.docId }}</td>
               <td class="text-center">
                 <button class="btn-edit-row" (click)="openEditLoan(loan)">
                   <i class="fa-solid fa-pen-to-square"></i> Sửa

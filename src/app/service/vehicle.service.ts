@@ -200,4 +200,13 @@ export class VehicleService {
             { responseType: 'blob' }
         );
     }
+    // lấy lên danh sách xe vinfast chưa nhập kho thật sự
+    getVinfastInSafeVehicles(): Observable<Vehicle[]> {
+        return this.http.get<Vehicle[]>(`http://localhost:8080/officer/vehicles/vinfast/in-safe`);
+    }
+
+    updateVehicleInSafe(vehicleIds: number[], inSafe: boolean): Observable<any> {
+        let params = new HttpParams().set('inSafe', inSafe);
+        return this.http.put(`${this.apiUrl}/update-safe`, vehicleIds, { params });
+    }
 }
