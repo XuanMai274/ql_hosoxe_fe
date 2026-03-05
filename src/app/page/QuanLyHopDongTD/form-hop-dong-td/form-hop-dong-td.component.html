@@ -77,22 +77,62 @@
                         </div>
                     </div>
 
-                    <!-- Cột 3: Hạn mức -->
-                    <div class="form-section">
-                        <div class="form-group">
-                            <label class="form-label">Hạn mức tín dụng (VNĐ) <span class="text-danger">*</span></label>
-                            <input type="text" [value]="formattedCreditLimit" (input)="onCreditLimitInput($event)"
-                                class="form-input amount-input" placeholder="0">
-                            <div class="hint"
-                                *ngIf="contractForm.get('creditLimit')?.touched && contractForm.get('creditLimit')?.invalid">
-                                Hạn mức phải lớn hơn hoặc bằng 0.
+                    <!-- Cột 3: Hạn mức & Số dư -->
+                    <div class="form-section full-width">
+                        <div class="card-grid-3">
+                            <div class="form-group">
+                                <label class="form-label">Hạn mức tín dụng (VNĐ) <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" [value]="formattedCreditLimit" (input)="onCreditLimitInput($event)"
+                                    class="form-input amount-input highlight" placeholder="0">
+                                <div class="hint"
+                                    *ngIf="contractForm.get('creditLimit')?.touched && contractForm.get('creditLimit')?.invalid">
+                                    Hạn mức phải lớn hơn hoặc bằng 0.
+                                </div>
                             </div>
-                        </div>
+                            <div></div>
+                            <div></div>
 
-                        <div class="form-group" *ngIf="isEditMode">
-                            <label class="form-label">Hạn mức đã sử dụng</label>
-                            <input type="text" [value]="((fullContract?.usedLimit || 0) | number:'1.0-0') + ' VNĐ'"
-                                class="form-input read-only" readonly>
+                            <div class="form-group">
+                                <label class="form-label">Dư bảo lãnh phát hành (VNĐ)</label>
+                                <input type="text" [value]="formattedIssuedGuaranteeBalance"
+                                    (input)="onIssuedGuaranteeBalanceInput($event)" class="form-input amount-input"
+                                    placeholder="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Dư nợ vay xe (VNĐ)</label>
+                                <input type="text" [value]="formattedVehicleLoanBalance"
+                                    (input)="onVehicleLoanBalanceInput($event)" class="form-input amount-input"
+                                    placeholder="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Dư vay BĐS (VNĐ)</label>
+                                <input type="text" [value]="formattedRealEstateLoanBalance"
+                                    (input)="onRealEstateLoanBalanceInput($event)" class="form-input amount-input"
+                                    placeholder="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Hạn mức đã sử dụng</label>
+                                <div class="input-with-icon">
+                                    <input type="text" [value]="formattedUsedLimit + ' VNĐ'"
+                                        class="form-input read-only info-bg" readonly>
+                                    <i class="fa-solid fa-calculator hint-icon"></i>
+                                </div>
+                                <div class="hint">Tính bằng tổng 3 loại dư nợ trên.</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Hạn mức còn lại</label>
+                                <div class="input-with-icon">
+                                    <input type="text" [value]="formattedRemainingLimit + ' VNĐ'"
+                                        class="form-input read-only success-bg" readonly>
+                                    <i class="fa-solid fa-vault hint-icon"></i>
+                                </div>
+                                <div class="hint">Hạn mức tín dụng - Hạn mức đã dùng.</div>
+                            </div>
                         </div>
                     </div>
                 </div>

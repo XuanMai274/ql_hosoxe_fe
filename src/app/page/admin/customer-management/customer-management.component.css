@@ -518,3 +518,21 @@
     animation: spin 0.8s linear infinite;
     margin: 0 auto 15px;
 }
+
+.error-feedback {
+    color: #dc2626;
+    font-size: 11px;
+    margin-top: 4px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.password-hint {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 4px;
+    line-height: 1.4;
+    display: block;
+}

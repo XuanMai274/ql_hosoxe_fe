@@ -7,8 +7,20 @@
             <p class="page-subtitle">Xem và xử lý các yêu cầu bảo lãnh từ khách hàng</p>
         </div>
         <div class="header-actions">
+            <div class="filter-group">
+                <i class="fa-solid fa-filter"></i>
+                <select class="status-filter" (change)="onStatusChange($event)">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="PENDING">Chờ duyệt</option>
+                    <option value="APPROVED">Đã duyệt</option>
+                    <option value="REJECTED">Đã từ chối</option>
+                </select>
+            </div>
             <button class="btn-refresh" (click)="loadApplications()" [disabled]="isLoading">
                 <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="isLoading"></i> Làm mới
+            </button>
+            <button class="btn-refresh teal-btn" (click)="openHistory()">
+                <i class="fa-solid fa-list"></i> Danh sách đơn
             </button>
         </div>
     </div>
@@ -146,8 +158,105 @@
     </div>
 </div>
 
+<!-- ===== MODAL LỊCH SỬ (TẤT CẢ) ===== -->
+<div class="modal-overlay" *ngIf="showHistoryModal" (click)="closeHistory()">
+    <div class="modal-panel modal-lg" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <div class="modal-title-wrap">
+                <div class="modal-icon teal-box">
+                    <i class="fa-solid fa-history"></i>
+                </div>
+                <div>
+                    <h2>Toàn bộ Lịch sử Hồ sơ</h2>
+                    <p class="modal-subtitle">Xem lại tất cả các đơn bảo lãnh (bao gồm cả đơn đã từ chối)</p>
+                </div>
+            </div>
+            <div class="header-actions" style="margin-left: auto; margin-right: 20px;">
+                <select class="status-filter" (change)="onHistoryStatusChange($event)" style="height: 38px;">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="PENDING">Chờ duyệt</option>
+                    <option value="APPROVED">Đã duyệt</option>
+                    <option value="REJECTED">Đã từ chối</option>
+                </select>
+            </div>
+            <button class="btn-close-modal" (click)="closeHistory()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <!-- Loader -->
+            <div class="state-box" *ngIf="isHistoryLoading">
+                <div class="spinner"></div>
+                <p>Đang tải dữ liệu...</p>
+            </div>
+
+            <div class="table-responsive" *ngIf="!isHistoryLoading">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th style="width:50px" class="text-center">STT</th>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-right">Tổng tiền BL</th>
+                            <th>Ngày gửi</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let app of historyApplications; let i = index">
+                            <td class="text-center">{{ historyCurrentPage * pageSize + i + 1 }}</td>
+                            <td class="code-cell">{{ app.applicationNumber }}</td>
+                            <td>{{ app.customerDTO?.customerName }}</td>
+                            <td class="text-center">{{ app.totalVehicleCount || 0 }} xe</td>
+                            <td class="text-right amount-cell">{{ app.totalGuaranteeAmount | number:'1.0-0' }} đ</td>
+                            <td class="date-cell">{{ app.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                            <td>
+                                <span class="status-badge" [ngClass]="getStatusClass(app.status)">
+                                    {{ getStatusText(app.status) }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn-view" (click)="openDetail(app)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="historyApplications.length === 0">
+                            <td colspan="8" class="no-data">Không tìm thấy đơn nào</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination History -->
+            <div class="pagination-bar" *ngIf="historyTotalElements > pageSize">
+                <span class="page-info">Tổng {{ historyTotalElements }} đơn</span>
+                <div class="page-actions">
+                    <button class="page-btn" (click)="onHistoryPageChange(historyCurrentPage - 1)"
+                        [disabled]="historyCurrentPage === 0">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span class="page-tag active">{{ historyCurrentPage + 1 }} / {{ getHistoryTotalPages() }}</span>
+                    <button class="page-btn" (click)="onHistoryPageChange(historyCurrentPage + 1)"
+                        [disabled]="(historyCurrentPage + 1) * pageSize >= historyTotalElements">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="closeHistory()">Đóng</button>
+        </div>
+    </div>
+</div>
+
 <!-- ===== MODAL CHI TIẾT ===== -->
-<div class="modal-overlay" *ngIf="showDetailModal" (click)="closeDetail()">
+<div class="modal-overlay detail-modal-overlay" *ngIf="showDetailModal" (click)="closeDetail()">
     <div class="modal-panel" (click)="$event.stopPropagation()">
 
         <div class="modal-header">

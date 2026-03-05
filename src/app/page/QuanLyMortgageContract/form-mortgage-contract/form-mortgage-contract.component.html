@@ -113,6 +113,22 @@
                                 <option value="EXPIRED">Đã hết hạn</option>
                             </select>
                         </div>
+
+                        <!-- Cấu hình Số nhảy (Sequence) -->
+                        <div class="form-group highlight-section" *ngIf="isEditMode">
+                            <label class="form-label">Cấu hình Số nhảy (Sequence)</label>
+                            <div class="side-by-side">
+                                <div class="inner-group">
+                                    <label>Số BLCT</label>
+                                    <input type="number" formControlName="guaranteeRunningNo" class="form-input small">
+                                </div>
+                                <div class="inner-group">
+                                    <label>Số Nhập kho</label>
+                                    <input type="number" formControlName="warehouseRunningNo" class="form-input small">
+                                </div>
+                            </div>
+                            <small class="text-muted">Dùng để sinh số HĐ bảo lãnh và số Nhập kho kế tiếp</small>
+                        </div>
                     </div>
                 </div>
             </div>

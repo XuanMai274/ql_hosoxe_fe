@@ -268,6 +268,14 @@
                     <label class="form-label">Mật khẩu <span class="required" *ngIf="!isEditing">*</span></label>
                     <input type="password" formControlName="password" class="form-input"
                         placeholder="{{ isEditing ? '********' : 'Tối thiểu 6 ký tự' }}" />
+                    <small class="password-hint" *ngIf="!isEditing">
+                        <i class="fa-solid fa-circle-info"></i> Yêu cầu: ít nhất 1 chữ hoa, 1 chữ thường và 1 ký tự
+                        (số/đặc biệt).
+                    </small>
+                    <div class="error-feedback"
+                        *ngIf="customerForm.get('password')?.touched && customerForm.get('password')?.errors?.['pattern']">
+                        <i class="fa-solid fa-circle-exclamation"></i> Mật khẩu không đúng định dạng yêu cầu.
+                    </div>
                 </div>
             </div>
 
