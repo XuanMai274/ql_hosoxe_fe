@@ -79,30 +79,32 @@
         <thead>
           <tr>
             <th>Số Hợp đồng</th>
-            <th>Ngày ký</th>
-            <th>Ngày hết hạn</th>
-            <th class="text-right">Đã sử dụng</th>
-            <th class="text-right">Hạn mức còn lại</th>
-            <th class="text-center">Trạng thái</th>
+            <th>Đã sử dụng</th>
+            <th>Còn lại</th>
+            <th>Dư bảo lãnh</th>
+            <th>Dư vay xe</th>
+            <th>Dư vay BDS</th>
+            <th>Trạng thái</th>
             <th class="text-center">Thao tác</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let contract of filteredContracts" [class.row-expired]="contract.status === 'EXPIRED'">
             <td class="font-bold contract-num">{{ contract.contractNumber }}</td>
-            <td>{{ formatDate(contract.contractDate) }}</td>
-            <td>{{ formatDate(contract.expiryDate) }}</td>
-            <td class="text-right font-bold">{{ (contract.usedLimit || 0) | number:'1.0-0' }} ₫</td>
-            <td class="text-right text-teal">{{ (contract.remainingLimit || 0) | number:'1.0-0' }} ₫</td>
-            <td class="text-center">
+            <td class="text-right font-bold">{{ contract.usedLimit| number }} ₫</td>
+            <td class="text-right text-teal">{{ contract.remainingLimit | number }} ₫</td>
+            <td class="text-right text-teal">{{ contract.issuedGuaranteeBalance | number }} ₫</td>
+            <td class="text-right text-muted">{{ contract.vehicleLoanBalance | number }} ₫</td>
+            <td class="text-right text-muted">{{ contract.realEstateLoanBalance| number }} ₫</td>
+            <td>
               <span [class]="'status-pill ' + getStatusBadgeClass(contract.status)">
                 <i class="fa-solid fa-circle"></i>
                 {{ getStatusLabel(contract.status) }}
               </span>
             </td>
             <td class="text-center">
-              <button class="btn-view" (click)="goToEdit(contract.id!)">
-                <i class="fa-solid fa-eye"></i> Xem
+              <button class="action-btn edit" title="Chỉnh sửa" (click)="goToEdit(contract.id!)">
+                <i class="fa-solid fa-pen-to-square"></i>
               </button>
             </td>
           </tr>

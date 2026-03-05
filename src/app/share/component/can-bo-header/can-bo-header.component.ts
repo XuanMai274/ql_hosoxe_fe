@@ -15,7 +15,7 @@ export class CanBoHeaderComponent {
   showUserDropdown: boolean = false;
 
   constructor(private authService: AuthServiceComponent) {
-    this.username = sessionStorage.getItem('fullName') || 'Người dùng';
+    this.username = localStorage.getItem('fullName') || 'Officer';
     this.userRole = this.authService.getUserRole();
   }
 

@@ -199,6 +199,9 @@
                     <label class="form-label">Tên khách hàng <span class="required">*</span></label>
                     <input type="text" formControlName="customerName" class="form-input"
                         placeholder="Nhập tên khách hàng" />
+                    <div class="error-feedback" *ngIf="isSubmitted && customerForm.get('customerName')?.errors?.['required']">
+                        <i class="fa-solid fa-circle-exclamation"></i> Tên khách hàng không được để trống.
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Loại khách hàng <span class="required">*</span></label>
@@ -213,10 +216,19 @@
                 <div class="form-group">
                     <label class="form-label">Email</label>
                     <input type="email" formControlName="email" class="form-input" placeholder="email@example.com" />
+                    <div class="error-feedback" *ngIf="isSubmitted && customerForm.get('email')?.errors?.['required']">
+                        <i class="fa-solid fa-circle-exclamation"></i> Email không được để trống.
+                    </div>
+                    <div class="error-feedback" *ngIf="isSubmitted && customerForm.get('email')?.errors?.['email']">
+                        <i class="fa-solid fa-circle-exclamation"></i> Email không đúng định dạng.
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Số điện thoại</label>
                     <input type="text" formControlName="phone" class="form-input" placeholder="Nhập số điện thoại" />
+                    <div class="error-feedback" *ngIf="isSubmitted && customerForm.get('phone')?.errors?.['pattern']">
+                        <i class="fa-solid fa-circle-exclamation"></i> Số điện thoại phải bao gồm 10 chữ số.
+                    </div>
                 </div>
                 <div class="form-group full-width">
                     <label class="form-label">Địa chỉ</label>
@@ -262,18 +274,30 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label class="form-label">Tên đăng nhập <span class="required">*</span></label>
-                    <input type="text" formControlName="username" class="form-input" placeholder="user.name" />
+                    <input type="text" formControlName="username" class="form-input" placeholder="Username" />
+                    <div class="error-feedback" *ngIf="isSubmitted && customerForm.get('username')?.errors?.['required']">
+                        <i class="fa-solid fa-circle-exclamation"></i> Tên đăng nhập không được để trống.
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Mật khẩu <span class="required" *ngIf="!isEditing">*</span></label>
-                    <input type="password" formControlName="password" class="form-input"
-                        placeholder="{{ isEditing ? '********' : 'Tối thiểu 6 ký tự' }}" />
+                    <div class="password-wrapper">
+                        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-input"
+                            placeholder="{{ isEditing ? '********' : 'Tối thiểu 6 ký tự' }}" />
+                        <button type="button" class="btn-toggle-password" (click)="showPassword = !showPassword">
+                            <i class="fa-solid" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+                        </button>
+                    </div>
                     <small class="password-hint" *ngIf="!isEditing">
                         <i class="fa-solid fa-circle-info"></i> Yêu cầu: ít nhất 1 chữ hoa, 1 chữ thường và 1 ký tự
                         (số/đặc biệt).
                     </small>
                     <div class="error-feedback"
-                        *ngIf="customerForm.get('password')?.touched && customerForm.get('password')?.errors?.['pattern']">
+                        *ngIf="isSubmitted && customerForm.get('password')?.errors?.['required']">
+                        <i class="fa-solid fa-circle-exclamation"></i> Mật khẩu là bắt buộc khi tạo mới.
+                    </div>
+                    <div class="error-feedback"
+                        *ngIf="isSubmitted && customerForm.get('password')?.errors?.['pattern']">
                         <i class="fa-solid fa-circle-exclamation"></i> Mật khẩu không đúng định dạng yêu cầu.
                     </div>
                 </div>
@@ -281,7 +305,7 @@
 
             <div class="modal-footer-actions">
                 <button type="button" class="btn-modal-cancel" (click)="closeModal()">Hủy bỏ</button>
-                <button type="submit" class="btn-modal-submit" [disabled]="customerForm.invalid">
+                <button type="submit" class="btn-modal-submit">
                     <i class="fa-solid fa-floppy-disk"></i> {{ isEditing ? 'Lưu thay đổi' : 'Thêm khách hàng' }}
                 </button>
             </div>

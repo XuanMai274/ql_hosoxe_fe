@@ -29,6 +29,8 @@ export class CustomerManagementComponent implements OnInit {
   showModal = false;
   isEditing = false;
   selectedCustomer: Customer | null = null;
+  isSubmitted = false;
+  showPassword = false;
 
   customerForm: FormGroup;
   availableRoles: Role[] = [];
@@ -52,7 +54,7 @@ export class CustomerManagementComponent implements OnInit {
       customerName: ['', Validators.required],
       customerType: ['CA_NHAN', Validators.required],
       cif: [''],
-      phone: [''],
+      phone: ['', [Validators.pattern(/^0[0-9]{9}$/)]],
       email: ['', [Validators.required, Validators.email]],
       address: [''],
       taxCode: [''],
@@ -141,11 +143,19 @@ export class CustomerManagementComponent implements OnInit {
   openCreateModal(): void {
     this.isEditing = false;
     this.selectedCustomer = null;
+    this.isSubmitted = false;
     this.customerForm.reset({ customerType: 'INDIVIDUAL', status: 'ACTIVE' });
     const customerRole = this.availableRoles.find(r => r.code === 'CUSTOMER');
     if (customerRole) {
       this.customerForm.patchValue({ roleId: customerRole.id });
     }
+    this.customerForm.get('roleId')?.setValidators(Validators.required);
+    this.customerForm.get('username')?.setValidators(Validators.required);
+    this.customerForm.get('password')?.setValidators([
+      Validators.required,
+      Validators.minLength(6),
+      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9!@#$%^&*(),.?":{}|<>]).+$/)
+    ]);
     this.customerForm.get('username')?.enable();
     this.customerForm.get('password')?.enable();
     this.showModal = true;
@@ -153,10 +163,17 @@ export class CustomerManagementComponent implements OnInit {
 
   openEditModal(customer: Customer): void {
     this.isEditing = true;
+    this.isSubmitted = false;
     this.selectedCustomer = customer;
     this.customerForm.patchValue({ ...customer });
     this.customerForm.get('username')?.disable();
     this.customerForm.get('password')?.disable();
+    this.customerForm.get('roleId')?.clearValidators();
+    this.customerForm.get('roleId')?.updateValueAndValidity();
+    this.customerForm.get('username')?.clearValidators();
+    this.customerForm.get('username')?.updateValueAndValidity();
+    this.customerForm.get('password')?.clearValidators();
+    this.customerForm.get('password')?.updateValueAndValidity();
     this.showModal = true;
   }
 
@@ -166,8 +183,15 @@ export class CustomerManagementComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.isSubmitted = true;
     if (this.customerForm.invalid) {
       this.customerForm.markAllAsTouched();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Thông tin chưa hợp lệ',
+        text: 'Vui lòng kiểm tra lại các trường thông tin bắt buộc.',
+        confirmButtonColor: '#006b68'
+      });
       return;
     }
 

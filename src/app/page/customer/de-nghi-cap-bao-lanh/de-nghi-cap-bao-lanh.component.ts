@@ -10,6 +10,7 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { AuthServiceComponent } from '../../../core/service/auth-service.component';
 import { Subject, debounceTime } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-de-nghi-cap-bao-lanh',
@@ -174,33 +175,45 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
         this.newForm.reset();
         while (this.vehicles.length > 0) this.vehicles.removeAt(0);
 
-        if (item) {
-            this.isEditing = true;
-            this.currentEditId = item.id || null;
-            this.newForm.patchValue({
-                manufacturerCode: item.manufacturerDTO?.code
+        if (item && item.id) {
+            this.loading = true;
+            this.guaranteeAppService.getById(item.id).subscribe({
+                next: (fullItem) => {
+                    this.isEditing = true;
+                    this.currentEditId = fullItem.id || null;
+                    this.newForm.patchValue({
+                        manufacturerCode: fullItem.manufacturerDTO?.code
+                    });
+                    if (fullItem.vehicles && fullItem.vehicles.length > 0) {
+                        fullItem.vehicles.forEach(v => {
+                            this.vehicles.push(this.fb.group({
+                                loaiXe: [v.vehicleType, Validators.required],
+                                mauXe: [v.color],
+                                soKhung: [v.chassisNumber],
+                                soDonHang: [v.invoiceNumber],
+                                giaXe: [v.vehiclePrice, [Validators.required, Validators.min(1)]]
+                            }));
+                        });
+                    } else {
+                        this.vehicles.push(this.createRow());
+                    }
+                    this.loading = false;
+                    this.showForm = true;
+                    document.body.style.overflow = 'hidden';
+                },
+                error: (err) => {
+                    console.error('Lỗi khi tải dữ liệu sửa', err);
+                    this.loading = false;
+                    alert('Không thể tải dữ liệu để chỉnh sửa');
+                }
             });
-            if (item.vehicles && item.vehicles.length > 0) {
-                item.vehicles.forEach(v => {
-                    this.vehicles.push(this.fb.group({
-                        loaiXe: [v.vehicleType, Validators.required],
-                        mauXe: [v.color, Validators.required],
-                        soKhung: [v.chassisNumber],
-                        soDonHang: [v.invoiceNumber],
-                        giaXe: [v.vehiclePrice, [Validators.required, Validators.min(1)]]
-                    }));
-                });
-            } else {
-                this.vehicles.push(this.createRow());
-            }
         } else {
             this.isEditing = false;
             this.currentEditId = null;
             this.vehicles.push(this.createRow());
+            this.showForm = true;
+            document.body.style.overflow = 'hidden';
         }
-
-        this.showForm = true;
-        document.body.style.overflow = 'hidden';
     }
 
     closeForm(): void {
@@ -290,39 +303,43 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
         if (this.isEditing && this.currentEditId) {
             this.guaranteeAppService.update(this.currentEditId, payload).subscribe({
                 next: (res) => {
+                    Swal.fire('Thành công', 'Đơn đề nghị đã được cập nhật', 'success');
+                    this.newForm.reset();
+                    while (this.vehicles.length > 0) this.vehicles.removeAt(0);
+                    this.isEditing = false;
+                    this.loadData(this.page); // Assuming loadData() without args loads current page
                     this.submitting = false;
                     this.closeForm();
-                    this.loadData(this.page);
                     if (res.id && res.subGuaranteeContractNumber) {
                         this.exportAllFiles(res.id, res.subGuaranteeContractNumber);
                     }
                 },
                 error: (err) => {
-                    console.error(err);
+                    console.error("Error updating proposal:", err);
+                    const msg = err.error?.message || 'Không thể cập nhật đơn đề nghị';
+                    Swal.fire('Lỗi', msg, 'error');
                     this.submitting = false;
-                    alert('Có lỗi khi cập nhật đơn bảo lãnh');
                 }
             });
         } else {
             this.guaranteeAppService.create(payload).subscribe({
                 next: (res) => {
-                    if (!res.id) {
-                        alert('Không tìm thấy ID');
-                        return;
-                    }
-                    if (!res.id || !res.subGuaranteeContractNumber) {
-                        alert('Thiếu dữ liệu xuất file');
-                        return;
-                    }
+                    Swal.fire('Thành công', 'Đã gửi đơn đề nghị cấp bảo lãnh', 'success');
+                    this.newForm.reset();
+                    this.newForm.patchValue({ status: 'PENDING' });
+                    while (this.vehicles.length > 0) this.vehicles.removeAt(0);
+                    this.loadData(0);
                     this.submitting = false;
                     this.closeForm();
-                    this.loadData(0);
-                    this.exportAllFiles(res.id, res.subGuaranteeContractNumber);
+                    if (res.id && res.subGuaranteeContractNumber) {
+                        this.exportAllFiles(res.id, res.subGuaranteeContractNumber);
+                    }
                 },
                 error: (err) => {
-                    console.error(err);
+                    console.error("Error creating proposal:", err);
+                    const msg = err.error?.message || 'Không thể tạo đơn đề nghị';
+                    Swal.fire('Lỗi', msg, 'error');
                     this.submitting = false;
-                    alert('Có lỗi khi tạo đơn bảo lãnh');
                 }
             });
         }
@@ -441,6 +458,23 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
                 alert('Lỗi khi xuất file');
             }
         });
+    }
+
+    /* ================== HELPERS ================== */
+    formatMoney(value: any): string {
+        if (value === null || value === undefined) return '';
+        return Number(value).toLocaleString('vi-VN');
+    }
+
+    onMoneyInput(event: any, controlName: string, control?: AbstractControl) {
+        let raw = event.target.value.replace(/\D/g, '');
+        let numericValue = raw ? Number(raw) : null;
+        if (control) {
+            control.setValue(numericValue, { emitEvent: false });
+        } else {
+            this.newForm.get(controlName)?.setValue(numericValue, { emitEvent: false });
+        }
+        event.target.value = this.formatMoney(numericValue);
     }
 }
 

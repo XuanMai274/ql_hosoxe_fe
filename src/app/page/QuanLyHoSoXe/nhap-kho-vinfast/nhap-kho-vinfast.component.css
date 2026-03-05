@@ -19,7 +19,7 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #028B89, #02a6a3);
+  background: #017c7a;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -827,6 +827,7 @@
   font-size: 48px;
   margin-bottom: 12px;
 }
+
 .deadline-badge {
   margin-left: 8px;
   padding: 2px 8px;

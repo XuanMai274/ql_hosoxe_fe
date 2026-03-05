@@ -52,11 +52,10 @@ export class ChinhSuaBaoLanhComponent {
   buildForm(data: GuaranteeLetter): void {
     this.editForm = this.fb.group({
       guaranteeNoticeNumber: [data.guaranteeNoticeNumber],
-      guaranteeContractNumber: [{ value: data.guaranteeContractNumber, disabled: true }],
-      guaranteeContractDate: [{ value: data.guaranteeContractDate, disabled: true }],
-
+      guaranteeContractNumber: [data.guaranteeContractNumber],
+      guaranteeContractDate: [data.guaranteeContractDate],
+      guaranteeNoticeDate: [data.guaranteeNoticeDate],
       referenceCode: [data.referenceCode],
-      manufacturerId: [data.manufacturerDTO?.id, Validators.required],
       manufacturerCode: [data.manufacturerDTO?.code, Validators.required],
 
       expectedGuaranteeAmount: [data.expectedGuaranteeAmount, Validators.required],
@@ -265,8 +264,10 @@ export class ChinhSuaBaoLanhComponent {
       ...this.originalData,
       ...this.editForm.getRawValue(),
       id,
+      referenceCode: this.editForm.value.referenceCode || null,
+      guaranteeNoticeDate: this.editForm.value.guaranteeNoticeDate || null,
       manufacturerDTO: {
-        id: this.editForm.value.manufacturerId
+        id: this.getManufacturerIdByCode(this.editForm.value.manufacturerCode)
       },
       branchAuthorizedRepresentativeDTO: {
         id: this.editForm.value.branchAuthorizedRepresentativeId
@@ -301,11 +302,12 @@ export class ChinhSuaBaoLanhComponent {
             .then(() => this.router.navigate(['/manager/danh-sach-bao-lanh']));
         },
         error: (err) => {
-          if (err.status === 400 && err.error?.message?.includes('Mã tham chiếu')) {
+          const msg = err.error?.message || "";
+          if (err.status === 400 && (msg.includes('Mã tham chiếu') || msg.includes('Số Ref'))) {
             this.editForm.get('referenceCode')?.setErrors({ duplicate: true });
-            Swal.fire('Lỗi', 'Mã tham chiếu đã tồn tại trên hệ thống. Vui lòng kiểm tra lại.', 'error');
+            Swal.fire('Lỗi', 'Số Ref này đã tồn tại trên hệ thống. Vui lòng kiểm tra lại.', 'error');
           } else {
-            Swal.fire('Lỗi', err.error?.message || 'Không thể cập nhật', 'error');
+            Swal.fire('Lỗi', err.error?.message || 'Không thể cập nhật dữ liệu', 'error');
           }
         }
       });
@@ -314,5 +316,23 @@ export class ChinhSuaBaoLanhComponent {
 
   cancel(): void {
     this.router.navigate(['manager/danh-sach-bao-lanh']);
+  }
+
+  getManufacturerIdByCode(code: string): number {
+    const manufacturer = this.brands.find(m => m.code === code);
+    return manufacturer?.id || 0;
+  }
+
+  /* ================== HELPERS ================== */
+  formatMoney(value: any): string {
+    if (value === null || value === undefined) return '';
+    return Number(value).toLocaleString('vi-VN');
+  }
+
+  onMoneyInput(event: any, controlName: string) {
+    let raw = event.target.value.replace(/\D/g, '');
+    let numericValue = raw ? Number(raw) : null;
+    this.editForm.get(controlName)?.setValue(numericValue, { emitEvent: false });
+    event.target.value = this.formatMoney(numericValue);
   }
 }

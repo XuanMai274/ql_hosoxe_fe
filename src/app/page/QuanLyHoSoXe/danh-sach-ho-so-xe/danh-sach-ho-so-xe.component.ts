@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { PageResponse } from '../../../models/page-response';
 import { VehicleList } from '../../../models/vehiclelist.model';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { DocumentService } from '../../../service/document.service';
 
 @Component({
   selector: 'app-danh-sach-ho-so-xe',
@@ -33,7 +34,8 @@ export class DanhSachHoSoXeComponent {
 
   constructor(
     private vehicleService: VehicleService,
-    private router: Router
+    private router: Router,
+    private documentService: DocumentService
   ) {
     this.searchSubject.pipe(
       debounceTime(500)
@@ -112,5 +114,4 @@ export class DanhSachHoSoXeComponent {
       window.URL.revokeObjectURL(url);
     });
   }
-
 }
