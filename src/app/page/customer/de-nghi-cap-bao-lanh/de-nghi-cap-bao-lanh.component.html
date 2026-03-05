@@ -27,18 +27,6 @@
           <option *ngFor="let m of manufacturers" [value]="m.id">{{ m.name }}</option>
         </select>
       </div>
-
-      <div class="filter-group">
-        <label class="filter-label"><i class="fa-solid fa-calendar-days"></i> Từ ngày</label>
-        <input type="date" [ngModel]="fromDate" class="filter-input"
-          (ngModelChange)="fromDate = $event; applyFilter()" />
-      </div>
-
-      <div class="filter-group">
-        <label class="filter-label"><i class="fa-solid fa-calendar-check"></i> Đến ngày</label>
-        <input type="date" [ngModel]="toDate" class="filter-input" (ngModelChange)="toDate = $event; applyFilter()" />
-      </div>
-
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-circle-info"></i> Trạng thái</label>
         <select [ngModel]="statusSearch" class="filter-select" (ngModelChange)="statusSearch = $event; applyFilter()">
@@ -377,8 +365,9 @@
                 <td class="text-center"><span class="fixed-tag tag-bltt">BLTT</span></td>
                 <td class="text-center"><span class="fixed-tag tag-bidv">BIDV</span></td>
                 <td class="text-center"><span class="fixed-tag tag-coc">COC</span></td>
-                <td><input type="number" class="td-input text-right" [class.invalid]="isRowInvalid(i, 'giaXe')"
-                    formControlName="giaXe" placeholder="0" min="0" /></td>
+                <td><input type="text" class="td-input text-right" [class.invalid]="isRowInvalid(i, 'giaXe')"
+                    [value]="formatMoney(row.get('giaXe')?.value)" (input)="onMoneyInput($event, 'giaXe', row)"
+                    placeholder="0" /></td>
                 <td class="text-center"><span class="rate-small">{{
                     getTileByCode(newForm.get('manufacturerCode')?.value) }}%</span></td>
                 <td class="text-right calc-cell">{{ getGiaTriBL(row) | number:'1.0-0' }}</td>

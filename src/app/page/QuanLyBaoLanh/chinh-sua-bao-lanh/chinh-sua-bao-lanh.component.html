@@ -1,195 +1,232 @@
-<form *ngIf="editForm" [formGroup]="editForm" (ngSubmit)="submit()" class="form-container">
-  <div class="page-actions">
-    <button class="btn-outline btn-back" type="button" (click)="cancel()">
-      <i class="fa-solid fa-angles-left"></i>
-      Quay lại
-    </button>
-  </div>
-  <!-- ===== FILE THƯ BẢO LÃNH ===== -->
-  <!-- ===== FILE THƯ BẢO LÃNH ===== -->
-  <fieldset>
-    <legend>File thư bảo lãnh</legend>
-
-    <div class="file-actions">
-
-      <!-- Chọn file -->
-      <label class="btn-upload-file" title="Chọn file PDF">
-        <i class="fa-solid fa-file-circle-plus"></i>
-        <input type="file" accept="application/pdf" (change)="onSelectFile($event)" hidden />
-      </label>
-      <!-- xem file -->
-      <label *ngIf="originalData.fileId" class="btn-upload-file" title="Xem file PDF" (click)="onPreviewFile()">
-        <i class="fa-solid fa-eye"></i>
-      </label>
-      <!-- Xóa file -->
-      <label *ngIf="originalData.fileId" class="btn-upload-file btn-delete" title="Xóa file" (click)="onDeleteFile()">
-        <i class="fa-regular fa-circle-xmark"></i>
-      </label>
-
-      <!-- Nút Upload thật -->
-      <button *ngIf="selectedFile" type="button" class="btn-upload-confirm" (click)="confirmUpload()"
-        title="Upload file">
-        <i class="fa-solid fa-cloud-arrow-up"></i>
-        Upload
-      </button>
-
-      <!-- Loading -->
-      <i *ngIf="uploading" class="fa fa-spinner fa-spin loading-icon"></i>
-
-      <!-- Download -->
-      <button *ngIf="originalData.fileId" type="button" class="btn-file-download" (click)="downloadFile()"
-        title="Tải thư bảo lãnh">
-
-        <i class="fa-solid fa-download"></i>
-      </button>
-
-      <!-- FILE STATUS -->
-      <div class="file-status has-file" *ngIf="originalData.fileId">
-        <i class="fa-solid fa-file-pdf"></i>
-        <span>{{ originalData.fileId.fileName }}</span>
+<div class="page-container" *ngIf="editForm">
+  <!-- ===== HEADER ===== -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-badge">
+        <i class="fa-solid fa-pen-to-square"></i> Nghiệp vụ bảo lãnh
       </div>
-
-      <div class="file-status no-file" *ngIf="!originalData.fileId">
-        <i class="fa-regular fa-circle-xmark"></i>
-        <span>Chưa có file thư bảo lãnh</span>
-      </div>
-
-      <!-- File vừa chọn -->
-      <div *ngIf="selectedFile" class="file-preview">
-        <i class="fa-solid fa-paperclip"></i>
-        {{ selectedFile.name }}
-      </div>
-
+      <h1 class="page-title">Chỉnh sửa thư bảo lãnh</h1>
+      <p class="page-subtitle">Cập nhật thông tin chi tiết cho hợp đồng bảo lãnh <strong>{{
+          originalData.guaranteeContractNumber }}</strong></p>
     </div>
-  </fieldset>
-  <!-- ===== THÔNG TIN THƯ BẢO LÃNH ===== -->
-  <fieldset>
-    <legend>Thông tin thư bảo lãnh</legend>
+    <div class="header-actions">
+      <button class="btn-outline" (click)="cancel()">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+      </button>
+      <button class="btn-primary" (click)="submit()">
+        <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
+      </button>
+    </div>
+  </div>
 
-    <div class="grid">
-      <div>
-        <label>Số hợp đồng bảo lãnh</label>
-        <input formControlName="guaranteeContractNumber" />
-      </div>
-      <div>
-        <label>Ngày bảo lãnh</label>
-        <input type="date" formControlName="guaranteeContractDate" />
-      </div>
-      <div>
-        <label>Số thư bảo lãnh</label>
-        <input formControlName="guaranteeNoticeNumber" />
-      </div>
-      <div>
-        <label>Mã tham chiếu</label>
-        <input formControlName="referenceCode" [class.is-invalid]="editForm.get('referenceCode')?.invalid" />
-        <div *ngIf="editForm.get('referenceCode')?.errors?.['duplicate']" class="error-msg">
-          Mã tham chiếu này đã tồn tại trên hệ thống.
+  <div class="main-layout">
+    <!-- ===== LEFT SIDE: FORM SECTIONS ===== -->
+    <div class="content-body">
+      <form [formGroup]="editForm">
+
+        <!-- CARD 1: THÔNG TIN CHUNG -->
+        <div class="section-card">
+          <div class="card-header">
+            <i class="fa-solid fa-file-invoice"></i>
+            <h3>Thông tin thư bảo lãnh</h3>
+          </div>
+          <div class="grid-form">
+            <div class="form-group">
+              <label>Số hợp đồng bảo lãnh</label>
+              <input formControlName="guaranteeContractNumber" placeholder="Nhập số hợp đồng" />
+            </div>
+            <div class="form-group">
+              <label>Ngày phát hành bảo lãnh</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-calendar"></i>
+                <input type="date" formControlName="guaranteeContractDate" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Số thư bảo lãnh</label>
+              <input formControlName="guaranteeNoticeNumber" placeholder="Nhập số thư" />
+            </div>
+            <div class="form-group">
+              <label>Ngày phát hành thư</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-calendar"></i>
+                <input type="date" formControlName="guaranteeNoticeDate" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Số Ref (Mã tham chiếu)</label>
+              <input formControlName="referenceCode" [class.is-invalid]="editForm.get('referenceCode')?.invalid"
+                placeholder="Nhập số Ref" />
+              <div *ngIf="editForm.get('referenceCode')?.errors?.['duplicate']" class="error-msg">
+                <i class="fa-solid fa-circle-exclamation"></i> Số Ref này đã tồn tại trên hệ thống.
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Hãng xe</label>
+              <select formControlName="manufacturerCode">
+                <option *ngFor="let m of brands" [value]="m.code">{{ m.name }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: GIÁ TRỊ TÀI CHÍNH -->
+        <div class="section-card">
+          <div class="card-header">
+            <i class="fa-solid fa-sack-dollar"></i>
+            <h3>Giá trị bảo lãnh</h3>
+          </div>
+          <div class="grid-form three-cols">
+            <div class="form-group">
+              <label>Số tiền bảo lãnh dự kiến (VNĐ)</label>
+              <input type="text" class="amount-input"
+                [value]="formatMoney(editForm.get('expectedGuaranteeAmount')?.value)"
+                (input)="onMoneyInput($event, 'expectedGuaranteeAmount')" />
+            </div>
+            <div class="form-group">
+              <label>Tổng tiền bảo lãnh thực tế</label>
+              <input type="text" class="disabled-input"
+                [value]="formatMoney(editForm.get('totalGuaranteeAmount')?.value)" disabled />
+            </div>
+            <div class="form-group">
+              <label>Số tiền còn lại</label>
+              <input type="text" class="disabled-input highlight"
+                [value]="formatMoney(editForm.get('remainingAmount')?.value)" disabled />
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3: THÔNG TIN XE & HỢP ĐỒNG -->
+        <div class="two-column-grid">
+          <!-- XE -->
+          <div class="section-card">
+            <div class="card-header">
+              <i class="fa-solid fa-car-side"></i>
+              <h3>Thông tin xe</h3>
+            </div>
+            <div class="grid-form">
+              <div class="form-group">
+                <label>Số xe dự kiến</label>
+                <input type="number" formControlName="expectedVehicleCount" />
+              </div>
+              <div class="form-group">
+                <label>Số xe đã nhập</label>
+                <input type="number" class="disabled-input" [value]="editForm.get('importedVehicleCount')?.value"
+                  disabled />
+              </div>
+              <div class="form-group">
+                <label>Số xe đã xuất</label>
+                <input type="number" class="disabled-input" [value]="editForm.get('exportedVehicleCount')?.value"
+                  disabled />
+              </div>
+            </div>
+          </div>
+
+          <!-- HĐ MUA BÁN -->
+          <div class="section-card">
+            <div class="card-header">
+              <i class="fa-solid fa-file-contract"></i>
+              <h3>Hợp đồng mua bán</h3>
+            </div>
+            <div class="grid-form">
+              <div class="form-group">
+                <label>Tên hợp đồng</label>
+                <input class="disabled-input" [value]="editForm.get('saleContract')?.value" disabled />
+              </div>
+              <div class="form-group">
+                <label>Giá trị hợp đồng (VNĐ)</label>
+                <input class="disabled-input amount-text"
+                  [value]="formatMoney(editForm.get('saleContractAmount')?.value)" disabled />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 4: CHI NHÁNH -->
+        <div class="section-card">
+          <div class="card-header">
+            <i class="fa-solid fa-building-user"></i>
+            <h3>Chi nhánh & Người đại diện</h3>
+          </div>
+          <div class="grid-form">
+            <div class="form-group">
+              <label>Chi nhánh cấp bảo lãnh</label>
+              <input class="disabled-input" [value]="editForm.get('branchName')?.value" disabled />
+            </div>
+            <div class="form-group">
+              <label>Người đại diện chi nhánh</label>
+              <input class="disabled-input" [value]="editForm.get('representativeName')?.value" disabled />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- ===== RIGHT SIDE: SIDEBAR ACTIONS (FILE) ===== -->
+    <div class="content-sidebar">
+      <div class="sidebar-card">
+        <div class="card-header">
+          <i class="fa-solid fa-file-pdf"></i>
+          <h3>File thư bảo lãnh</h3>
+        </div>
+
+        <div class="file-status-box" [class.has-file]="originalData.fileId">
+          <div class="status-icon">
+            <i class="fa-solid" [ngClass]="originalData.fileId ? 'fa-circle-check' : 'fa-circle-xmark'"></i>
+          </div>
+          <div class="status-info">
+            <span class="status-label">{{ originalData.fileId ? 'Đã đính kèm file' : 'Chưa có file PDF' }}</span>
+            <span class="file-name" *ngIf="originalData.fileId">{{ originalData.fileId.fileName }}</span>
+          </div>
+        </div>
+
+        <div class="file-actions-vertical">
+          <!-- Xem/Tải file -->
+          <ng-container *ngIf="originalData.fileId">
+            <button type="button" class="btn-side btn-view" (click)="onPreviewFile()">
+              <i class="fa-solid fa-eye"></i> Xem thư bảo lãnh
+            </button>
+            <button type="button" class="btn-side btn-download" (click)="downloadFile()">
+              <i class="fa-solid fa-download"></i> Tải về máy
+            </button>
+            <button type="button" class="btn-side btn-delete-file" (click)="onDeleteFile()">
+              <i class="fa-solid fa-trash-can"></i> Xóa file hiện tại
+            </button>
+            <div class="divider"></div>
+          </ng-container>
+
+          <!-- Chọn file mới -->
+          <label class="btn-side btn-select-new">
+            <i class="fa-solid fa-file-circle-plus"></i>
+            {{ originalData.fileId ? 'Thay thế file mới' : 'Chọn file đính kèm' }}
+            <input type="file" accept="application/pdf" (change)="onSelectFile($event)" hidden />
+          </label>
+
+          <!-- Confirm Upload -->
+          <div *ngIf="selectedFile" class="upload-preview-active animate__animated animate__fadeIn">
+            <div class="preview-info">
+              <i class="fa-solid fa-paperclip"></i>
+              <span>{{ selectedFile.name }}</span>
+            </div>
+            <button type="button" class="btn-upload-now" (click)="confirmUpload()" [disabled]="uploading">
+              <i class="fa-solid fa-cloud-arrow-up" *ngIf="!uploading"></i>
+              <i class="fa-solid fa-spinner fa-spin" *ngIf="uploading"></i>
+              Bắt đầu Upload
+            </button>
+          </div>
         </div>
       </div>
 
-      <div>
-        <label>Hãng xe</label>
-        <select formControlName="manufacturerCode">
-          <option *ngFor="let m of brands" [value]="m.code">
-            {{ m.name }}
-          </option>
-        </select>
+      <div class="sidebar-help">
+        <i class="fa-solid fa-circle-question"></i>
+        <p>Lưu ý: Các trường có màu xám đậm là dữ liệu được hệ thống tự động trích xuất hoặc từ các nghiệp vụ khác,
+          không được phép chỉnh sửa trực tiếp.</p>
       </div>
     </div>
-  </fieldset>
-
-  <!-- ===== GIÁ TRỊ BẢO LÃNH ===== -->
-  <fieldset>
-    <legend>Giá trị bảo lãnh</legend>
-
-    <div class="grid">
-      <div>
-        <label>Số tiền bảo lãnh dự kiến</label>
-        <input type="number" formControlName="expectedGuaranteeAmount" />
-      </div>
-
-      <div>
-        <label>Tổng tiền bảo lãnh thực tế</label>
-        <input type="number" formControlName="totalGuaranteeAmount" />
-      </div>
-
-      <!-- <div>
-        <label>Đã sử dụng</label>
-        <input type="number" formControlName="usedAmount" />
-      </div> -->
-
-      <div>
-        <label>Còn lại</label>
-        <input type="number" formControlName="remainingAmount" />
-      </div>
-    </div>
-  </fieldset>
-
-  <!-- ===== THÔNG TIN XE ===== -->
-  <fieldset>
-    <legend>Thông tin xe</legend>
-
-    <div class="grid">
-      <div>
-        <label>Số xe dự kiến</label>
-        <input type="number" formControlName="expectedVehicleCount" />
-      </div>
-
-      <div>
-        <label>Số xe đã nhập</label>
-        <input type="number" formControlName="importedVehicleCount" />
-      </div>
-
-      <div>
-        <label>Số xe đã xuất</label>
-        <input type="number" formControlName="exportedVehicleCount" />
-      </div>
-    </div>
-  </fieldset>
-
-  <!-- ===== HỢP ĐỒNG MUA BÁN ===== -->
-  <fieldset>
-    <legend>Hợp đồng mua bán</legend>
-
-    <div class="grid">
-      <div>
-        <label>Tên hợp đồng</label>
-        <input formControlName="saleContract" />
-      </div>
-
-      <div>
-        <label>Giá trị hợp đồng</label>
-        <input type="number" formControlName="saleContractAmount" />
-      </div>
-    </div>
-  </fieldset>
-
-  <!-- ===== CHI NHÁNH ===== -->
-  <fieldset>
-    <legend>Chi nhánh & người đại diện</legend>
-
-    <div class="grid">
-      <div>
-        <label>Chi nhánh</label>
-        <input formControlName="branchName" />
-      </div>
-
-      <div>
-        <label>Người đại diện</label>
-        <input formControlName="representativeName" />
-      </div>
-    </div>
-  </fieldset>
-
-  <!-- ===== ACTION ===== -->
-  <div class="actions">
-    <div class="page-actions">
-      <button class="btn-outline btn-back" type="button" (click)="cancel()">
-        <i class="fa-solid fa-angles-left"></i>
-        Quay lại
-      </button>
-    </div>
-    <button class="btn-primary" type="submit">Lưu thay đổi</button>
   </div>
 
-</form>
+  <!-- FIXED BOTTOM MOBILE BAR -->
+  <div class="mobile-actions">
+    <button class="btn-primary" (click)="submit()">Lưu thay đổi</button>
+  </div>
+</div>
