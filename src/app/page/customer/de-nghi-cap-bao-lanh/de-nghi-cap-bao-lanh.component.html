@@ -107,12 +107,13 @@
             <th class="text-right">Giá trị HĐ (VNĐ)</th>
             <th class="text-right">Giá trị BL (VNĐ)</th>
             <th class="text-center">Trạng thái</th>
-            <th class="text-center">Ngày ký</th>
+            <th class="text-center">Ngày gửi</th>
+            <th class="text-center" style="width:100px">Thao tác</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngIf="donHangList.length === 0">
-            <td colspan="8">
+            <td colspan="9">
               <div class="no-data-row">
                 <i class="fa-solid fa-inbox"></i>
                 <p>Không có đơn đề nghị bảo lãnh nào</p>
@@ -137,7 +138,17 @@
                 {{ getStatusLabel(item.status) }}
               </span>
             </td>
-            <td class="text-center">{{ (item.approvedAt | date:'dd/MM/yyyy') || '—' }}</td>
+            <td class="text-center">{{ (item.createdAt | date:'dd/MM/yyyy') || '—' }}</td>
+            <td class="text-center">
+              <div class="row-actions" (click)="$event.stopPropagation()">
+                <button class="btn-icon-edit" *ngIf="canEdit(item.status)" (click)="openForm(item)" title="Chỉnh sửa">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn-icon-view" (click)="openDetail(item)" title="Xem chi tiết">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            </td>
           </tr>
         </tbody>
         <tfoot *ngIf="donHangList.length > 0">
@@ -146,7 +157,7 @@
               <i class="fa-solid fa-calculator"></i> Tổng giá trị bảo lãnh
             </td>
             <td class="text-right total-amount">{{tongGiaTriBaoLanh| number:'1.0-0' }}</td>
-            <td colspan="2" class="total-unit">VNĐ</td>
+            <td colspan="3" class="total-unit">VNĐ</td>
           </tr>
         </tfoot>
       </table>
@@ -301,11 +312,12 @@
     <div class="modal-header">
       <div class="modal-title-wrap">
         <div class="modal-icon">
-          <i class="fa-solid fa-plus"></i>
+          <i class="fa-solid" [ngClass]="isEditing ? 'fa-pen-to-square' : 'fa-plus'"></i>
         </div>
         <div>
-          <h2>Tạo đơn đề nghị bảo lãnh mới</h2>
-          <p class="modal-subtitle">Nhập danh sách xe cần bảo lãnh</p>
+          <h2>{{ isEditing ? 'Chỉnh sửa đơn đề nghị bảo lãnh' : 'Tạo đơn đề nghị bảo lãnh mới' }}</h2>
+          <p class="modal-subtitle">{{ isEditing ? 'Cập nhật lại thông tin danh sách xe' : 'Nhập danh sách xe cần bảo
+            lãnh' }}</p>
         </div>
       </div>
       <button class="btn-close-modal" (click)="closeForm()">
@@ -399,7 +411,9 @@
             <i class="fa-solid fa-xmark"></i> Hủy
           </button>
           <button type="submit" class="btn-submit" [disabled]="submitting">
-            <span *ngIf="!submitting"><i class="fa-solid fa-floppy-disk"></i> Lưu đơn đề nghị</span>
+            <span *ngIf="!submitting">
+              <i class="fa-solid fa-floppy-disk"></i> {{ isEditing ? 'Cập nhật đơn' : 'Lưu đơn đề nghị' }}
+            </span>
             <span *ngIf="submitting"><i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...</span>
           </button>
         </div>

@@ -91,6 +91,13 @@ export class VehicleService {
             { responseType: 'blob' }
         );
     }
+    exportHoSoNhapKhoVinfastZip(request: ExportPNKRequest) {
+        return this.http.post(
+            'http://localhost:8080/officer/vehicles/nhapkho/export-vinfast',
+            request,
+            { responseType: 'blob' }
+        );
+    }
 
     exportExcel(filters: {
         chassisNumber?: string;

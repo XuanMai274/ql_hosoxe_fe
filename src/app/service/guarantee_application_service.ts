@@ -68,4 +68,11 @@ export class GuaranteeApplicationService {
   create(data: any): Observable<GuaranteeApplication> {
     return this.http.post<GuaranteeApplication>(this.baseUrl, data);
   }
+
+  /**
+   * Cập nhật đề nghị bảo lãnh
+   */
+  update(id: number, data: any): Observable<GuaranteeApplication> {
+    return this.http.put<GuaranteeApplication>(`${this.baseUrl}/${id}`, data);
+  }
 }

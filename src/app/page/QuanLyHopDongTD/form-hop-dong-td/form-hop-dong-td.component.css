@@ -308,15 +308,58 @@
     color: #dc2626;
 }
 
+/* ===== EXTENSIONS FOR BALANCES ===== */
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.card-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+.highlight {
+    border-color: #028B89;
+    background: #f0fdfc;
+    font-size: 20px;
+}
+
+.info-bg {
+    background: #eff6ff !important;
+    /* Blue-ish for Used */
+    color: #1e40af !important;
+    font-weight: 700;
+}
+
+.success-bg {
+    background: #f0fdf4 !important;
+    /* Green-ish for Remaining */
+    color: #166534 !important;
+    font-weight: 700;
+}
+
+.amount-input {
+    color: #028B89;
+    font-weight: 800;
+    font-size: 17px;
+    text-align: right;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
-    .card-body-grid {
+
+    .card-body-grid,
+    .card-grid-3 {
         grid-template-columns: 1fr 1fr;
     }
 }
 
 @media (max-width: 768px) {
-    .card-body-grid {
+
+    .card-body-grid,
+    .card-grid-3 {
         grid-template-columns: 1fr;
     }
 

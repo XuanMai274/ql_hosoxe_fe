@@ -14,13 +14,29 @@ export class OfficerGuaranteeService {
     constructor(private http: HttpClient) { }
 
     /**
-     * Lấy danh sách hồ sơ bảo lãnh mà khách hàng đã gửi
+     * Lấy danh sách hồ sơ bảo lãnh mà khách hàng đã gửi (Bao gồm cả Rejected)
      */
-    getGuaranteeApplications(page: number = 0, size: number = 10): Observable<PageResponse<GuaranteeApplication>> {
-        const params = new HttpParams()
+    getGuaranteeApplications(page: number = 0, size: number = 10, status?: string): Observable<PageResponse<GuaranteeApplication>> {
+        let params = new HttpParams()
             .set('page', page.toString())
             .set('size', size.toString());
+        if (status) {
+            params = params.set('status', status);
+        }
         return this.http.get<PageResponse<GuaranteeApplication>>(this.BASE_URL, { params });
+    }
+
+    /**
+     * Lấy danh sách hồ sơ bảo lãnh CẦN DUYỆT (Loại bỏ các đơn đã bị REJECTED)
+     */
+    getExcludeRejectedApplications(page: number = 0, size: number = 10, status?: string): Observable<PageResponse<GuaranteeApplication>> {
+        let params = new HttpParams()
+            .set('page', page.toString())
+            .set('size', size.toString());
+        if (status) {
+            params = params.set('status', status);
+        }
+        return this.http.get<PageResponse<GuaranteeApplication>>(`${this.BASE_URL}/exclude-rejected`, { params });
     }
 
     /**

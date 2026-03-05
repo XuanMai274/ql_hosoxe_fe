@@ -62,6 +62,16 @@ export class DocumentService {
         );
     }
 
+    previewLatestDocCustomer(vehicleId: number): Observable<Blob> {
+        return this.http.get(
+            `http://localhost:8080/customer/documents/view`,
+            {
+                params: { vehicleId: vehicleId.toString() },
+                responseType: 'blob'
+            }
+        );
+    }
+
     /* ================= DOWNLOAD ================= */
     downloadFile(documentId: number): Observable<Blob> {
 

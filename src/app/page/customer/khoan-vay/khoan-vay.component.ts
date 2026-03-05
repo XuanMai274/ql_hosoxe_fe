@@ -127,7 +127,8 @@ export class CustomerKhoanVayComponent implements OnInit {
     getStatusClass(status: string): string {
         switch (status?.toUpperCase()) {
             case 'ACTIVE': return 'status-active';
-            case 'CLOSED': return 'status-closed';
+            case 'CLOSED':
+            case 'PAID_OFF': return 'status-closed';
             case 'OVERDUE': return 'status-overdue';
             default: return '';
         }
@@ -136,7 +137,8 @@ export class CustomerKhoanVayComponent implements OnInit {
     getStatusLabel(status: string): string {
         switch (status?.toUpperCase()) {
             case 'ACTIVE': return 'Đang hiệu lực';
-            case 'CLOSED': return 'Đã tất toán';
+            case 'CLOSED':
+            case 'PAID_OFF': return 'Đã tất toán';
             case 'OVERDUE': return 'Quá hạn';
             default: return status || '—';
         }

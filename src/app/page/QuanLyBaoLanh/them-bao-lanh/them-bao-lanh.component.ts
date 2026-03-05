@@ -121,6 +121,7 @@ export class ThemBaoLanhComponent implements OnInit {
       authorizedRepresentativeId: [null, Validators.required],
 
       guaranteeContractNumber: ['', Validators.required],
+      referenceCode: [''],
       saleContract: ['', Validators.required],
       saleContractAmount: [null, [Validators.required, Validators.min(1)]],
 
@@ -349,6 +350,7 @@ export class ThemBaoLanhComponent implements OnInit {
       saleContract: v.saleContract,
       saleContractAmount: v.saleContractAmount,
       expectedVehicleCount: v.expectedVehicleCount,
+      referenceCode: v.referenceCode,
     };
 
     // Trước khi gọi thêm bảo lãnh, lấy số liệu creditContract mới nhất
@@ -381,7 +383,18 @@ export class ThemBaoLanhComponent implements OnInit {
           error: err => {
             console.error("Error creating guarantee:", err);
             const msg = err.error?.message || "Có lỗi xảy ra khi lưu bảo lãnh (Bad Request)";
-            alert("Lỗi: " + msg);
+
+            if (msg.includes('Ngày hợp đồng')) {
+              alert("Lỗi: " + msg);
+            } else if (msg.includes('Số hợp đồng')) {
+              this.guaranteeForm.get('guaranteeContractNumber')?.setErrors({ duplicate: true });
+              alert("Lỗi: Số hợp đồng bảo lãnh này đã tồn tại.");
+            } else if (msg.includes('Mã tham chiếu')) {
+              this.guaranteeForm.get('referenceCode')?.setErrors({ duplicate: true });
+              alert("Lỗi: Mã tham chiếu này đã tồn tại.");
+            } else {
+              alert("Lỗi: " + msg);
+            }
           }
         });
       },

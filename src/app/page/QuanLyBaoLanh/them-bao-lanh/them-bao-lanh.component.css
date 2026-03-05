@@ -1616,3 +1616,16 @@ select:focus {
   color: #348d87;
   background: #f0fdfa;
 }
+
+/* ================= ERROR STYLES ================= */
+.is-invalid {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+}
+
+.text-error {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}

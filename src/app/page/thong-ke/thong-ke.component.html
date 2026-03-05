@@ -1,9 +1,9 @@
 <div class="stats-page-container">
     <div class="header-section">
-        <div class="title-box">
+        <!-- <div class="title-box">
             <h1><i class="fa-solid fa-chart-pie"></i> THỐNG KÊ</h1>
             <p>Dữ liệu tổng hợp thời gian thực từ các nghiệp vụ Core</p>
-        </div>
+        </div> -->
         <button class="btn-refresh" (click)="loadStatistics()" [disabled]="isLoading">
             <i class="fa-solid fa-sync" [class.fa-spin]="isLoading"></i> Làm mới dữ liệu
         </button>
@@ -116,7 +116,7 @@
 
         <!-- Visualization Section -->
         <div class="main-stats-grid">
-            <div class="chart-card">
+            <!-- <div class="chart-card">
                 <div class="card-header">
                     <h3>Phân bổ Hãng sản xuất</h3>
                 </div>
@@ -129,9 +129,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
-            <div class="chart-card">
+            <!-- <div class="chart-card">
                 <div class="card-header">
                     <h3>Xu hướng Đề nghị Bảo lãnh</h3>
                 </div>
@@ -143,7 +143,7 @@
                         <span class="month-label">{{ m.month }}</span>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>

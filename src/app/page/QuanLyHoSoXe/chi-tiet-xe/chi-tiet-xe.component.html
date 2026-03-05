@@ -292,6 +292,20 @@
               </li>
             </ul>
           </div>
+
+          <!-- Cấu hình số nhảy (Sequence) -->
+          <div class="highlight-section" *ngIf="selectedGuaranteeId">
+            <div class="inner-group side-by-side">
+              <div class="inner-group">
+                <label>Số BLCT (Sequence)</label>
+                <input type="number" formControlName="guaranteeRunningNo" class="form-input small">
+              </div>
+              <div class="inner-group">
+                <label>Số Nhập kho (Sequence)</label>
+                <input type="number" formControlName="warehouseRunningNo" class="form-input small">
+              </div>
+            </div>
+          </div>
         </ng-container>
 
       </div>

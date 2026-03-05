@@ -21,6 +21,11 @@ export class FormHopDongTDComponent implements OnInit {
     customers: Customer[] = [];
     isLoading = false;
     formattedCreditLimit = '0';
+    formattedIssuedGuaranteeBalance = '0';
+    formattedVehicleLoanBalance = '0';
+    formattedRealEstateLoanBalance = '0';
+    formattedUsedLimit = '0';
+    formattedRemainingLimit = '0';
 
     fullContract: CreditContract | null = null; // Lưu giữ toàn bộ dữ liệu gốc
 
@@ -36,7 +41,17 @@ export class FormHopDongTDComponent implements OnInit {
             contractDate: ['', Validators.required],
             expiryDate: [{ value: '', disabled: true }],
             creditLimit: [0, [Validators.required, Validators.min(0)]],
+            issuedGuaranteeBalance: [0, [Validators.min(0)]],
+            vehicleLoanBalance: [0, [Validators.min(0)]],
+            realEstateLoanBalance: [0, [Validators.min(0)]],
+            usedLimit: [{ value: 0, disabled: true }],
+            remainingLimit: [{ value: 0, disabled: true }],
             customerId: [null, Validators.required]
+        });
+
+        // Listen for balance changes to update usedLimit and remainingLimit
+        this.contractForm.valueChanges.subscribe(() => {
+            this.calculateLimits();
         });
 
         // Listen for contractDate changes to update expiryDate
@@ -60,6 +75,34 @@ export class FormHopDongTDComponent implements OnInit {
         this.contractForm.get('creditLimit')?.valueChanges.subscribe(value => {
             this.formattedCreditLimit = this.formatCurrency(value || 0);
         });
+
+        this.contractForm.get('issuedGuaranteeBalance')?.valueChanges.subscribe(value => {
+            this.formattedIssuedGuaranteeBalance = this.formatCurrency(value || 0);
+        });
+
+        this.contractForm.get('vehicleLoanBalance')?.valueChanges.subscribe(value => {
+            this.formattedVehicleLoanBalance = this.formatCurrency(value || 0);
+        });
+
+        this.contractForm.get('realEstateLoanBalance')?.valueChanges.subscribe(value => {
+            this.formattedRealEstateLoanBalance = this.formatCurrency(value || 0);
+        });
+    }
+
+    calculateLimits(): void {
+        const creditLimit = this.contractForm.get('creditLimit')?.value || 0;
+        const issued = this.contractForm.get('issuedGuaranteeBalance')?.value || 0;
+        const vehicleLoan = this.contractForm.get('vehicleLoanBalance')?.value || 0;
+        const realEstateLoan = this.contractForm.get('realEstateLoanBalance')?.value || 0;
+
+        const usedLimit = issued + vehicleLoan + realEstateLoan;
+        const remainingLimit = creditLimit - usedLimit;
+
+        this.contractForm.get('usedLimit')?.setValue(usedLimit, { emitEvent: false });
+        this.contractForm.get('remainingLimit')?.setValue(remainingLimit, { emitEvent: false });
+
+        this.formattedUsedLimit = this.formatCurrency(usedLimit);
+        this.formattedRemainingLimit = this.formatCurrency(remainingLimit);
     }
 
     ngOnInit(): void {
@@ -150,19 +193,33 @@ export class FormHopDongTDComponent implements OnInit {
     }
 
     onCreditLimitInput(event: any): void {
+        const val = this.parseNumericInput(event);
+        this.contractForm.get('creditLimit')?.setValue(val);
+        event.target.value = this.formatCurrency(val);
+    }
+
+    onIssuedGuaranteeBalanceInput(event: any): void {
+        const val = this.parseNumericInput(event);
+        this.contractForm.get('issuedGuaranteeBalance')?.setValue(val);
+        event.target.value = this.formatCurrency(val);
+    }
+
+    onVehicleLoanBalanceInput(event: any): void {
+        const val = this.parseNumericInput(event);
+        this.contractForm.get('vehicleLoanBalance')?.setValue(val);
+        event.target.value = this.formatCurrency(val);
+    }
+
+    onRealEstateLoanBalanceInput(event: any): void {
+        const val = this.parseNumericInput(event);
+        this.contractForm.get('realEstateLoanBalance')?.setValue(val);
+        event.target.value = this.formatCurrency(val);
+    }
+
+    private parseNumericInput(event: any): number {
         const input = event.target.value;
-        // Remove non-digit characters
         const numericValue = input.replace(/\D/g, '');
-        const val = numericValue ? parseInt(numericValue, 10) : 0;
-
-        // Update form control without triggering another valueChanges if possible, 
-        // but it's safe since we're using raw numeric value
-        this.contractForm.get('creditLimit')?.setValue(val, { emitEvent: false });
-
-        // Update display
-        this.formattedCreditLimit = this.formatCurrency(val);
-        // Force the input to show the formatted value
-        event.target.value = this.formattedCreditLimit;
+        return numericValue ? parseInt(numericValue, 10) : 0;
     }
 
     formatCurrency(value: number | string): string {

@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { Customer } from '../../../models/customer.model';
 import { ExportPNKRequest } from '../../../models/exportPNK-request';
+import { WarehouseService } from '../../../service/warehouse.service';
 @Component({
   selector: 'app-nhap-kho-vinfast',
   imports: [FormsModule, CommonModule],
@@ -14,145 +15,120 @@ import { ExportPNKRequest } from '../../../models/exportPNK-request';
   styleUrl: './nhap-kho-vinfast.component.css'
 })
 export class NhapKhoVinfastComponent {
-  // ===============================
-  // DATA SOURCE
-  // ===============================
+
   vehiclesAll: Vehicle[] = [];
   filteredVehicles: Vehicle[] = [];
   vehicles: Vehicle[] = [];
+
   currentStep = 1;
   selectedVehicles: Vehicle[] = [];
-  selectedCustomer?: Customer;
 
-  importNumber = '';
-  code = '';
-
-  loading = false;
-
-  // ===============================
-  // FILTER
-  // ===============================
   chassisNumber = '';
   ref = '';
-  manufacturer = '';
-  status = '';
+  deadlineStatus = '';
 
-  // ===============================
-  // PAGINATION
-  // ===============================
   page = 0;
   size = 10;
   totalPages = 1;
 
-  constructor(private vehicleService: VehicleService) { }
+  loading = false;
+
+  constructor(private vehicleService: VehicleService, private warehouseService: WarehouseService) { }
 
   ngOnInit(): void {
     this.loadVehicles();
   }
 
-  // ===============================
-  // LOAD DATA
-  // ===============================
   loadVehicles(): void {
-    this.loading = true;
     this.vehicleService.getVinfastInSafeVehicles().subscribe({
       next: (res: Vehicle[]) => {
         this.vehiclesAll = res;
         this.filteredVehicles = [...res];
         this.updatePage();
-        this.loading = false;
       },
       error: () => {
-        this.loading = false;
         Swal.fire('Lỗi', 'Không tải được danh sách xe', 'error');
       }
     });
   }
 
-  // ===============================
-  // FILTER
-  // ===============================
   search(): void {
 
-    const chassis = this.chassisNumber?.toLowerCase().trim() || '';
-    const ref = this.ref?.toLowerCase().trim() || '';
-    const manu = this.manufacturer?.trim() || '';
-    const status = this.status?.trim() || '';
+    const chassis = this.chassisNumber.toLowerCase().trim();
+    const ref = this.ref.toLowerCase().trim();
+    const deadline = this.deadlineStatus;
 
     this.filteredVehicles = this.vehiclesAll.filter(v => {
 
       const matchChassis =
         !chassis ||
-        (v.chassisNumber || '').toLowerCase().includes(chassis);
+        this.fuzzyMatch(v.chassisNumber || '', chassis);
 
-      const matchGuarantee =
+      const matchRef =
         !ref ||
         (v.guaranteeLetterDTO?.referenceCode || '')
           .toLowerCase()
           .includes(ref);
 
-      const matchManufacturer =
-        !manu ||
-        v.manufacturerDTO?.code === manu;
-
-      const matchStatus =
-        !status ||
-        v.status === status;
-
       const matchDeadline =
-        this.matchDeadlineStatus(v);
+        !deadline ||
+        this.matchDeadlineStatus(v, deadline);
 
-      return matchChassis &&
-        matchGuarantee &&
-        matchManufacturer &&
-        matchStatus &&
-        matchDeadline;
+      return matchChassis && matchRef && matchDeadline;
     });
 
     this.page = 0;
     this.updatePage();
   }
+  private fuzzyMatch(source: string, keyword: string): boolean {
 
+    if (!source || !keyword) return false;
+
+    source = source.toLowerCase();
+    keyword = keyword.toLowerCase();
+
+    let i = 0; // index source
+    let j = 0; // index keyword
+
+    while (i < source.length && j < keyword.length) {
+      if (source[i] === keyword[j]) {
+        j++;
+      }
+      i++;
+    }
+
+    return j === keyword.length;
+  }
   clearFilter(): void {
     this.chassisNumber = '';
     this.ref = '';
-    this.manufacturer = '';
-    this.status = '';
-
+    this.deadlineStatus = '';
     this.filteredVehicles = [...this.vehiclesAll];
     this.page = 0;
     this.updatePage();
   }
 
-  private matchDeadlineStatus(vehicle: Vehicle): boolean {
-
-    if (!this.status) return true;
+  private matchDeadlineStatus(vehicle: Vehicle, status: string): boolean {
 
     const label = (vehicle.deadlineLabel || '').toLowerCase();
 
-    if (this.status === 'OVERDUE')
+    if (status === 'OVERDUE')
       return label.includes('quá hạn');
 
-    if (this.status === 'TODAY')
+    if (status === 'TODAY')
       return label.includes('hôm nay');
 
-    if (this.status === 'WARNING')
+    if (status === 'WARNING')
       return label.includes('còn');
 
     return true;
   }
 
-  // ===============================
-  // PAGINATION
-  // ===============================
   updatePage(): void {
 
     const total = this.filteredVehicles.length;
 
-    this.totalPages = Math.max(
-      1,
-      Math.ceil(total / this.size)
-    );
+    this.totalPages = Math.max(1, Math.ceil(total / this.size));
 
     if (this.page >= this.totalPages) {
       this.page = this.totalPages - 1;
@@ -166,7 +142,6 @@ export class NhapKhoVinfastComponent {
 
   changePage(p: number): void {
     if (p < 0 || p >= this.totalPages) return;
-
     this.page = p;
     this.updatePage();
   }
@@ -175,83 +150,49 @@ export class NhapKhoVinfastComponent {
     return item.id;
   }
 
-  // ===============================
-  // SELECTION
-  // ===============================
   onSelectVehicle(vehicle: Vehicle, event: Event) {
 
-    const input = event.target as HTMLInputElement;
+    const checked = (event.target as HTMLInputElement).checked;
 
-    if (input.checked) {
-
-      if (!this.selectedVehicles.find(v => v.id === vehicle.id)) {
+    if (checked) {
+      if (!this.selectedVehicles.some(v => v.id === vehicle.id)) {
         this.selectedVehicles.push(vehicle);
       }
-
     } else {
-
       this.selectedVehicles =
         this.selectedVehicles.filter(v => v.id !== vehicle.id);
     }
-
-    this.autoDetectCustomer();
   }
 
-  selectAllCurrentPage(): void {
-
-    this.vehicles.forEach(v => {
-
-      if (!this.selectedVehicles.find(s => s.id === v.id)) {
-        this.selectedVehicles.push(v);
-      }
-
-    });
-
-    this.autoDetectCustomer();
+  isSelected(vehicle: Vehicle): boolean {
+    return this.selectedVehicles.some(v => v.id === vehicle.id);
   }
 
-  clearSelection(): void {
-    this.selectedVehicles = [];
-    this.selectedCustomer = undefined;
+  isAllCurrentPageSelected(): boolean {
+    return this.vehicles.length > 0 &&
+      this.vehicles.every(v =>
+        this.selectedVehicles.some(s => s.id === v.id)
+      );
   }
 
-  isChecked(vehicle: Vehicle): boolean {
-    return !!this.selectedVehicles.find(v => v.id === vehicle.id);
-  }
+  toggleSelectAll(event: Event): void {
 
-  private autoDetectCustomer(): void {
+    const checked = (event.target as HTMLInputElement).checked;
 
-    if (!this.selectedVehicles.length) {
-      this.selectedCustomer = undefined;
-      return;
+    if (checked) {
+      this.vehicles.forEach(v => {
+        if (!this.selectedVehicles.some(s => s.id === v.id)) {
+          this.selectedVehicles.push(v);
+        }
+      });
+    } else {
+      this.selectedVehicles =
+        this.selectedVehicles.filter(
+          s => !this.vehicles.some(v => v.id === s.id)
+        );
     }
-
-    const customer = this.selectedVehicles[0].guaranteeLetterDTO?.customerDTO;
-
-    const sameCustomer = this.selectedVehicles.every(v =>
-      v.guaranteeLetterDTO?.customerDTO?.id === customer?.id
-    );
-
-    this.selectedCustomer = sameCustomer ? customer : undefined;
   }
 
-  // ===============================
-  // HELPER
-  // ===============================
-
-  getDeadlineClass(label?: string): string {
-
-    if (!label) return '';
-
-    const l = label.toLowerCase();
-
-    if (l.includes('quá hạn')) return 'deadline-overdue';
-    if (l.includes('hôm nay')) return 'deadline-today';
-    if (l.includes('còn')) return 'deadline-warning';
-
-    return '';
-  }
-  //// ===== STEP =====
   goToStep(step: number) {
     this.currentStep = step;
   }
@@ -265,60 +206,114 @@ export class NhapKhoVinfastComponent {
     this.currentStep--;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  // kiểm tra xem xe đã được chọn chưa
-  isSelected(vehicle: Vehicle): boolean {
-    return this.selectedVehicles.some(v => v.id === vehicle.id);
+
+  clearSelection(): void {
+    this.selectedVehicles = [];
+  }
+  getDeadlineClass(label?: string): string {
+
+    if (!label) return '';
+
+    const l = label.toLowerCase();
+
+    if (l.includes('quá hạn')) return 'deadline-overdue';
+    if (l.includes('hôm nay')) return 'deadline-today';
+    if (l.includes('còn')) return 'deadline-warning';
+
+    return '';
   }
 
   confirmNhapKho(): void {
+
     if (this.selectedVehicles.length === 0) {
       Swal.fire('Thông báo', 'Vui lòng chọn xe trước khi nhập kho', 'warning');
       return;
     }
 
-    const ids = this.selectedVehicles.map(v => v.id!).filter(id => !!id);
+    const ids = this.selectedVehicles.map(v => v.id!);
 
     Swal.fire({
       title: 'Xác nhận nhập kho?',
-      text: `Đã chọn ${ids.length} xe để cập nhật trạng thái và xuất hồ sơ.`,
+      text: `Đã chọn ${ids.length} xe.`,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Xác nhận',
-      cancelButtonText: 'Hủy'
-    }).then((result) => {
+      confirmButtonText: 'Xác nhận'
+    }).then(result => {
+
       if (result.isConfirmed) {
-        this.loading = true;
-        // Gọi API cập nhật inSafe = false trước khi xuất
+
         this.vehicleService.updateVehicleInSafe(ids, false).subscribe({
           next: () => {
-            this.loading = false;
             this.currentStep = 3;
-            this.autoDownloadFiles(ids);
-            Swal.fire('Thành công', 'Đã cập nhật trạng thái và đang tải bộ hồ sơ ZIP', 'success');
+            this.autoDownloadFiles();
+            Swal.fire('Thành công', 'Đang tải bộ hồ sơ ZIP', 'success');
           },
-          error: (err) => {
-            this.loading = false;
-            Swal.fire('Lỗi', err.error?.message || 'Có lỗi xảy ra khi cập nhật trạng thái xe', 'error');
+          error: () => {
+            Swal.fire('Lỗi', 'Có lỗi xảy ra khi cập nhật trạng thái xe', 'error');
           }
         });
+
       }
     });
   }
+  private groupByImportId(vehicles: Vehicle[]): Map<number, Vehicle[]> {
 
-  private autoDownloadFiles(ids: number[]): void {
-    const request: ExportPNKRequest = {
-      importNumber: this.importNumber,
-      code: this.code,
-      vehicleIds: ids
-    };
+    const map = new Map<number, Vehicle[]>();
 
-    // Xuất toàn bộ hồ sơ dạng file ZIP
-    this.vehicleService.exportHoSoNhapKhoZip(request).subscribe(blob => {
-      this.downloadFile(blob, `BO_HO_SO_NHAP_KHO_VINFAST_${this.importNumber || new Date().getTime()}.zip`);
+    vehicles.forEach(v => {
+
+      const importId = v.warehouseImportId; // hoặc v.warehouseImportDTO?.id
+
+      if (!importId) return;
+
+      if (!map.has(importId)) {
+        map.set(importId, []);
+      }
+
+      map.get(importId)!.push(v);
+    });
+
+    return map;
+  }
+  private autoDownloadFiles(): void {
+
+    const grouped = this.groupByImportId(this.selectedVehicles);
+
+    grouped.forEach((vehicles, importId) => {
+
+      const ids = vehicles.map(v => v.id!);
+
+      // Bước 1: Lấy số hợp đồng thật
+      this.warehouseService.getWarehouseImportById(importId)
+        .subscribe(importRes => {
+
+          const importNumber = importRes.importNumber;
+
+          const request: ExportPNKRequest = {
+            importNumber: importNumber,
+            code: '',
+            vehicleIds: ids
+          };
+
+          // Bước 2: Gọi export
+          this.vehicleService
+            .exportHoSoNhapKhoVinfastZip(request)
+            .subscribe(blob => {
+
+              this.downloadFile(
+                blob,
+                `${importNumber}_NHAP_KHO_VINFAST_.zip`
+              );
+
+            });
+
+        });
+
     });
   }
 
   private downloadFile(blob: Blob, filename: string): void {
+
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

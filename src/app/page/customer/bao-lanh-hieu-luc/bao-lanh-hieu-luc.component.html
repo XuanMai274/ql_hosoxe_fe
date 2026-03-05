@@ -1,0 +1,80 @@
+<div class="page-container">
+    <!-- ===== PAGE BANNER ===== -->
+    <div class="page-banner">
+        <div class="banner-left">
+            <div class="banner-badge">
+                <i class="fa-solid fa-file-shield"></i> Quản lý bảo lãnh
+            </div>
+            <h1 class="page-title">Danh sách bảo lãnh còn hiệu lực</h1>
+            <p class="page-subtitle">Tra cứu và quản lý các thư bảo lãnh đang trong thời gian hiệu lực</p>
+        </div>
+        <div class="banner-right">
+        </div>
+    </div>
+
+    <!-- ===== TABLE CARD ===== -->
+    <div class="table-card">
+        <div class="table-header">
+            <div class="table-title">
+                <i class="fa-solid fa-list-ul"></i> Danh sách bảo lãnh
+            </div>
+            <span class="record-count">{{ totalElements }} bảo lãnh</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width:56px">STT</th>
+                        <th>Mã tham chiếu</th>
+                        <th>Số thư bảo lãnh</th>
+                        <th>Ngày phát hành</th>
+                        <th>Ngày hết hạn</th>
+                        <th class="text-right">Số tiền bảo lãnh</th>
+                        <th class="text-center">Hồ sơ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let gl of guaranteeLetters; let i = index">
+                        <td class="text-center stt-cell">{{ page * size + i + 1 }}</td>
+                        <td class="code-cell">{{ gl.referenceCode }}</td>
+                        <td class="font-bold">{{ gl.guaranteeNoticeNumber }}</td>
+                        <td>{{ gl.guaranteeNoticeDate | date:'dd/MM/yyyy' }}</td>
+                        <td>{{ gl.expiryDate | date:'dd/MM/yyyy' }}</td>
+                        <td class="text-right amount-cell">{{ gl.totalGuaranteeAmount | number:'1.0-0' }} VND</td>
+                        <td class="text-center">
+                            <button *ngIf="gl.hasFile" (click)="viewDocument(gl)" class="btn-view">
+                                <i class="fa-solid fa-file-pdf"></i> Xem COC/VAT
+                            </button>
+                            <span *ngIf="!gl.hasFile" class="no-file-text">
+                                Chưa có file
+                            </span>
+                        </td>
+                    </tr>
+                    <tr *ngIf="guaranteeLetters.length === 0">
+                        <td colspan="7">
+                            <div class="no-data-row">
+                                <i class="fa-solid fa-inbox"></i>
+                                <p>Không có bảo lãnh nào còn hiệu lực.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination-bar" *ngIf="totalPages > 1">
+            <span class="page-info">Trang {{ page + 1 }} / {{ totalPages }}</span>
+            <div class="page-actions">
+                <button class="page-btn" [disabled]="page === 0" (click)="onPageChange(page - 1)">
+                    <i class="fa-solid fa-chevron-left"></i> Trước
+                </button>
+                <span class="page-tag">{{ page + 1 }} / {{ totalPages }}</span>
+                <button class="page-btn" [disabled]="page + 1 >= totalPages" (click)="onPageChange(page + 1)">
+                    Sau <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

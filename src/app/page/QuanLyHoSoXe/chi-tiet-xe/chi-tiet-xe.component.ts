@@ -63,6 +63,8 @@ export class ChiTietXeComponent {
       /* UI ONLY */
       invoiceNumber: [''],
       guaranteeNoticeNumber: [''],
+      guaranteeRunningNo: [0],
+      warehouseRunningNo: [0],
       createAt: ['']
     });
   }
@@ -116,7 +118,9 @@ export class ChiTietXeComponent {
 
       if (res.guaranteeLetterDTO) {
         this.vehicleForm.patchValue({
-          guaranteeNoticeNumber: res.guaranteeLetterDTO.guaranteeNoticeNumber
+          guaranteeNoticeNumber: res.guaranteeLetterDTO.guaranteeNoticeNumber,
+          guaranteeRunningNo: res.guaranteeLetterDTO.mortgageContractDTO?.guaranteeRunningNo || 0,
+          warehouseRunningNo: res.guaranteeLetterDTO.mortgageContractDTO?.warehouseRunningNo || 0
         });
 
         this.selectedGuaranteeId = res.guaranteeLetterDTO.id;
@@ -351,7 +355,13 @@ export class ChiTietXeComponent {
         : null,
 
       guaranteeLetterDTO: this.selectedGuaranteeId
-        ? { id: this.selectedGuaranteeId }
+        ? {
+          id: this.selectedGuaranteeId,
+          mortgageContractDTO: {
+            guaranteeRunningNo: this.vehicleForm.value.guaranteeRunningNo,
+            warehouseRunningNo: this.vehicleForm.value.warehouseRunningNo
+          }
+        }
         : null
     };
 

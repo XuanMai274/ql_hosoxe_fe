@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { VehicleService } from '../../../service/vehicle.service';
 import { Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DocumentService } from '../../../service/document.service';
 import { CommonModule } from '@angular/common';
 import { PageResponse } from '../../../models/page-response';
 import { VehicleList } from '../../../models/vehiclelist.model';
@@ -33,6 +34,7 @@ export class DanhSachXeComponent {
 
     constructor(
         private vehicleService: VehicleService,
+        private documentService: DocumentService,
         private router: Router
     ) {
         this.searchSubject.pipe(
@@ -87,8 +89,15 @@ export class DanhSachXeComponent {
         this.loadVehicles();
     }
 
-    viewDetail(id: number): void {
-        // Navigate to a customer-friendly detail view if available, or stay consistent
-        this.router.navigate(['customer/vehicles/detail', id]);
+    viewCocVat(vehicleId: number): void {
+        this.documentService.previewLatestDocCustomer(vehicleId).subscribe({
+            next: (blob) => {
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank');
+            },
+            error: (err) => {
+                console.error('Lỗi khi xem file:', err);
+            }
+        });
     }
 }

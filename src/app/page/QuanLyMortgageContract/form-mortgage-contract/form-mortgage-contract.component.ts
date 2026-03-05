@@ -41,7 +41,9 @@ export class FormMortgageContractComponent implements OnInit {
             personalIdNumber: [''],
             status: ['ACTIVE'],
             customerId: [null, Validators.required],
-            manufacturerId: [null]
+            manufacturerId: [null],
+            guaranteeRunningNo: [0],
+            warehouseRunningNo: [0]
         });
 
         // Sync display value when totalCollateralValue changes
@@ -109,6 +111,12 @@ export class FormMortgageContractComponent implements OnInit {
                         patchData.manufacturerId = contract.manufacturerDTO.id;
                     }
                     this.contractForm.patchValue(patchData);
+                    if (contract.guaranteeRunningNo !== undefined) {
+                        this.contractForm.get('guaranteeRunningNo')?.setValue(contract.guaranteeRunningNo);
+                    }
+                    if (contract.warehouseRunningNo !== undefined) {
+                        this.contractForm.get('warehouseRunningNo')?.setValue(contract.warehouseRunningNo);
+                    }
                     // Manually trigger display update
                     this.formattedTotalValue = this.formatCurrency(contract.totalCollateralValue || 0);
                 }

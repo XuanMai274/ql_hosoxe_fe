@@ -300,3 +300,39 @@
         gap: 20px;
     }
 }
+
+/* ===== NEW: SEQUENCE STYLES ===== */
+.highlight-section {
+    background: #f0fdfc;
+    border: 1.5px dashed #028B89;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+
+.side-by-side {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.inner-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.inner-group label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.form-input.small {
+    padding: 8px 12px;
+    font-size: 13px;
+    text-align: center;
+    background: white;
+}

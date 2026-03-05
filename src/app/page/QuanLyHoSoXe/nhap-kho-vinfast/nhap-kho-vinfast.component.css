@@ -827,3 +827,25 @@
   font-size: 48px;
   margin-bottom: 12px;
 }
+.deadline-badge {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.deadline-overdue {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.deadline-today {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.deadline-warning {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}

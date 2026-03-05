@@ -89,11 +89,25 @@
           </div>
           <div>
             <label>Số hợp đồng bảo lãnh <span class="req">*</span></label>
-            <input formControlName="guaranteeContractNumber" />
+            <input formControlName="guaranteeContractNumber"
+              [class.is-invalid]="guaranteeForm.get('guaranteeContractNumber')?.touched && (guaranteeForm.get('guaranteeContractNumber')?.invalid || guaranteeForm.get('guaranteeContractNumber')?.errors?.['duplicate'])" />
 
-            <small class="text-error" *ngIf="guaranteeForm.get('guaranteeContractNumber')?.touched
-        && guaranteeForm.get('guaranteeContractNumber')?.invalid">
-              Số hợp đồng bảo lãnh không được để trống
+            <small class="text-error" *ngIf="guaranteeForm.get('guaranteeContractNumber')?.touched">
+              <span *ngIf="guaranteeForm.get('guaranteeContractNumber')?.errors?.['required']">
+                Số hợp đồng bảo lãnh không được để trống
+              </span>
+              <span *ngIf="guaranteeForm.get('guaranteeContractNumber')?.errors?.['duplicate']">
+                Số hợp đồng bảo lãnh này đã tồn tại trên hệ thống
+              </span>
+            </small>
+          </div>
+          <div>
+            <label>Mã tham chiếu</label>
+            <input formControlName="referenceCode"
+              [class.is-invalid]="guaranteeForm.get('referenceCode')?.errors?.['duplicate']"
+              placeholder="Nhập mã tham chiếu (nếu có)" />
+            <small class="text-error" *ngIf="guaranteeForm.get('referenceCode')?.errors?.['duplicate']">
+              Mã tham chiếu này đã tồn tại trên hệ thống
             </small>
           </div>
           <div>
