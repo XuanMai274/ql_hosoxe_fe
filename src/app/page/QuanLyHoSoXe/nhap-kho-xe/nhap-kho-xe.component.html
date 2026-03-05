@@ -69,7 +69,10 @@
           <th>Giá</th>
           <th>Trạng thái</th>
           <th>REF</th>
-          <th>Chọn</th>
+          <th>
+            <input type="checkbox" [checked]="isAllSelected()" (change)="toggleSelectAll($event)" />
+            Chọn tất cả
+          </th>
         </tr>
       </thead>
 

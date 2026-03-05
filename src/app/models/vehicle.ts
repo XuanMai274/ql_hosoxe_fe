@@ -36,4 +36,6 @@ export interface Vehicle {
   invoiceId?: Invoice;
   guaranteeLetterDTO?: GuaranteeLetter;
   manufacturerDTO?: Manufacturer;
+  warehouseImportId:number;
+  warehouseExportId:number;
 }

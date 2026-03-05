@@ -45,5 +45,8 @@ export class WarehouseService {
             request
         );
     }
-    
+    getWarehouseImportById(id: number): Observable<WarehouseImportDTO> {
+        return this.http.get<WarehouseImportDTO>(`${this.baseUrl}/${id}`);
+    }
+
 }

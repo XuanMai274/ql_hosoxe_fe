@@ -190,7 +190,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     createVehicleRow(): FormGroup {
         return this.fb.group({
             loaiXe: ['', Validators.required],
-            mauXe: ['', Validators.required],
+            mauXe: [''],
             soKhung: [''],
             soDonHang: [''],
             giaXe: [null, [Validators.required, Validators.min(1)]]

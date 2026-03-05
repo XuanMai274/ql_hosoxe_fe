@@ -445,7 +445,27 @@ export class NhapKhoXeComponent implements OnInit {
   goToStep(step: number) {
     this.currentStep = step;
   }
+  isAllSelected(): boolean {
+    return this.vehicles.length > 0 &&
+      this.vehicles.every(v => this.isSelected(v));
+  }
+  toggleSelectAll(event: any) {
+    const checked = event.target.checked;
 
+    if (checked) {
+      // Thêm tất cả xe chưa có vào selectedVehicles
+      this.vehicles.forEach(v => {
+        if (!this.isSelected(v)) {
+          this.selectedVehicles.push(v);
+        }
+      });
+    } else {
+      // Bỏ chọn tất cả xe trong trang hiện tại
+      this.selectedVehicles = this.selectedVehicles.filter(
+        sv => !this.vehicles.some(v => v.id === sv.id)
+      );
+    }
+  }
   nextStep() {
     if (this.currentStep === 1) {
       this.buildLoanForms();
@@ -806,6 +826,22 @@ export class NhapKhoXeComponent implements OnInit {
     this.previewData![field] = numericValue as any;
 
     event.target.value = this.formatMoney(numericValue);
+    // thay đổi giá trị BDS và tổng trị giá xe thì giá trị thay đổi
+    if (
+      field === 'totalCollateralValue' ||
+      field === 'realEstateValue'
+    ) {
+      this.recalculateValues();
+    }
+
+    // nếu đổi dư nợ thì tính lại limit
+    if (
+      field === 'issuedGuaranteeBalance' ||
+      field === 'vehicleLoanBalance' ||
+      field === 'realEstateLoanBalance'
+    ) {
+      this.recalcLimit();
+    }
   }
   doneNhapKho(): void {
 
