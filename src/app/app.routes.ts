@@ -37,6 +37,7 @@ import { QuanLyRutHoSoXeComponent } from './page/QuanLyRutHoSoXe/quan-ly-rut-ho-
 import { QuanLyNhapKhoComponent } from './page/QuanLyHoSoXe/quan-ly-nhap-kho/quan-ly-nhap-kho.component';
 import { QuanLyXuatKhoComponent } from './page/QuanLyHoSoXe/quan-ly-xuat-kho/quan-ly-xuat-kho.component';
 import { ThongKeComponent } from './page/thong-ke/thong-ke.component';
+import { NhapKhoVinfastComponent } from './page/QuanLyHoSoXe/nhap-kho-vinfast/nhap-kho-vinfast.component';
 import { DanhSachMortgageContractComponent } from './page/QuanLyMortgageContract/danh-sach-mortgage-contract/danh-sach-mortgage-contract.component';
 import { FormMortgageContractComponent } from './page/QuanLyMortgageContract/form-mortgage-contract/form-mortgage-contract.component';
 import { ThongKeBaoLanhComponent } from './page/QuanLyBaoLanh/thong-ke-bao-lanh/thong-ke-bao-lanh.component';
@@ -169,6 +170,10 @@ export const routes: Routes = [
             {
                 path: 'quan-ly-rut-ho-so-xe',
                 component: QuanLyRutHoSoXeComponent
+            },
+            {
+                path: 'nhap-kho-vinfast',
+                component: NhapKhoVinfastComponent
             },
             // ADMIN ROUTES
 

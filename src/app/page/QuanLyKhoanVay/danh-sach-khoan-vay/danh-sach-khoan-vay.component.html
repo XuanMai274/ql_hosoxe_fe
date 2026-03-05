@@ -14,15 +14,20 @@
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-file-signature"></i> Số HĐTD chi tiết</label>
         <input type="text" placeholder="Tìm theo số HĐ..." [ngModel]="contractNumber"
-          (ngModelChange)="contractNumber = $event; onSearch()" class="filter-input" />
+          (ngModelChange)="contractNumber = $event; search()" class="filter-input" />
       </div>
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-calendar"></i> Từ ngày</label>
-        <input type="date" [ngModel]="fromDate" (ngModelChange)="fromDate = $event; onSearch()" class="filter-input" />
+        <input type="date" [ngModel]="fromDate" (ngModelChange)="fromDate = $event; search()" class="filter-input" />
       </div>
       <div class="filter-group">
         <label class="filter-label"><i class="fa-solid fa-calendar"></i> Đến ngày</label>
-        <input type="date" [ngModel]="toDate" (ngModelChange)="toDate = $event; onSearch()" class="filter-input" />
+        <input type="date" [ngModel]="toDate" (ngModelChange)="toDate = $event; search()" class="filter-input" />
+      </div>
+      <div class="filter-actions">
+        <button class="btn-search" (click)="search()">
+          <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
+        </button>
       </div>
     </div>
   </div>
@@ -58,9 +63,8 @@
         <thead>
           <tr>
             <th class="text-center" style="width:56px">STT</th>
-            <th>Khách hàng</th>
             <th>Số HĐTD chi tiết</th>
-            <th>Ngày giải ngân</th>
+            <!-- <th>Ngày giải ngân</th> -->
             <th class="text-center">Số lượng xe</th>
             <th class="text-center">SL xe đã trả</th>
             <th class="text-right">Tiền giải ngân (VNĐ)</th>
@@ -73,15 +77,9 @@
           <tr *ngFor="let item of disbursements; let i = index">
             <td class="text-center stt-cell">{{ i + 1 + page * size }}</td>
             <td>
-              <div class="customer-name" [title]="item.mortgageContractDTO?.customerDTO?.customerName || '—'">
-                {{ item.mortgageContractDTO?.customerDTO?.customerName || '—' }}
-              </div>
-              <div class="sub-text">{{ item.mortgageContractDTO?.customerDTO?.cif || '' }}</div>
-            </td>
-            <td>
               <div class="contract-num font-bold">{{ item.loanContractNumber }}</div>
             </td>
-            <td>{{ item.disbursementDate | date:'dd/MM/yyyy' }}</td>
+            <!-- <td>{{ item.disbursementDate | date:'dd/MM/yyyy' }}</td> -->
             <td class="text-center">
               <span class="count-chip">{{ item.vehicleCount || 0 }} xe</span>
             </td>

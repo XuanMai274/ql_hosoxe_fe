@@ -19,6 +19,8 @@ import Swal from 'sweetalert2';
 import { AuthServiceComponent } from '../../../core/service/auth-service.component';
 import { Customer } from '../../../models/customer.model';
 import { CustomerService } from '../../../service/customer.service';
+import { WarehouseImportRequest } from '../../../models/warehouse-import-request';
+import { FullProcessNKGNRequest } from '../../../models/full-processNKGN-request';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
@@ -219,47 +221,112 @@ export class NhapKhoXeComponent implements OnInit {
     return days[d.getDay()];
   }
 
+  // confirmDisbursement() {
+  //   if (!this.previewData) return;
+  //   this.loading = true;
+
+  //   const ids = this.getSelectedIds();
+  //   const request: WarehouseImportRequest = {
+  //     vehicleIds: ids,
+  //     totalCollateralValue: this.previewData?.totalCollateralValue || 0,
+  //     totalOutstandingBalance: this.previewData?.usedLimit || 0,
+
+  //   };
+  //   // 1. Gọi API Nhập kho
+  //   this.warehouseService.importWarehouse(request).subscribe({
+  //     next: (res) => {
+  //       console.log("Warehouse result:", res);
+  //       this.warehouseImportResult = res;
+  //       this.importedVehicleIds = res.vehicleIds;
+  //       this.importNumber = res.importNumber;
+  //       if (this.previewData) {
+  //         this.previewData.mortgageContractId =
+  //           this.warehouseImportResult?.mortgageContractDTO?.id;
+  //       }
+  //       console.log("data giải ngân: ", this.previewData)
+  //       // 2. Gọi API Tạo giải ngân
+  //       this.disbursementService.createDisbursement(this.previewData!).subscribe({
+  //         next: (resDis) => {
+  //           // Lưu giải ngân đã tạo
+  //           this.createdDisbursement = resDis;
+
+  //           // update lại để dùng cho tạo khoản vay
+  //           this.previewData = resDis;
+
+  //           // 3. Gọi API Tạo khoản vay
+  //           this.submitBatchLoans();
+  //         },
+  //         error: (err) => {
+  //           this.loading = false;
+  //           Swal.fire('Lỗi', err.error?.message || "Lỗi tạo giải ngân", 'error');
+  //         }
+  //       });
+  //     },
+  //     error: (err) => {
+  //       this.loading = false;
+  //       Swal.fire('Lỗi', err.error?.message || "Lỗi nhập kho", 'error');
+  //     }
+  //   });
+  // }
   confirmDisbursement() {
+
     if (!this.previewData) return;
-    this.loading = true;
 
     const ids = this.getSelectedIds();
+    if (!ids.length) {
+      Swal.fire('Lỗi', 'Chưa chọn xe', 'error');
+      return;
+    }
 
-    // 1. Gọi API Nhập kho
-    this.warehouseService.importWarehouse(ids).subscribe({
-      next: (res) => {
-        console.log("Warehouse result:", res);
-        this.warehouseImportResult = res;
-        this.importedVehicleIds = res.vehicleIds;
-        this.importNumber = res.importNumber;
-        if (this.previewData) {
-          this.previewData.mortgageContractId =
-            this.warehouseImportResult?.mortgageContractDTO?.id;
-        }
-        console.log("data giải ngân: ", this.previewData)
-        // 2. Gọi API Tạo giải ngân
-        this.disbursementService.createDisbursement(this.previewData!).subscribe({
-          next: (resDis) => {
-            // Lưu giải ngân đã tạo
-            this.createdDisbursement = resDis;
+    this.loading = true;
 
-            // update lại để dùng cho tạo khoản vay
-            this.previewData = resDis;
-
-            // 3. Gọi API Tạo khoản vay
-            this.submitBatchLoans();
-          },
-          error: (err) => {
-            this.loading = false;
-            Swal.fire('Lỗi', err.error?.message || "Lỗi tạo giải ngân", 'error');
-          }
-        });
+    const request: FullProcessNKGNRequest = {
+      warehouseRequest: {
+        vehicleIds: ids,
+        totalCollateralValue:
+          this.previewData.totalCollateralValue || 0,
+        totalOutstandingBalance:
+          this.previewData.usedLimit || 0
       },
-      error: (err) => {
-        this.loading = false;
-        Swal.fire('Lỗi', err.error?.message || "Lỗi nhập kho", 'error');
-      }
-    });
+      disbursementRequest: this.previewData
+    };
+
+    this.warehouseService.executeFullProcess(request)
+      .subscribe({
+        next: (res) => {
+          this.closePreviewModal();
+          // ===== SET LẠI STATE =====
+          this.warehouseImportResult = res.warehouseImport;
+          this.createdDisbursement = res.disbursement;
+          this.createdLoans = res.loans || [];
+
+          this.importNumber =
+            res.warehouseImport.importNumber;
+
+          this.importedVehicleIds =
+            res.warehouseImport.vehicleIds;
+
+          this.loading = false;
+
+          // ===== TỰ ĐỘNG EXPORT =====
+          this.exportHoSoNhapKhoZip();
+          this.exportHoSoGiaiNgan();
+
+          Swal.fire(
+            'Thành công',
+            'Đã xử lý và xuất hồ sơ',
+            'success'
+          );
+        },
+        error: (err) => {
+          this.loading = false;
+          Swal.fire(
+            'Lỗi',
+            err.error?.message || 'Xử lý thất bại',
+            'error'
+          );
+        }
+      });
   }
   // hàm tính lãi suất
   // recalculateInterest() {

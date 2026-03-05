@@ -54,7 +54,7 @@ export class QuanLyRutHoSoXeComponent implements OnInit {
             this.exportService.getVehiclesByExportId(request.id).subscribe({
                 next: (data) => {
                     this.vehicles = data;
-
+                    console.log("dữ liệu xe thuộc đơn đề nghị", data)
                     if (!this.selectedRequest!.totalDebtCollection) {
                         const total = data.reduce((sum, v) => sum + (v.guaranteeAmount || 0), 0);
                         this.selectedRequest!.totalDebtCollection = total;
