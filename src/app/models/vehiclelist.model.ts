@@ -8,4 +8,5 @@ export interface VehicleList {
   engineNumber: string;
   price: number;
   ref: string;
+  hasDocument: boolean;
 }

@@ -60,4 +60,5 @@ export interface GuaranteeLetter {
     issuedGuaranteeBalance?: number;     // Dư bảo lãnh
     vehicleLoanBalance?: number;         // Dư vay xe
     realEstateLoanBalance?: number;      // Dư vay BĐS
+    hasFile?: boolean;
 }

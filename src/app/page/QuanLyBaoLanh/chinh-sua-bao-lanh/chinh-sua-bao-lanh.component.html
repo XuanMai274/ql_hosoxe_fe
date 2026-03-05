@@ -80,12 +80,11 @@
         <input formControlName="guaranteeNoticeNumber" />
       </div>
       <div>
-        <label>Ngày thư bảo lãnh</label>
-        <input formControlName="guaranteeNoticeDate" type="date" />
-      </div>
-      <div>
         <label>Mã tham chiếu</label>
-        <input formControlName="referenceCode" />
+        <input formControlName="referenceCode" [class.is-invalid]="editForm.get('referenceCode')?.invalid" />
+        <div *ngIf="editForm.get('referenceCode')?.errors?.['duplicate']" class="error-msg">
+          Mã tham chiếu này đã tồn tại trên hệ thống.
+        </div>
       </div>
 
       <div>
