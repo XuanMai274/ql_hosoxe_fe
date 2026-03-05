@@ -29,6 +29,7 @@ export class CustomerManagementComponent implements OnInit {
   showModal = false;
   isEditing = false;
   selectedCustomer: Customer | null = null;
+  isSubmitted = false;
 
   customerForm: FormGroup;
   availableRoles: Role[] = [];
@@ -52,7 +53,7 @@ export class CustomerManagementComponent implements OnInit {
       customerName: ['', Validators.required],
       customerType: ['CA_NHAN', Validators.required],
       cif: [''],
-      phone: [''],
+      phone: ['', [Validators.pattern(/^0[0-9]{9}$/)]],
       email: ['', [Validators.required, Validators.email]],
       address: [''],
       taxCode: [''],
@@ -141,6 +142,7 @@ export class CustomerManagementComponent implements OnInit {
   openCreateModal(): void {
     this.isEditing = false;
     this.selectedCustomer = null;
+    this.isSubmitted = false;
     this.customerForm.reset({ customerType: 'INDIVIDUAL', status: 'ACTIVE' });
     const customerRole = this.availableRoles.find(r => r.code === 'CUSTOMER');
     if (customerRole) {
@@ -153,6 +155,7 @@ export class CustomerManagementComponent implements OnInit {
 
   openEditModal(customer: Customer): void {
     this.isEditing = true;
+    this.isSubmitted = false;
     this.selectedCustomer = customer;
     this.customerForm.patchValue({ ...customer });
     this.customerForm.get('username')?.disable();
@@ -166,6 +169,7 @@ export class CustomerManagementComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.isSubmitted = true;
     if (this.customerForm.invalid) {
       this.customerForm.markAllAsTouched();
       return;

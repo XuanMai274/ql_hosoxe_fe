@@ -217,6 +217,9 @@
                 <div class="form-group">
                     <label class="form-label">Số điện thoại</label>
                     <input type="text" formControlName="phone" class="form-input" placeholder="Nhập số điện thoại" />
+                    <div class="error-feedback" *ngIf="isSubmitted && customerForm.get('phone')?.errors?.['pattern']">
+                        <i class="fa-solid fa-circle-exclamation"></i> Số điện thoại phải bao gồm 10 chữ số.
+                    </div>
                 </div>
                 <div class="form-group full-width">
                     <label class="form-label">Địa chỉ</label>

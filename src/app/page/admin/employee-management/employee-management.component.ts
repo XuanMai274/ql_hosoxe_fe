@@ -30,6 +30,7 @@ export class EmployeeManagementComponent implements OnInit {
   showModal = false;
   isEditing = false;
   selectedEmployee: Employee | null = null;
+  isSubmitted = false;
 
   employeeForm: FormGroup;
 
@@ -50,7 +51,7 @@ export class EmployeeManagementComponent implements OnInit {
       employeeCode: ['', Validators.required],
       fullName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: [''],
+      phone: ['', [Validators.pattern(/^0[0-9]{9}$/)]],
       position: [''],
       status: ['ACTIVE'],
       // Thông tin tài khoản
@@ -129,6 +130,7 @@ export class EmployeeManagementComponent implements OnInit {
   openCreateModal(): void {
     this.isEditing = false;
     this.selectedEmployee = null;
+    this.isSubmitted = false;
     this.employeeForm.reset({ status: 'ACTIVE' });
     // Reset role specifically if needed, using first available role id or default
     if (this.availableRoles.length > 0) {
@@ -143,6 +145,7 @@ export class EmployeeManagementComponent implements OnInit {
 
   openEditModal(emp: Employee): void {
     this.isEditing = true;
+    this.isSubmitted = false;
     this.selectedEmployee = emp;
     this.employeeForm.patchValue({
       employeeCode: emp.employeeCode,
@@ -167,6 +170,7 @@ export class EmployeeManagementComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.isSubmitted = true;
     if (this.employeeForm.invalid) {
       console.log('Form errors:', this.employeeForm.errors);
       // Log individual field errors
