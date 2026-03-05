@@ -67,6 +67,8 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     showForm = false;
     submitting = false;
     newForm: FormGroup;
+    isEditing = false;
+    currentEditId: number | null = null;
 
     constructor(
         private guaranteeAppService: GuaranteeApplicationService,
@@ -76,7 +78,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     ) {
         this.newForm = this.fb.group({
             manufacturerCode: ['', Validators.required],
-            vehicles: this.fb.array([this.createVehicleRow()])
+            vehicles: this.fb.array([this.createRow()])
         });
 
         this.searchSubject.pipe(
@@ -168,11 +170,35 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     }
 
     // ===== MODAL FORM TẠO MỚI =====
-    openForm(): void {
+    openForm(item?: GuaranteeApplication): void {
         this.newForm.reset();
-        // Reset về 1 dòng trống
         while (this.vehicles.length > 0) this.vehicles.removeAt(0);
-        this.vehicles.push(this.createVehicleRow());
+
+        if (item) {
+            this.isEditing = true;
+            this.currentEditId = item.id || null;
+            this.newForm.patchValue({
+                manufacturerCode: item.manufacturerDTO?.code
+            });
+            if (item.vehicles && item.vehicles.length > 0) {
+                item.vehicles.forEach(v => {
+                    this.vehicles.push(this.fb.group({
+                        loaiXe: [v.vehicleType, Validators.required],
+                        mauXe: [v.color, Validators.required],
+                        soKhung: [v.chassisNumber],
+                        soDonHang: [v.invoiceNumber],
+                        giaXe: [v.vehiclePrice, [Validators.required, Validators.min(1)]]
+                    }));
+                });
+            } else {
+                this.vehicles.push(this.createRow());
+            }
+        } else {
+            this.isEditing = false;
+            this.currentEditId = null;
+            this.vehicles.push(this.createRow());
+        }
+
         this.showForm = true;
         document.body.style.overflow = 'hidden';
     }
@@ -187,7 +213,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
         return this.newForm.get('vehicles') as FormArray;
     }
 
-    createVehicleRow(): FormGroup {
+    createRow(): FormGroup {
         return this.fb.group({
             loaiXe: ['', Validators.required],
             mauXe: [''],
@@ -198,7 +224,7 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
     }
 
     addVehicleRow(): void {
-        this.vehicles.push(this.createVehicleRow());
+        this.vehicles.push(this.createRow());
     }
 
     removeVehicleRow(index: number): void {
@@ -261,27 +287,49 @@ export class DeNghiCapBaoLanhComponent implements OnInit {
             vehicles: vehicles
         };
 
-        this.guaranteeAppService.create(payload).subscribe({
-            next: (res) => {
-                if (!res.id) {
-                    alert('Không tìm thấy ID');
-                    return;
+        if (this.isEditing && this.currentEditId) {
+            this.guaranteeAppService.update(this.currentEditId, payload).subscribe({
+                next: (res) => {
+                    this.submitting = false;
+                    this.closeForm();
+                    this.loadData(this.page);
+                    if (res.id && res.subGuaranteeContractNumber) {
+                        this.exportAllFiles(res.id, res.subGuaranteeContractNumber);
+                    }
+                },
+                error: (err) => {
+                    console.error(err);
+                    this.submitting = false;
+                    alert('Có lỗi khi cập nhật đơn bảo lãnh');
                 }
-                if (!res.id || !res.subGuaranteeContractNumber) {
-                    alert('Thiếu dữ liệu xuất file');
-                    return;
+            });
+        } else {
+            this.guaranteeAppService.create(payload).subscribe({
+                next: (res) => {
+                    if (!res.id) {
+                        alert('Không tìm thấy ID');
+                        return;
+                    }
+                    if (!res.id || !res.subGuaranteeContractNumber) {
+                        alert('Thiếu dữ liệu xuất file');
+                        return;
+                    }
+                    this.submitting = false;
+                    this.closeForm();
+                    this.loadData(0);
+                    this.exportAllFiles(res.id, res.subGuaranteeContractNumber);
+                },
+                error: (err) => {
+                    console.error(err);
+                    this.submitting = false;
+                    alert('Có lỗi khi tạo đơn bảo lãnh');
                 }
-                this.submitting = false;
-                this.closeForm();
-                this.loadData(0);
-                this.exportAllFiles(res.id, res.subGuaranteeContractNumber);
-            },
-            error: (err) => {
-                console.error(err);
-                this.submitting = false;
-                alert('Có lỗi khi tạo đơn bảo lãnh');
-            }
-        });
+            });
+        }
+    }
+
+    canEdit(status?: string): boolean {
+        return status?.toUpperCase().includes('PENDING') || false;
     }
 
     getManufacturerIdByCode(code: string): number {

@@ -47,6 +47,11 @@ export class GuaranteeLetterService {
             responseType: 'blob'
         });
     }
+    previewPdfCustomer(fileId: number) {
+        return this.http.get(`http://localhost:8080/customer/guarantee-files/${fileId}/view`, {
+            responseType: 'blob'
+        });
+    }
     // xóa file thư bảo lãnh
     deleteFile(fileId: number) {
         return this.http.delete(
@@ -190,6 +195,13 @@ export class GuaranteeLetterService {
                     manufacturerCode
                 }
             }
+        );
+    }
+
+    getActiveGuaranteesForCustomer(page = 0, size = 10): Observable<PageResponse<GuaranteeLetter>> {
+        return this.http.get<PageResponse<GuaranteeLetter>>(
+            `http://localhost:8080/customer/guarantee-letters/active`,
+            { params: { page, size } }
         );
     }
 

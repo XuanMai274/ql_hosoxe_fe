@@ -96,7 +96,7 @@
                             </div>
                         </td>
                     </tr>
-                    <tr *ngFor="let v of vehicles; let i = index" class="clickable-row" (click)="viewDetail(v.id)">
+                    <tr *ngFor="let v of vehicles; let i = index">
                         <td class="text-center stt-cell">{{ page * size + i + 1 }}</td>
                         <td class="font-bold">{{ v.vehicleName }}</td>
                         <td class="code-cell">{{ v.chassisNumber }}</td>
@@ -111,9 +111,11 @@
                         </td>
                         <td>{{ v.ref || '—' }}</td>
                         <td class="text-center">
-                            <button class="btn-view" (click)="viewDetail(v.id); $event.stopPropagation()">
-                                <i class="fa-solid fa-eye"></i> Xem
+                            <button *ngIf="v.hasDocument" class="btn-view"
+                                (click)="viewCocVat(v.id); $event.stopPropagation()">
+                                <i class="fa-solid fa-file-pdf"></i> Xem COC/VAT
                             </button>
+                            <span *ngIf="!v.hasDocument" class="no-file-text">Chưa có file</span>
                         </td>
                     </tr>
                 </tbody>

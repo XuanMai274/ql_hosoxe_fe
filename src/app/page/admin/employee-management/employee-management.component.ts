@@ -55,7 +55,11 @@ export class EmployeeManagementComponent implements OnInit {
       status: ['ACTIVE'],
       // Thông tin tài khoản
       username: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9!@#$%^&*(),.?":{}|<>]).+$/)
+      ]],
       roleId: ['', Validators.required],
     });
   }

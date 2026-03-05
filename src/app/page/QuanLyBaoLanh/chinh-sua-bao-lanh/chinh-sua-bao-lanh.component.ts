@@ -52,7 +52,6 @@ export class ChinhSuaBaoLanhComponent {
   buildForm(data: GuaranteeLetter): void {
     this.editForm = this.fb.group({
       guaranteeNoticeNumber: [data.guaranteeNoticeNumber],
-      guaranteeNoticeDate: [{ value: data.guaranteeNoticeDate }],
       guaranteeContractNumber: [{ value: data.guaranteeContractNumber, disabled: true }],
       guaranteeContractDate: [{ value: data.guaranteeContractDate, disabled: true }],
 
@@ -301,7 +300,14 @@ export class ChinhSuaBaoLanhComponent {
           Swal.fire('Thành công', 'Đã lưu dữ liệu', 'success')
             .then(() => this.router.navigate(['/manager/danh-sach-bao-lanh']));
         },
-        error: () => Swal.fire('Lỗi', 'Không thể cập nhật', 'error')
+        error: (err) => {
+          if (err.status === 400 && err.error?.message?.includes('Mã tham chiếu')) {
+            this.editForm.get('referenceCode')?.setErrors({ duplicate: true });
+            Swal.fire('Lỗi', 'Mã tham chiếu đã tồn tại trên hệ thống. Vui lòng kiểm tra lại.', 'error');
+          } else {
+            Swal.fire('Lỗi', err.error?.message || 'Không thể cập nhật', 'error');
+          }
+        }
       });
     });
   }

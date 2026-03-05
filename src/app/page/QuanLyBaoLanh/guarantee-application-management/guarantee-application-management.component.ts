@@ -23,10 +23,19 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
     currentPage = 0;
     pageSize = 10;
     totalElements = 0;
+    selectedStatus = '';
 
     showDetailModal = false;
     selectedApp: GuaranteeApplication | null = null;
     isLoadingDetail = false;
+
+    // History Modal
+    showHistoryModal = false;
+    historyApplications: GuaranteeApplication[] = [];
+    historyTotalElements = 0;
+    historyCurrentPage = 0;
+    historySelectedStatus = '';
+    isHistoryLoading = false;
 
     statistics: GuaranteeStatistics = {
         totalVehicles: 0,
@@ -57,7 +66,7 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
 
     loadApplications(): void {
         this.isLoading = true;
-        this.officerGuaranteeService.getGuaranteeApplications(this.currentPage, this.pageSize).subscribe({
+        this.officerGuaranteeService.getExcludeRejectedApplications(this.currentPage, this.pageSize, this.selectedStatus).subscribe({
             next: (response: PageResponse<GuaranteeApplication>) => {
                 this.applications = response.content;
                 this.totalElements = response.totalElements;
@@ -69,6 +78,12 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
                 Swal.fire('Lỗi', 'Không thể tải danh sách hồ sơ bảo lãnh', 'error');
             }
         });
+    }
+
+    onStatusChange(event: any): void {
+        this.selectedStatus = event.target.value;
+        this.currentPage = 0;
+        this.loadApplications();
     }
 
     openDetail(item: GuaranteeApplication): void {
@@ -131,6 +146,53 @@ export class GuaranteeApplicationManagementComponent implements OnInit {
     onPageChange(page: number): void {
         this.currentPage = page;
         this.loadApplications();
+    }
+
+    // ===== HISTORY MODAL METHODS =====
+    openHistory(): void {
+        this.showHistoryModal = true;
+        this.historyCurrentPage = 0;
+        this.historySelectedStatus = '';
+        this.loadHistory();
+    }
+
+    closeHistory(): void {
+        this.showHistoryModal = false;
+    }
+
+    loadHistory(): void {
+        this.isHistoryLoading = true;
+        this.officerGuaranteeService.getGuaranteeApplications(
+            this.historyCurrentPage,
+            this.pageSize,
+            this.historySelectedStatus
+        ).subscribe({
+            next: (response: PageResponse<GuaranteeApplication>) => {
+                this.historyApplications = response.content;
+                this.historyTotalElements = response.totalElements;
+                this.isHistoryLoading = false;
+            },
+            error: (err: any) => {
+                console.error('Error loading history:', err);
+                this.isHistoryLoading = false;
+                Swal.fire('Lỗi', 'Không thể tải lịch sử đơn bảo lãnh', 'error');
+            }
+        });
+    }
+
+    onHistoryStatusChange(event: any): void {
+        this.historySelectedStatus = event.target.value;
+        this.historyCurrentPage = 0;
+        this.loadHistory();
+    }
+
+    onHistoryPageChange(page: number): void {
+        this.historyCurrentPage = page;
+        this.loadHistory();
+    }
+
+    getHistoryTotalPages(): number {
+        return Math.ceil(this.historyTotalElements / this.pageSize);
     }
 
     getStatusClass(status: string | undefined): string {

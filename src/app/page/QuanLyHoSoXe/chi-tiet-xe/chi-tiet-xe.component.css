@@ -90,7 +90,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
   border: 1px solid #f1f5f9 !important;
   position: relative;
-   overflow: visible;
+  overflow: visible;
   transition: all 0.25s ease;
 }
 
@@ -209,7 +209,8 @@
 /* ================= DROPDOWN LIST ================= */
 .dropdown {
   position: absolute;
-  top: calc(100% + 6px);        /* NẰM NGAY DƯỚI INPUT */
+  top: calc(100% + 6px);
+  /* NẰM NGAY DƯỚI INPUT */
   left: 0;
   width: 100%;
 
@@ -267,6 +268,7 @@
 .dropdown::-webkit-scrollbar-track {
   background: transparent;
 }
+
 /* ================= RESPONSIVE ================= */
 
 @media (max-width: 1200px) {
@@ -284,6 +286,7 @@
     grid-template-columns: 1fr;
   }
 }
+
 /* ================= FILE UPLOAD ================= */
 
 .upload-wrapper {
@@ -349,7 +352,7 @@
   justify-content: space-between;
   align-items: center;
 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 /* File info */
@@ -488,6 +491,7 @@
   color: #028B89;
   font-size: 18px;
 }
+
 .vehicle-files {
   display: flex;
   flex-direction: column;
@@ -507,7 +511,7 @@
 
 .file-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(2,148,147,0.15);
+  box-shadow: 0 6px 16px rgba(2, 148, 147, 0.15);
 }
 
 .file-icon i {
@@ -552,6 +556,7 @@
 .btn-delete:hover {
   background: #fecaca;
 }
+
 .vehicle-file-upload {
   display: flex;
   align-items: center;
@@ -634,6 +639,7 @@
   cursor: not-allowed;
   transform: none;
 }
+
 /* ===== FILE CARD ===== */
 .file-card {
   display: grid;
@@ -647,7 +653,7 @@
 }
 
 .file-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
 }
 
 /* ===== FILE ICON ===== */
@@ -720,19 +726,24 @@
 .btn-delete:hover {
   background: #ffcdd2;
 }
+
 .vehicle-files {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-width: 400px;   /* Giới hạn chiều ngang */
+  max-width: 400px;
+  /* Giới hạn chiều ngang */
 }
+
 .file-name {
   display: block;
-  max-width: 220px;   /* chỉnh theo UI bạn muốn */
+  max-width: 220px;
+  /* chỉnh theo UI bạn muốn */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 /* =========================
    FILE CARD
 ========================= */
@@ -781,7 +792,8 @@
 ========================= */
 .file-info {
   flex: 1;
-  min-width: 0; /* QUAN TRỌNG để ellipsis hoạt động trong flex */
+  min-width: 0;
+  /* QUAN TRỌNG để ellipsis hoạt động trong flex */
 }
 
 .file-name {
@@ -849,4 +861,37 @@
 
 .btn-delete:hover {
   background: #fee2e2;
+}
+
+/* ===== NEW: SEQUENCE STYLES ===== */
+.highlight-section {
+  background: #f0fdfc;
+  border: 1.5px dashed #028B89;
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 10px;
+  grid-column: span 3;
+}
+
+.inner-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.inner-group label {
+  font-size: 11px !important;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.form-input.small {
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  text-align: center;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
 }

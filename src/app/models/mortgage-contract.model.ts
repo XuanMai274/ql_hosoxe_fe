@@ -21,4 +21,7 @@ export interface MortgageContract {
 
   createdAt?: string;
   updatedAt?: string;
+
+  guaranteeRunningNo?: number;
+  warehouseRunningNo?: number;
 }

@@ -1,6 +1,6 @@
 /* ============================================================
-   DANH SÁCH XE – UNIFIED TEAL THEME
-   (Styled to match de-nghi-cap-bao-lanh)
+   DANH SÁCH BẢO LÃNH – UNIFIED TEAL THEME
+   (Match with vehicle list theme)
    ============================================================ */
 
 :host {
@@ -103,129 +103,6 @@
     flex-shrink: 0;
 }
 
-/* ===== FILTER CARD ===== */
-.filter-card {
-    background: white;
-    border-radius: 18px;
-    padding: 20px 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-    border: 1px solid #f0f0f0;
-}
-
-.filter-inner {
-    display: flex;
-    align-items: flex-end;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.filter-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #546e7a;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.filter-select,
-.filter-input {
-    height: 38px;
-    padding: 0 12px;
-    border-radius: 10px;
-    border: 1.5px solid #e2e8f0;
-    font-size: 13.5px;
-    color: #1f2937;
-    transition: all 0.2s;
-    min-width: 160px;
-    background: #fafcfc;
-}
-
-.filter-select:focus,
-.filter-input:focus {
-    outline: none;
-    border-color: #028B89;
-    box-shadow: 0 0 0 3px rgba(2, 139, 137, 0.08);
-    background: white;
-}
-
-.filter-actions {
-    display: flex;
-    gap: 8px;
-    margin-left: auto;
-}
-
-.btn-search {
-    height: 38px;
-    padding: 0 18px;
-    border-radius: 10px;
-    background: #028B89;
-    color: white;
-    border: none;
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    transition: all 0.2s;
-}
-
-.btn-search:hover {
-    background: #006b68;
-}
-
-.btn-reset {
-    height: 38px;
-    padding: 0 16px;
-    border-radius: 10px;
-    background: #f1f5f9;
-    color: #546e7a;
-    border: 1px solid #e2e8f0;
-    font-size: 13.5px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    transition: all 0.2s;
-}
-
-.btn-reset:hover {
-    background: #e2e8f0;
-}
-
-/* ===== STATE BOX (loading/error/empty) ===== */
-.state-box {
-    background: white;
-    border-radius: 18px;
-    padding: 60px 20px;
-    text-align: center;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-    border: 1px solid #f0f0f0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    color: #6b7280;
-}
-
-.state-box .spinner {
-    width: 36px;
-    height: 36px;
-    border: 3px solid rgba(2, 139, 137, 0.15);
-    border-top-color: #028B89;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-}
-
 /* ===== TABLE CARD ===== */
 .table-card {
     background: white;
@@ -299,15 +176,7 @@
     transition: background 0.15s;
 }
 
-.modern-table tbody tr:last-child {
-    border-bottom: none;
-}
-
-.modern-table tbody tr.clickable-row {
-    cursor: pointer;
-}
-
-.modern-table tbody tr.clickable-row:hover {
+.modern-table tbody tr:hover {
     background: #f0fdfc;
 }
 
@@ -345,38 +214,6 @@
 .amount-cell {
     font-weight: 700;
     color: #1f2937;
-}
-
-/* ===== STATUS BADGE ===== */
-.status-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-}
-
-.status-active {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.status-expired {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.status-pending {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.status-default {
-    background: #f1f5f9;
-    color: #64748b;
 }
 
 /* ===== BUTTONS IN TABLE ===== */
@@ -495,19 +332,5 @@
         flex-direction: column;
         gap: 16px;
         align-items: flex-start;
-    }
-
-    .filter-inner {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .filter-actions {
-        margin-left: 0;
-        justify-content: space-between;
-    }
-
-    .page-btn {
-        padding: 0 10px;
     }
 }

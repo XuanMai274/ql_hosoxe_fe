@@ -83,7 +83,7 @@ legend {
 /* =========================
    FORM ITEM
 ========================= */
-.grid > div {
+.grid>div {
   display: flex;
   flex-direction: column;
 }
@@ -187,6 +187,7 @@ select:disabled {
    RESPONSIVE
 ========================= */
 @media (max-width: 1024px) {
+
   h2,
   form.form-container {
     width: 95%;
@@ -213,6 +214,7 @@ select:disabled {
     cursor: pointer;
   }
 }
+
 .file-actions {
   display: flex;
   align-items: center;
@@ -239,6 +241,7 @@ select:disabled {
 .loading-icon {
   color: #029493;
 }
+
 /* =========================
    FILE UPLOAD UX
 ========================= */
@@ -320,6 +323,7 @@ select:disabled {
 .file-status.no-file i {
   color: #94a3b8;
 }
+
 .btn-upload-confirm {
   display: inline-flex;
   align-items: center;
@@ -344,4 +348,19 @@ select:disabled {
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+/* =========================
+   ERROR STYLES
+========================= */
+.is-invalid {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.error-msg {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 500;
 }

@@ -66,7 +66,11 @@ export class CustomerManagementComponent implements OnInit {
       id: [null],
       userAccountId: [null],
       username: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9!@#$%^&*(),.?":{}|<>]).+$/)
+      ]],
       roleId: ['', Validators.required]
     });
   }
