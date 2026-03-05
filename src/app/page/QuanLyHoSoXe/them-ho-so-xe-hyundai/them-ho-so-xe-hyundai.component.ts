@@ -25,6 +25,7 @@ interface VehicleData {
   color?: string;
   numberOfSeats?: string;
   isAutoFilled?: boolean;
+  invoiceDate?: string; // Thêm ngày hóa đơn từ Excel
   file: File | null;
 }
 
@@ -299,11 +300,13 @@ export class ThemHoSoXeHyundaiComponent {
       });
 
       const invoiceGroups: InvoiceGroup[] = [];
-      const today = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const today = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
       invoiceMap.forEach((vList, invNo) => {
+        const excelDate = vList[0]?.invoiceDate;
         invoiceGroups.push({
           invoiceNumber: invNo === 'HĐ-CHƯA-XÁC-ĐỊNH' ? '' : invNo,
-          invoiceDate: today, // Mặc định hôm nay nếu excel k có
+          invoiceDate: excelDate || today, // Ưu tiên ngày từ Excel nếu có
           dealerName: vList[0].dealerName || '',
           contractNumber: vList[0].contractNumber || '',
           vehicles: vList,
@@ -438,7 +441,9 @@ export class ThemHoSoXeHyundaiComponent {
   }
 
   updateVehiclePrice(gIdx: number, iIdx: number, vIdx: number, value: any): void {
-    this.guaranteeGroups[gIdx].invoices[iIdx].vehicles[vIdx].unitPrice = value;
+    const numericValue = this.parsePrice(value);
+    // Lưu dưới dạng chuỗi đã format để hiển thị 1.000.000
+    this.guaranteeGroups[gIdx].invoices[iIdx].vehicles[vIdx].unitPrice = numericValue.toLocaleString('vi-VN');
     this.calculateSummary();
   }
 
