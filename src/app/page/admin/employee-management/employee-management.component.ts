@@ -31,6 +31,7 @@ export class EmployeeManagementComponent implements OnInit {
   isEditing = false;
   selectedEmployee: Employee | null = null;
   isSubmitted = false;
+  showPassword = false;
 
   employeeForm: FormGroup;
 
@@ -137,6 +138,14 @@ export class EmployeeManagementComponent implements OnInit {
       this.employeeForm.patchValue({ roleId: this.availableRoles[0].id });
     }
 
+    this.employeeForm.get('roleId')?.setValidators(Validators.required);
+    this.employeeForm.get('username')?.setValidators(Validators.required);
+    this.employeeForm.get('employeeCode')?.setValidators(Validators.required);
+    this.employeeForm.get('password')?.setValidators([
+      Validators.required,
+      Validators.minLength(6),
+      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9!@#$%^&*(),.?":{}|<>]).+$/)
+    ]);
     this.employeeForm.get('username')?.enable();
     this.employeeForm.get('password')?.enable();
     this.employeeForm.get('employeeCode')?.enable();
@@ -161,6 +170,16 @@ export class EmployeeManagementComponent implements OnInit {
     this.employeeForm.get('username')?.disable();
     this.employeeForm.get('password')?.disable();
     this.employeeForm.get('employeeCode')?.disable();
+
+    this.employeeForm.get('roleId')?.clearValidators();
+    this.employeeForm.get('roleId')?.updateValueAndValidity();
+    this.employeeForm.get('username')?.clearValidators();
+    this.employeeForm.get('username')?.updateValueAndValidity();
+    this.employeeForm.get('password')?.clearValidators();
+    this.employeeForm.get('password')?.updateValueAndValidity();
+    this.employeeForm.get('employeeCode')?.clearValidators();
+    this.employeeForm.get('employeeCode')?.updateValueAndValidity();
+
     this.showModal = true;
   }
 
@@ -172,16 +191,13 @@ export class EmployeeManagementComponent implements OnInit {
   onSubmit(): void {
     this.isSubmitted = true;
     if (this.employeeForm.invalid) {
-      console.log('Form errors:', this.employeeForm.errors);
-      // Log individual field errors
-      Object.keys(this.employeeForm.controls).forEach(key => {
-        const controlErrors = this.employeeForm.get(key)?.errors;
-        if (controlErrors != null) {
-          console.log('Field: ' + key + ', Errors: ', controlErrors);
-        }
-      });
       this.employeeForm.markAllAsTouched();
-      Swal.fire({ icon: 'warning', title: 'Thông tin chưa hợp lệ', text: 'Vui lòng kiểm tra lại các trường thông tin bắt buộc.', confirmButtonColor: '#006b68' });
+      Swal.fire({
+        icon: 'warning',
+        title: 'Thông tin chưa hợp lệ',
+        text: 'Vui lòng kiểm tra lại các trường thông tin bắt buộc.',
+        confirmButtonColor: '#006b68'
+      });
       return;
     }
 

@@ -193,6 +193,9 @@
         <div class="form-group">
           <label class="form-label">Mã nhân viên <span class="required">*</span></label>
           <input type="text" formControlName="employeeCode" class="form-input" placeholder="VD: NV001" />
+          <div class="error-feedback" *ngIf="isSubmitted && employeeForm.get('employeeCode')?.errors?.['required']">
+            <i class="fa-solid fa-circle-exclamation"></i> Mã nhân viên không được để trống.
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Trạng thái</label>
@@ -204,10 +207,19 @@
         <div class="form-group full-width">
           <label class="form-label">Họ và Tên <span class="required">*</span></label>
           <input type="text" formControlName="fullName" class="form-input" placeholder="Nhập họ và tên đầy đủ" />
+          <div class="error-feedback" *ngIf="isSubmitted && employeeForm.get('fullName')?.errors?.['required']">
+            <i class="fa-solid fa-circle-exclamation"></i> Họ tên không được để trống.
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Email <span class="required">*</span></label>
           <input type="email" formControlName="email" class="form-input" placeholder="example@bidv.com.vn" />
+          <div class="error-feedback" *ngIf="isSubmitted && employeeForm.get('email')?.errors?.['required']">
+            <i class="fa-solid fa-circle-exclamation"></i> Email không được để trống.
+          </div>
+          <div class="error-feedback" *ngIf="isSubmitted && employeeForm.get('email')?.errors?.['email']">
+            <i class="fa-solid fa-circle-exclamation"></i> Email không đúng định dạng.
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Số điện thoại</label>
@@ -226,17 +238,27 @@
       <div class="form-grid">
         <div class="form-group">
           <label class="form-label">Tên đăng nhập <span class="required">*</span></label>
-          <input type="text" formControlName="username" class="form-input" placeholder="user.name" />
+          <input type="text" formControlName="username" class="form-input" placeholder="Username" />
+          <div class="error-feedback" *ngIf="isSubmitted && employeeForm.get('username')?.errors?.['required']">
+            <i class="fa-solid fa-circle-exclamation"></i> Tên đăng nhập không được để trống.
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Mật khẩu <span class="required" *ngIf="!isEditing">*</span></label>
-          <input type="password" formControlName="password" class="form-input"
-            placeholder="{{ isEditing ? '********' : 'Tối thiểu 6 ký tự' }}" />
+          <div class="password-wrapper">
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-input"
+              placeholder="{{ isEditing ? '********' : 'Tối thiểu 6 ký tự' }}" />
+            <button type="button" class="btn-toggle-password" (click)="showPassword = !showPassword">
+              <i class="fa-solid" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+            </button>
+          </div>
           <small class="password-hint" *ngIf="!isEditing">
             <i class="fa-solid fa-circle-info"></i> Yêu cầu: ít nhất 1 chữ hoa, 1 chữ thường và 1 ký tự (số/đặc biệt).
           </small>
-          <div class="error-feedback"
-            *ngIf="employeeForm.get('password')?.touched && employeeForm.get('password')?.errors?.['pattern']">
+          <div class="error-feedback" *ngIf="isSubmitted && employeeForm.get('password')?.errors?.['required']">
+            <i class="fa-solid fa-circle-exclamation"></i> Mật khẩu là bắt buộc khi tạo mới.
+          </div>
+          <div class="error-feedback" *ngIf="isSubmitted && employeeForm.get('password')?.errors?.['pattern']">
             <i class="fa-solid fa-circle-exclamation"></i> Mật khẩu không đúng định dạng yêu cầu.
           </div>
         </div>
@@ -249,6 +271,9 @@
                 <span class="role-name">{{ $any(r).name || $any(r).code }}</span>
               </div>
             </label>
+          </div>
+          <div class="error-feedback" *ngIf="isSubmitted && employeeForm.get('roleId')?.errors?.['required']">
+            <i class="fa-solid fa-circle-exclamation"></i> Vui lòng chọn một vai trò.
           </div>
           <div class="text-muted" *ngIf="availableRoles.length === 0">
             Đang tải danh sách vai trò...

@@ -30,6 +30,7 @@ export class CustomerManagementComponent implements OnInit {
   isEditing = false;
   selectedCustomer: Customer | null = null;
   isSubmitted = false;
+  showPassword = false;
 
   customerForm: FormGroup;
   availableRoles: Role[] = [];
@@ -148,6 +149,13 @@ export class CustomerManagementComponent implements OnInit {
     if (customerRole) {
       this.customerForm.patchValue({ roleId: customerRole.id });
     }
+    this.customerForm.get('roleId')?.setValidators(Validators.required);
+    this.customerForm.get('username')?.setValidators(Validators.required);
+    this.customerForm.get('password')?.setValidators([
+      Validators.required,
+      Validators.minLength(6),
+      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9!@#$%^&*(),.?":{}|<>]).+$/)
+    ]);
     this.customerForm.get('username')?.enable();
     this.customerForm.get('password')?.enable();
     this.showModal = true;
@@ -160,6 +168,12 @@ export class CustomerManagementComponent implements OnInit {
     this.customerForm.patchValue({ ...customer });
     this.customerForm.get('username')?.disable();
     this.customerForm.get('password')?.disable();
+    this.customerForm.get('roleId')?.clearValidators();
+    this.customerForm.get('roleId')?.updateValueAndValidity();
+    this.customerForm.get('username')?.clearValidators();
+    this.customerForm.get('username')?.updateValueAndValidity();
+    this.customerForm.get('password')?.clearValidators();
+    this.customerForm.get('password')?.updateValueAndValidity();
     this.showModal = true;
   }
 
@@ -172,6 +186,12 @@ export class CustomerManagementComponent implements OnInit {
     this.isSubmitted = true;
     if (this.customerForm.invalid) {
       this.customerForm.markAllAsTouched();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Thông tin chưa hợp lệ',
+        text: 'Vui lòng kiểm tra lại các trường thông tin bắt buộc.',
+        confirmButtonColor: '#006b68'
+      });
       return;
     }
 
